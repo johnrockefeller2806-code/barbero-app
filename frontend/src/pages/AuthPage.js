@@ -5,6 +5,8 @@ import { useLanguage } from '../contexts/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
 import { Scissors, User, Mail, Lock, Phone, MapPin, ArrowRight, ArrowLeft } from 'lucide-react';
 
+const LOGO_URL = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/7tsbrqqb_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg";
+
 const AuthPage = () => {
   const navigate = useNavigate();
   const { login, register } = useAuth();
