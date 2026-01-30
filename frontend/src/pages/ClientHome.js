@@ -130,12 +130,12 @@ export const ClientHome = () => {
         <div className="px-6 space-y-4">
           {loading ? (
             <div className="text-center py-12">
-              <div className="w-8 h-8 border-2 border-[#7c3aed] border-t-transparent rounded-full animate-spin mx-auto" />
+              <div className="w-8 h-8 border-2 border-[#d4af37] border-t-transparent rounded-full animate-spin mx-auto" />
             </div>
           ) : barbers.length === 0 ? (
             <div className="text-center py-12">
               <Scissors className="w-12 h-12 text-[#52525e] mx-auto mb-4" />
-              <p className="text-[#71717a]">No barbers found</p>
+              <p className="text-[#71717a]">Nenhum barbeiro encontrado</p>
             </div>
           ) : (
             barbers.map(barber => (
@@ -147,10 +147,10 @@ export const ClientHome = () => {
               >
                 {/* Available Badge */}
                 {barber.is_available && (
-                  <div className="gradient-green py-2 text-center">
+                  <div className="bg-gradient-to-r from-[#d4af37] to-[#f4d03f] py-2 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-1.5 h-1.5 bg-[#0a0a0f] rounded-full" />
-                      <span className="text-[11px] font-bold text-[#0a0a0f] tracking-wider">AVAILABLE NOW</span>
+                      <span className="text-[11px] font-bold text-[#0a0a0f] tracking-wider">DISPONÍVEL AGORA</span>
                     </div>
                   </div>
                 )}
@@ -159,12 +159,12 @@ export const ClientHome = () => {
                   {/* Avatar */}
                   <div className="relative">
                     <img
-                      src={barber.avatar || `https://ui-avatars.com/api/?name=${barber.name}&background=7c3aed&color=fff`}
+                      src={barber.avatar || `https://ui-avatars.com/api/?name=${barber.name}&background=d4af37&color=0a0a0f`}
                       alt={barber.name}
                       className="w-[72px] h-[72px] rounded-2xl object-cover"
                     />
                     {barber.is_available && (
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#00ff88] rounded-full border-[3px] border-[#1a1a24]" />
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#d4af37] rounded-full border-[3px] border-[#1a1a24]" />
                     )}
                   </div>
 
@@ -181,7 +181,7 @@ export const ClientHome = () => {
                       </div>
                       {barber.distance && (
                         <div className="flex items-center gap-1">
-                          <MapPin className="w-4 h-4 text-[#22d3ee]" />
+                          <MapPin className="w-4 h-4 text-[#d4af37]" />
                           <span className="text-white text-sm">{barber.distance}</span>
                         </div>
                       )}
@@ -190,7 +190,7 @@ export const ClientHome = () => {
                     {/* Specialties */}
                     <div className="flex gap-1.5 flex-wrap">
                       {barber.specialties?.slice(0, 3).map(spec => (
-                        <span key={spec} className="px-2 py-0.5 rounded-md bg-[#7c3aed]/20 text-[#c084fc] text-[11px] font-medium">
+                        <span key={spec} className="px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#d4af37] text-[11px] font-medium">
                           {spec}
                         </span>
                       ))}
@@ -199,17 +199,17 @@ export const ClientHome = () => {
 
                   {/* Price & Action */}
                   <div className="text-right">
-                    <div className="text-[11px] text-[#52525e]">From</div>
+                    <div className="text-[11px] text-[#52525e]">A partir de</div>
                     <div className="text-xl font-bold text-white">€{barber.price_range_min}</div>
                     {barber.is_available ? (
-                      <button className="mt-2 px-4 py-2 rounded-xl gradient-purple text-white text-sm font-medium flex items-center gap-1">
+                      <button className="mt-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f] text-sm font-bold flex items-center gap-1">
                         <Zap className="w-4 h-4" />
-                        Book
+                        Agendar
                       </button>
                     ) : (
                       <div className="mt-2 px-3 py-2 rounded-xl bg-white/5 text-[#71717a] text-sm flex items-center gap-1">
                         <Clock className="w-4 h-4" />
-                        Soon
+                        Em breve
                       </div>
                     )}
                   </div>
