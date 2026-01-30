@@ -123,7 +123,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
               </div>
               <input
                 type="text"
-                placeholder="Full Name *"
+                placeholder="Nome Completo *"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="input-dark pl-12"
@@ -138,7 +138,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
               </div>
               <input
                 type="email"
-                placeholder="Email *"
+                placeholder="E-mail *"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="input-dark pl-12"
@@ -153,7 +153,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
               </div>
               <input
                 type="password"
-                placeholder="Password *"
+                placeholder="Senha *"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="input-dark pl-12"
@@ -168,7 +168,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
               </div>
               <input
                 type="tel"
-                placeholder="Phone Number"
+                placeholder="Telefone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="input-dark pl-12"
@@ -180,7 +180,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
             {isBarber && (
               <>
                 <div className="pt-4 border-t border-[#24242e]">
-                  <h3 className="text-white font-medium mb-4">Shop Details</h3>
+                  <h3 className="text-white font-medium mb-4">Detalhes da Barbearia</h3>
                 </div>
 
                 {/* Shop Name */}
@@ -190,7 +190,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
                   </div>
                   <input
                     type="text"
-                    placeholder="Shop Name *"
+                    placeholder="Nome da Barbearia *"
                     value={formData.shop_name}
                     onChange={(e) => setFormData({ ...formData, shop_name: e.target.value })}
                     className="input-dark pl-12"
@@ -205,7 +205,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
                   </div>
                   <input
                     type="text"
-                    placeholder="Shop Address *"
+                    placeholder="Endereço *"
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     className="input-dark pl-12"
@@ -217,7 +217,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
                 <div>
                   <div className="flex items-center gap-2 mb-3 text-[#71717a]">
                     <Tag className="w-5 h-5" />
-                    <span className="text-sm">Specialties</span>
+                    <span className="text-sm">Especialidades</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {specialtyOptions.map(spec => (
@@ -227,7 +227,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
                         onClick={() => toggleSpecialty(spec)}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                           formData.specialties.includes(spec)
-                            ? 'gradient-purple text-white'
+                            ? 'bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f]'
                             : 'bg-[#24242e] text-[#a1a1aa] hover:bg-[#2e2e3a]'
                         }`}
                       >
@@ -243,7 +243,11 @@ export const Register = ({ isBarber: isBarberProp }) => {
             <button
               type="submit"
               disabled={loading}
-              className={`${isBarber ? 'btn-green' : 'btn-primary'} w-full justify-center text-lg py-4 mt-6`}
+              className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all mt-6 disabled:opacity-50 ${
+                isBarber 
+                  ? 'btn-green' 
+                  : 'bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f] hover:shadow-[0_0_30px_rgba(212,175,55,0.4)]'
+              }`}
               data-testid="register-submit"
             >
               {loading ? (
@@ -254,7 +258,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
                 </div>
               ) : (
                 <>
-                  {isBarber ? 'Start Getting Bookings' : 'Create Account'}
+                  {isBarber ? 'Começar a Receber Clientes' : 'Criar Conta'}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -264,9 +268,9 @@ export const Register = ({ isBarber: isBarberProp }) => {
 
         {/* Login Link */}
         <p className="text-center mt-6 text-[#71717a]">
-          Already have an account?{' '}
-          <Link to="/login" className="text-[#a855f7] hover:text-[#c084fc] font-medium">
-            Sign In
+          Já tem uma conta?{' '}
+          <Link to="/login" className="text-[#d4af37] hover:text-[#f4d03f] font-medium">
+            Entrar
           </Link>
         </p>
       </div>
