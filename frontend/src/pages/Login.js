@@ -120,13 +120,13 @@ export const Login = () => {
             >
               {loading ? (
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div className="w-2 h-2 bg-[#0a0a0f] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 bg-[#0a0a0f] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 bg-[#0a0a0f] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               ) : (
                 <>
-                  Sign In
+                  Entrar
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -136,7 +136,7 @@ export const Login = () => {
           {/* Divider */}
           <div className="flex items-center gap-4 my-6">
             <div className="flex-1 h-px bg-[#24242e]" />
-            <span className="text-sm text-[#71717a]">or continue with</span>
+            <span className="text-sm text-[#71717a]">ou continue com</span>
             <div className="flex-1 h-px bg-[#24242e]" />
           </div>
 
@@ -149,37 +149,37 @@ export const Login = () => {
               <svg className="w-6 h-6" viewBox="0 0 24 24"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
             </button>
             <button className="w-14 h-14 rounded-2xl glass-card flex items-center justify-center hover:bg-white/10 transition-colors">
-              <Fingerprint className="w-6 h-6 text-[#00ff88]" />
+              <Fingerprint className="w-6 h-6 text-[#d4af37]" />
             </button>
           </div>
         </div>
 
         {/* Register Link */}
         <div className="text-center mt-8">
-          <p className="text-[#71717a] mb-4">Don't have an account?</p>
+          <p className="text-[#71717a] mb-4">Não tem uma conta?</p>
           <div className="flex justify-center gap-3">
             <Link
               to="/register"
-              className="px-6 py-3 rounded-xl bg-[#7c3aed]/20 border border-[#7c3aed]/30 text-[#a855f7] font-medium hover:bg-[#7c3aed]/30 transition-colors flex items-center gap-2"
+              className="px-6 py-3 rounded-xl bg-[#d4af37]/20 border border-[#d4af37]/30 text-[#d4af37] font-medium hover:bg-[#d4af37]/30 transition-colors flex items-center gap-2"
               data-testid="register-client-link"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-              I'm a Client
+              Sou Cliente
             </Link>
             <Link
               to="/register/barber"
               className="px-6 py-3 rounded-xl bg-[#00ff88]/20 border border-[#00ff88]/30 text-[#00ff88] font-medium hover:bg-[#00ff88]/30 transition-colors flex items-center gap-2"
               data-testid="register-barber-link"
             >
-              <Scissors className="w-5 h-5" />
-              I'm a Barber
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" /></svg>
+              Sou Barbeiro
             </Link>
           </div>
         </div>
 
         {/* Location */}
         <div className="flex items-center justify-center gap-2 mt-8 text-[#71717a]">
-          <div className="w-2 h-2 bg-[#00ff88] rounded-full" />
+          <div className="w-2 h-2 bg-[#d4af37] rounded-full" />
           <span>Dublin, Ireland 🇮🇪</span>
         </div>
       </div>
