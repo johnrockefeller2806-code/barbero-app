@@ -38,9 +38,9 @@ export const ClientHome = () => {
   };
 
   const filters = [
-    { id: 'available', label: 'Available Now', icon: Zap },
-    { id: 'all', label: 'All Barbers', icon: Scissors },
-    { id: 'top', label: 'Top Rated', icon: Star },
+    { id: 'available', label: 'Disponíveis', icon: Zap },
+    { id: 'all', label: 'Todos', icon: Scissors },
+    { id: 'top', label: 'Top Avaliados', icon: Star },
   ];
 
   const getGreeting = () => {
