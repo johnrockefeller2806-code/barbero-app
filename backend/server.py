@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, APIRouter, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -6,768 +6,610 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
-from typing import List, Optional, Dict, Any, Literal
+from pydantic import BaseModel, Field, ConfigDict
+from typing import List, Optional
 import uuid
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
+import hashlib
 import jwt
-import bcrypt
-import json
+import math
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# JWT Config
-JWT_SECRET = os.environ.get('JWT_SECRET_KEY', 'quickcut-secret-key-2025')
-JWT_ALGORITHM = "HS256"
-JWT_EXPIRATION_HOURS = 72
-
-# Create the main app
-app = FastAPI(title="QuickCut API - Barber Booking Platform")
+app = FastAPI()
 api_router = APIRouter(prefix="/api")
 security = HTTPBearer(auto_error=False)
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+JWT_SECRET = os.environ.get('JWT_SECRET', 'barberx-secret-key-2024')
 
-# ============== MODELS ==============
+# ==================== MODELS ====================
 
-UserRole = Literal["client", "barber", "admin"]
-
-class UserCreate(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
-    role: UserRole = "client"
-    phone: str = ""
-
-class BarberRegister(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
-    phone: str
-    shop_name: str
-    address: str
-    specialties: List[str] = []
-    price_range_min: float = 20
-    price_range_max: float = 50
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
-
-class UserResponse(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str
+class UserRegister(BaseModel):
     name: str
     email: str
-    role: str = "client"
-    created_at: str
-    avatar: Optional[str] = None
+    password: str
+    phone: str
+    user_type: str  # 'client' or 'barber'
     # Barber specific fields
-    shop_name: Optional[str] = None
+    specialty: Optional[str] = None
+    services: Optional[List[dict]] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     address: Optional[str] = None
-    specialties: Optional[List[str]] = None
-    rating: Optional[float] = None
-    reviews_count: Optional[int] = None
-    is_available: Optional[bool] = None
-    lat: Optional[float] = None
-    lng: Optional[float] = None
+    photo_url: Optional[str] = None
+    # Home service fields
+    offers_home_service: bool = False
+    home_service_fee_per_km: float = 2.0  # € per km
 
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-    user: UserResponse
+class UserLogin(BaseModel):
+    email: str
+    password: str
 
-class BarberPublic(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    id: str
-    name: str
-    shop_name: str
-    address: str
-    avatar: Optional[str] = None
-    rating: float = 4.5
-    reviews_count: int = 0
-    specialties: List[str] = []
-    price_range_min: float = 20
-    price_range_max: float = 50
-    is_available: bool = False
-    lat: Optional[float] = None
-    lng: Optional[float] = None
-    distance: Optional[str] = None
-
-class Service(BaseModel):
+class User(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    barber_id: str
     name: str
-    description: str = ""
-    duration_minutes: int = 30
-    price: float
-    active: bool = True
+    email: str
+    phone: str
+    user_type: str
+    photo_url: Optional[str] = None
+    # Barber fields
+    specialty: Optional[str] = None
+    services: Optional[List[dict]] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    address: Optional[str] = None
+    is_online: bool = False
+    rating: float = 5.0
+    total_reviews: int = 0
+    # Home service fields
+    offers_home_service: bool = False
+    home_service_fee_per_km: float = 2.0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class ServiceCreate(BaseModel):
-    name: str
-    description: str = ""
-    duration_minutes: int = 30
-    price: float
-
-class Booking(BaseModel):
+class QueueEntry(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_id: str
     client_name: str
     barber_id: str
-    barber_name: str
-    shop_name: str
-    service_id: str
-    service_name: str
-    service_price: float
-    date: str
-    time: str
-    status: str = "pending"  # pending, confirmed, completed, cancelled
-    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-
-class BookingCreate(BaseModel):
-    barber_id: str
-    service_id: str
-    date: str
-    time: str
-
-class AvailabilityUpdate(BaseModel):
-    available: bool
-
-class LocationUpdate(BaseModel):
-    lat: float
-    lng: float
+    service: dict
+    status: str = "waiting"  # waiting, in_progress, completed, cancelled
+    position: int = 0
+    estimated_wait: int = 0  # minutes
+    # Home service fields
+    is_home_service: bool = False
+    client_address: Optional[str] = None
+    client_latitude: Optional[float] = None
+    client_longitude: Optional[float] = None
+    distance_km: float = 0
+    travel_fee: float = 0
+    total_price: float = 0
+    # Payment
+    payment_method: str = "cash"  # cash or card
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class Review(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    booking_id: str
     client_id: str
     client_name: str
     barber_id: str
-    rating: int  # 1-5
-    comment: str = ""
-    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-
-class ReviewCreate(BaseModel):
-    booking_id: str
     rating: int
-    comment: str = ""
+    comment: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-# ============== AUTH HELPERS ==============
+# ==================== HELPERS ====================
 
 def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    return hashlib.sha256(password.encode()).hexdigest()
 
-def verify_password(password: str, hashed: str) -> bool:
-    return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
-
-def create_token(user_id: str, email: str, role: str = "client") -> str:
+def create_token(user_id: str, user_type: str) -> str:
     payload = {
-        "sub": user_id,
-        "email": email,
-        "role": role,
-        "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
+        "user_id": user_id,
+        "user_type": user_type,
+        "exp": datetime.now(timezone.utc).timestamp() + 86400 * 7  # 7 days
     }
-    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+
+def decode_token(token: str) -> dict:
+    try:
+        return jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    except:
+        return None
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if not credentials:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user = await db.users.find_one({"id": payload["sub"]}, {"_id": 0, "password": 0})
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        return user
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
+    payload = decode_token(credentials.credentials)
+    if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
-
-async def get_barber_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    user = await get_current_user(credentials)
-    if user.get("role") != "barber":
-        raise HTTPException(status_code=403, detail="Barber access required")
+    user = await db.users.find_one({"id": payload["user_id"]}, {"_id": 0, "password": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
     return user
 
-async def get_optional_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    if not credentials:
-        return None
-    try:
-        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user = await db.users.find_one({"id": payload["sub"]}, {"_id": 0, "password": 0})
-        return user
-    except:
-        return None
+def calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Calculate distance in km using Haversine formula"""
+    R = 6371  # Earth's radius in km
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    return R * c
 
-# ============== AUTH ROUTES ==============
+# ==================== AUTH ROUTES ====================
 
-@api_router.get("/")
-async def root():
-    return {"message": "QuickCut API", "version": "1.0.0", "location": "Dublin, Ireland 🇮🇪"}
-
-@api_router.post("/auth/register", response_model=TokenResponse)
-async def register_client(user_data: UserCreate):
-    """Register a new client"""
-    existing = await db.users.find_one({"email": user_data.email})
+@api_router.post("/auth/register")
+async def register(input: UserRegister):
+    existing = await db.users.find_one({"email": input.email})
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    user_id = str(uuid.uuid4())
-    user = {
-        "id": user_id,
-        "name": user_data.name,
-        "email": user_data.email,
-        "phone": user_data.phone,
-        "password": hash_password(user_data.password),
-        "role": "client",
-        "avatar": None,
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
-    await db.users.insert_one(user)
+    user_data = input.model_dump()
+    user_data["password"] = hash_password(input.password)
+    user = User(**user_data)
+    doc = user.model_dump()
+    doc["password"] = user_data["password"]
+    doc["created_at"] = doc["created_at"].isoformat()
     
-    token = create_token(user_id, user_data.email, "client")
-    return TokenResponse(
-        access_token=token,
-        user=UserResponse(
-            id=user_id,
-            name=user_data.name,
-            email=user_data.email,
-            role="client",
-            created_at=user["created_at"]
-        )
-    )
-
-@api_router.post("/auth/register-barber", response_model=TokenResponse)
-async def register_barber(data: BarberRegister):
-    """Register a new barber"""
-    existing = await db.users.find_one({"email": data.email})
-    if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    user_id = str(uuid.uuid4())
-    user = {
-        "id": user_id,
-        "name": data.name,
-        "email": data.email,
-        "phone": data.phone,
-        "password": hash_password(data.password),
-        "role": "barber",
-        "shop_name": data.shop_name,
-        "address": data.address,
-        "specialties": data.specialties,
-        "price_range_min": data.price_range_min,
-        "price_range_max": data.price_range_max,
-        "rating": 5.0,
-        "reviews_count": 0,
-        "is_available": False,
-        "lat": 53.3498,  # Dublin default
-        "lng": -6.2603,
-        "avatar": None,
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
-    await db.users.insert_one(user)
-    
-    # Create default services
-    default_services = [
-        {"name": "Haircut", "description": "Classic haircut", "duration_minutes": 30, "price": 25},
-        {"name": "Beard Trim", "description": "Beard shaping and trim", "duration_minutes": 20, "price": 15},
-        {"name": "Fade", "description": "Skin fade or low fade", "duration_minutes": 40, "price": 30},
-        {"name": "Haircut + Beard", "description": "Full service", "duration_minutes": 45, "price": 35},
-    ]
-    for svc in default_services:
-        service = Service(barber_id=user_id, **svc)
-        await db.services.insert_one(service.model_dump())
-    
-    token = create_token(user_id, data.email, "barber")
-    return TokenResponse(
-        access_token=token,
-        user=UserResponse(
-            id=user_id,
-            name=data.name,
-            email=data.email,
-            role="barber",
-            shop_name=data.shop_name,
-            address=data.address,
-            specialties=data.specialties,
-            rating=5.0,
-            reviews_count=0,
-            is_available=False,
-            created_at=user["created_at"]
-        )
-    )
-
-@api_router.post("/auth/login", response_model=TokenResponse)
-async def login(credentials: UserLogin):
-    user = await db.users.find_one({"email": credentials.email})
-    if not user or not verify_password(credentials.password, user["password"]):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-    
-    role = user.get("role", "client")
-    token = create_token(user["id"], user["email"], role)
-    
-    return TokenResponse(
-        access_token=token,
-        user=UserResponse(
-            id=user["id"],
-            name=user["name"],
-            email=user["email"],
-            role=role,
-            shop_name=user.get("shop_name"),
-            address=user.get("address"),
-            specialties=user.get("specialties"),
-            rating=user.get("rating"),
-            reviews_count=user.get("reviews_count"),
-            is_available=user.get("is_available"),
-            created_at=user["created_at"],
-            avatar=user.get("avatar")
-        )
-    )
-
-@api_router.get("/auth/me", response_model=UserResponse)
-async def get_me(user: dict = Depends(get_current_user)):
-    return UserResponse(**user)
-
-# ============== BARBER ROUTES ==============
-
-@api_router.get("/barbers/available", response_model=List[BarberPublic])
-async def get_available_barbers(lat: float = 53.3498, lng: float = -6.2603, radius: float = 10):
-    """Get available barbers near location"""
-    barbers = await db.users.find(
-        {"role": "barber", "is_available": True},
-        {"_id": 0, "password": 0}
-    ).to_list(100)
-    
-    result = []
-    for b in barbers:
-        # Simple distance calculation (not accurate but good for demo)
-        if b.get("lat") and b.get("lng"):
-            dist = ((lat - b["lat"])**2 + (lng - b["lng"])**2)**0.5 * 111  # rough km
-            if dist <= radius:
-                result.append(BarberPublic(
-                    id=b["id"],
-                    name=b["name"],
-                    shop_name=b.get("shop_name", ""),
-                    address=b.get("address", ""),
-                    avatar=b.get("avatar"),
-                    rating=b.get("rating", 4.5),
-                    reviews_count=b.get("reviews_count", 0),
-                    specialties=b.get("specialties", []),
-                    price_range_min=b.get("price_range_min", 20),
-                    price_range_max=b.get("price_range_max", 50),
-                    is_available=True,
-                    lat=b.get("lat"),
-                    lng=b.get("lng"),
-                    distance=f"{dist:.1f} km"
-                ))
-    
-    # Sort by distance
-    result.sort(key=lambda x: float(x.distance.replace(" km", "")) if x.distance else 999)
-    return result
-
-@api_router.get("/barbers", response_model=List[BarberPublic])
-async def get_all_barbers():
-    """Get all barbers"""
-    barbers = await db.users.find(
-        {"role": "barber"},
-        {"_id": 0, "password": 0}
-    ).to_list(100)
-    
-    return [BarberPublic(
-        id=b["id"],
-        name=b["name"],
-        shop_name=b.get("shop_name", ""),
-        address=b.get("address", ""),
-        avatar=b.get("avatar"),
-        rating=b.get("rating", 4.5),
-        reviews_count=b.get("reviews_count", 0),
-        specialties=b.get("specialties", []),
-        price_range_min=b.get("price_range_min", 20),
-        price_range_max=b.get("price_range_max", 50),
-        is_available=b.get("is_available", False),
-        lat=b.get("lat"),
-        lng=b.get("lng")
-    ) for b in barbers]
-
-@api_router.get("/barbers/{barber_id}", response_model=BarberPublic)
-async def get_barber(barber_id: str):
-    barber = await db.users.find_one(
-        {"id": barber_id, "role": "barber"},
-        {"_id": 0, "password": 0}
-    )
-    if not barber:
-        raise HTTPException(status_code=404, detail="Barber not found")
-    
-    return BarberPublic(
-        id=barber["id"],
-        name=barber["name"],
-        shop_name=barber.get("shop_name", ""),
-        address=barber.get("address", ""),
-        avatar=barber.get("avatar"),
-        rating=barber.get("rating", 4.5),
-        reviews_count=barber.get("reviews_count", 0),
-        specialties=barber.get("specialties", []),
-        price_range_min=barber.get("price_range_min", 20),
-        price_range_max=barber.get("price_range_max", 50),
-        is_available=barber.get("is_available", False),
-        lat=barber.get("lat"),
-        lng=barber.get("lng")
-    )
-
-@api_router.post("/barbers/availability")
-async def set_availability(data: AvailabilityUpdate, user: dict = Depends(get_barber_user)):
-    """Toggle barber availability"""
-    await db.users.update_one(
-        {"id": user["id"]},
-        {"$set": {"is_available": data.available}}
-    )
-    logger.info(f"Barber {user['name']} is now {'AVAILABLE' if data.available else 'OFFLINE'}")
-    return {"status": "success", "is_available": data.available}
-
-@api_router.post("/barbers/location")
-async def update_location(data: LocationUpdate, user: dict = Depends(get_barber_user)):
-    """Update barber location"""
-    await db.users.update_one(
-        {"id": user["id"]},
-        {"$set": {"lat": data.lat, "lng": data.lng}}
-    )
-    return {"status": "success", "lat": data.lat, "lng": data.lng}
-
-# ============== SERVICES ROUTES ==============
-
-@api_router.get("/barbers/{barber_id}/services", response_model=List[Service])
-async def get_barber_services(barber_id: str):
-    services = await db.services.find(
-        {"barber_id": barber_id, "active": True},
-        {"_id": 0}
-    ).to_list(50)
-    return services
-
-@api_router.post("/services", response_model=Service)
-async def create_service(data: ServiceCreate, user: dict = Depends(get_barber_user)):
-    service = Service(barber_id=user["id"], **data.model_dump())
-    await db.services.insert_one(service.model_dump())
-    return service
-
-@api_router.delete("/services/{service_id}")
-async def delete_service(service_id: str, user: dict = Depends(get_barber_user)):
-    result = await db.services.update_one(
-        {"id": service_id, "barber_id": user["id"]},
-        {"$set": {"active": False}}
-    )
-    if result.modified_count == 0:
-        raise HTTPException(status_code=404, detail="Service not found")
-    return {"status": "success"}
-
-# ============== BOOKING ROUTES ==============
-
-@api_router.post("/bookings", response_model=Booking)
-async def create_booking(data: BookingCreate, user: dict = Depends(get_current_user)):
-    """Create a new booking"""
-    barber = await db.users.find_one({"id": data.barber_id, "role": "barber"}, {"_id": 0, "password": 0})
-    if not barber:
-        raise HTTPException(status_code=404, detail="Barber not found")
-    
-    service = await db.services.find_one({"id": data.service_id, "barber_id": data.barber_id}, {"_id": 0})
-    if not service:
-        raise HTTPException(status_code=404, detail="Service not found")
-    
-    booking = Booking(
-        client_id=user["id"],
-        client_name=user["name"],
-        barber_id=barber["id"],
-        barber_name=barber["name"],
-        shop_name=barber.get("shop_name", ""),
-        service_id=service["id"],
-        service_name=service["name"],
-        service_price=service["price"],
-        date=data.date,
-        time=data.time
-    )
-    await db.bookings.insert_one(booking.model_dump())
-    
-    logger.info(f"New booking: {user['name']} booked {service['name']} with {barber['name']} at {data.time}")
-    return booking
-
-@api_router.get("/bookings/my", response_model=List[Booking])
-async def get_my_bookings(user: dict = Depends(get_current_user)):
-    """Get client's bookings"""
-    bookings = await db.bookings.find(
-        {"client_id": user["id"]},
-        {"_id": 0}
-    ).sort("created_at", -1).to_list(100)
-    return bookings
-
-@api_router.get("/bookings/barber", response_model=List[Booking])
-async def get_barber_bookings(user: dict = Depends(get_barber_user)):
-    """Get barber's bookings"""
-    bookings = await db.bookings.find(
-        {"barber_id": user["id"]},
-        {"_id": 0}
-    ).sort("date", 1).to_list(100)
-    return bookings
-
-@api_router.patch("/bookings/{booking_id}/status")
-async def update_booking_status(booking_id: str, status: str, user: dict = Depends(get_current_user)):
-    """Update booking status"""
-    valid_statuses = ["pending", "confirmed", "completed", "cancelled"]
-    if status not in valid_statuses:
-        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
-    
-    # Check if user owns the booking (client or barber)
-    booking = await db.bookings.find_one({"id": booking_id}, {"_id": 0})
-    if not booking:
-        raise HTTPException(status_code=404, detail="Booking not found")
-    
-    if booking["client_id"] != user["id"] and booking["barber_id"] != user["id"]:
-        raise HTTPException(status_code=403, detail="Not authorized")
-    
-    await db.bookings.update_one(
-        {"id": booking_id},
-        {"$set": {"status": status}}
-    )
-    return {"status": "success", "booking_status": status}
-
-@api_router.delete("/bookings/{booking_id}")
-async def cancel_booking(booking_id: str, user: dict = Depends(get_current_user)):
-    """Cancel a booking"""
-    booking = await db.bookings.find_one({"id": booking_id}, {"_id": 0})
-    if not booking:
-        raise HTTPException(status_code=404, detail="Booking not found")
-    
-    if booking["client_id"] != user["id"]:
-        raise HTTPException(status_code=403, detail="Not authorized")
-    
-    await db.bookings.update_one(
-        {"id": booking_id},
-        {"$set": {"status": "cancelled"}}
-    )
-    return {"status": "success", "message": "Booking cancelled"}
-
-# ============== REVIEWS ROUTES ==============
-
-@api_router.post("/reviews", response_model=Review)
-async def create_review(data: ReviewCreate, user: dict = Depends(get_current_user)):
-    """Create a review for a completed booking"""
-    booking = await db.bookings.find_one(
-        {"id": data.booking_id, "client_id": user["id"], "status": "completed"},
-        {"_id": 0}
-    )
-    if not booking:
-        raise HTTPException(status_code=404, detail="Booking not found or not completed")
-    
-    # Check if already reviewed
-    existing = await db.reviews.find_one({"booking_id": data.booking_id})
-    if existing:
-        raise HTTPException(status_code=400, detail="Booking already reviewed")
-    
-    review = Review(
-        booking_id=data.booking_id,
-        client_id=user["id"],
-        client_name=user["name"],
-        barber_id=booking["barber_id"],
-        rating=min(5, max(1, data.rating)),
-        comment=data.comment
-    )
-    await db.reviews.insert_one(review.model_dump())
-    
-    # Update barber rating
-    all_reviews = await db.reviews.find({"barber_id": booking["barber_id"]}, {"_id": 0}).to_list(1000)
-    avg_rating = sum(r["rating"] for r in all_reviews) / len(all_reviews)
-    await db.users.update_one(
-        {"id": booking["barber_id"]},
-        {"$set": {"rating": round(avg_rating, 1), "reviews_count": len(all_reviews)}}
-    )
-    
-    return review
-
-@api_router.get("/barbers/{barber_id}/reviews", response_model=List[Review])
-async def get_barber_reviews(barber_id: str):
-    reviews = await db.reviews.find(
-        {"barber_id": barber_id},
-        {"_id": 0}
-    ).sort("created_at", -1).to_list(100)
-    return reviews
-
-# ============== BARBER DASHBOARD ROUTES ==============
-
-@api_router.get("/barber/dashboard")
-async def get_barber_dashboard(user: dict = Depends(get_barber_user)):
-    """Get barber dashboard stats"""
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    
-    # Today's bookings
-    today_bookings = await db.bookings.find(
-        {"barber_id": user["id"], "date": today},
-        {"_id": 0}
-    ).to_list(100)
-    
-    # Calculate today's earnings
-    completed_today = [b for b in today_bookings if b["status"] == "completed"]
-    today_earnings = sum(b["service_price"] for b in completed_today)
-    
-    # Pending bookings
-    pending = [b for b in today_bookings if b["status"] == "pending"]
-    
-    # Total stats
-    all_completed = await db.bookings.count_documents(
-        {"barber_id": user["id"], "status": "completed"}
-    )
+    await db.users.insert_one(doc)
+    token = create_token(user.id, user.user_type)
     
     return {
-        "today": {
-            "earnings": today_earnings,
-            "clients": len(completed_today),
-            "pending": len(pending),
-            "bookings": today_bookings
-        },
-        "total": {
-            "completed_bookings": all_completed
-        },
-        "is_available": user.get("is_available", False),
-        "rating": user.get("rating", 5.0),
-        "reviews_count": user.get("reviews_count", 0)
+        "token": token,
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "user_type": user.user_type,
+            "photo_url": user.photo_url
+        }
     }
 
-# ============== SEED DATA ==============
+@api_router.post("/auth/login")
+async def login(input: UserLogin):
+    user = await db.users.find_one({"email": input.email}, {"_id": 0})
+    if not user or user["password"] != hash_password(input.password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    token = create_token(user["id"], user["user_type"])
+    del user["password"]
+    
+    if isinstance(user.get("created_at"), str):
+        user["created_at"] = datetime.fromisoformat(user["created_at"])
+    
+    return {"token": token, "user": user}
+
+@api_router.get("/auth/me")
+async def get_me(user: dict = Depends(get_current_user)):
+    return user
+
+# ==================== BARBER ROUTES ====================
+
+@api_router.get("/barbers")
+async def get_barbers(lat: Optional[float] = None, lon: Optional[float] = None, online_only: bool = False):
+    query = {"user_type": "barber"}
+    if online_only:
+        query["is_online"] = True
+    
+    barbers = await db.users.find(query, {"_id": 0, "password": 0}).to_list(100)
+    
+    for b in barbers:
+        if isinstance(b.get("created_at"), str):
+            b["created_at"] = datetime.fromisoformat(b["created_at"])
+        # Calculate distance if coordinates provided
+        if lat and lon and b.get("latitude") and b.get("longitude"):
+            b["distance"] = round(calculate_distance(lat, lon, b["latitude"], b["longitude"]), 1)
+        else:
+            b["distance"] = None
+        # Get queue count
+        queue_count = await db.queue.count_documents({"barber_id": b["id"], "status": "waiting"})
+        b["queue_count"] = queue_count
+    
+    # Sort by distance if provided
+    if lat and lon:
+        barbers = sorted(barbers, key=lambda x: x.get("distance") or 9999)
+    
+    return barbers
+
+@api_router.get("/barbers/{barber_id}")
+async def get_barber(barber_id: str):
+    barber = await db.users.find_one({"id": barber_id, "user_type": "barber"}, {"_id": 0, "password": 0})
+    if not barber:
+        raise HTTPException(status_code=404, detail="Barber not found")
+    
+    if isinstance(barber.get("created_at"), str):
+        barber["created_at"] = datetime.fromisoformat(barber["created_at"])
+    
+    # Get reviews
+    reviews = await db.reviews.find({"barber_id": barber_id}, {"_id": 0}).to_list(50)
+    for r in reviews:
+        if isinstance(r.get("created_at"), str):
+            r["created_at"] = datetime.fromisoformat(r["created_at"])
+    barber["reviews"] = reviews
+    
+    # Get queue
+    queue = await db.queue.find({"barber_id": barber_id, "status": "waiting"}, {"_id": 0}).sort("position", 1).to_list(50)
+    barber["queue"] = queue
+    
+    return barber
+
+@api_router.put("/barbers/status")
+async def update_status(is_online: bool, user: dict = Depends(get_current_user)):
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can update status")
+    
+    await db.users.update_one({"id": user["id"]}, {"$set": {"is_online": is_online}})
+    return {"success": True, "is_online": is_online}
+
+@api_router.put("/barbers/profile")
+async def update_barber_profile(
+    specialty: Optional[str] = None,
+    services: Optional[List[dict]] = None,
+    latitude: Optional[float] = None,
+    longitude: Optional[float] = None,
+    address: Optional[str] = None,
+    photo_url: Optional[str] = None,
+    user: dict = Depends(get_current_user)
+):
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can update profile")
+    
+    update = {}
+    if specialty: update["specialty"] = specialty
+    if services: update["services"] = services
+    if latitude: update["latitude"] = latitude
+    if longitude: update["longitude"] = longitude
+    if address: update["address"] = address
+    if photo_url: update["photo_url"] = photo_url
+    
+    if update:
+        await db.users.update_one({"id": user["id"]}, {"$set": update})
+    
+    return {"success": True}
+
+# ==================== QUEUE ROUTES ====================
+
+@api_router.post("/queue/join")
+async def join_queue(
+    barber_id: str, 
+    service: dict, 
+    is_home_service: bool = False,
+    client_address: Optional[str] = None,
+    client_latitude: Optional[float] = None,
+    client_longitude: Optional[float] = None,
+    payment_method: str = "cash",
+    user: dict = Depends(get_current_user)
+):
+    if user["user_type"] != "client":
+        raise HTTPException(status_code=403, detail="Only clients can join queue")
+    
+    # Check if already in queue
+    existing = await db.queue.find_one({
+        "client_id": user["id"],
+        "barber_id": barber_id,
+        "status": "waiting"
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="Already in queue for this barber")
+    
+    # Get barber info for home service calculation
+    barber = await db.users.find_one({"id": barber_id}, {"_id": 0})
+    
+    distance_km = 0
+    travel_fee = 0
+    total_price = service.get("price", 0)
+    
+    if is_home_service:
+        if not barber.get("offers_home_service"):
+            raise HTTPException(status_code=400, detail="This barber does not offer home service")
+        if not client_latitude or not client_longitude:
+            raise HTTPException(status_code=400, detail="Client location required for home service")
+        
+        # Calculate distance
+        distance_km = calculate_distance(
+            barber.get("latitude", 0), barber.get("longitude", 0),
+            client_latitude, client_longitude
+        )
+        travel_fee = round(distance_km * barber.get("home_service_fee_per_km", 2.0), 2)
+        total_price = service.get("price", 0) + travel_fee
+    
+    # Get position
+    last_in_queue = await db.queue.find_one(
+        {"barber_id": barber_id, "status": "waiting"},
+        sort=[("position", -1)]
+    )
+    position = (last_in_queue["position"] + 1) if last_in_queue else 1
+    
+    entry = QueueEntry(
+        client_id=user["id"],
+        client_name=user["name"],
+        barber_id=barber_id,
+        service=service,
+        position=position,
+        estimated_wait=position * service.get("duration", 30),
+        is_home_service=is_home_service,
+        client_address=client_address,
+        client_latitude=client_latitude,
+        client_longitude=client_longitude,
+        distance_km=round(distance_km, 1),
+        travel_fee=travel_fee,
+        total_price=total_price,
+        payment_method=payment_method
+    )
+    
+    doc = entry.model_dump()
+    doc["created_at"] = doc["created_at"].isoformat()
+    await db.queue.insert_one(doc)
+    
+    return {"success": True, "queue_entry": entry.model_dump()}
+
+@api_router.get("/queue/my-position")
+async def get_my_position(user: dict = Depends(get_current_user)):
+    entries = await db.queue.find(
+        {"client_id": user["id"], "status": {"$in": ["waiting", "in_progress"]}},
+        {"_id": 0}
+    ).to_list(10)
+    
+    for e in entries:
+        if isinstance(e.get("created_at"), str):
+            e["created_at"] = datetime.fromisoformat(e["created_at"])
+        # Get barber info
+        barber = await db.users.find_one({"id": e["barber_id"]}, {"_id": 0, "name": 1, "photo_url": 1, "address": 1})
+        e["barber"] = barber
+    
+    return entries
+
+@api_router.get("/queue/barber")
+async def get_barber_queue(user: dict = Depends(get_current_user)):
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can view their queue")
+    
+    queue = await db.queue.find(
+        {"barber_id": user["id"], "status": {"$in": ["waiting", "in_progress"]}},
+        {"_id": 0}
+    ).sort("position", 1).to_list(50)
+    
+    for q in queue:
+        if isinstance(q.get("created_at"), str):
+            q["created_at"] = datetime.fromisoformat(q["created_at"])
+    
+    return queue
+
+@api_router.put("/queue/{entry_id}/status")
+async def update_queue_status(entry_id: str, status: str, user: dict = Depends(get_current_user)):
+    entry = await db.queue.find_one({"id": entry_id})
+    if not entry:
+        raise HTTPException(status_code=404, detail="Queue entry not found")
+    
+    # Check permissions
+    if user["user_type"] == "barber" and entry["barber_id"] != user["id"]:
+        raise HTTPException(status_code=403, detail="Not your queue")
+    if user["user_type"] == "client" and entry["client_id"] != user["id"]:
+        raise HTTPException(status_code=403, detail="Not your entry")
+    
+    await db.queue.update_one({"id": entry_id}, {"$set": {"status": status}})
+    
+    # If completed or cancelled, update positions
+    if status in ["completed", "cancelled"]:
+        await db.queue.update_many(
+            {"barber_id": entry["barber_id"], "status": "waiting", "position": {"$gt": entry["position"]}},
+            {"$inc": {"position": -1}}
+        )
+    
+    return {"success": True}
+
+@api_router.delete("/queue/{entry_id}")
+async def leave_queue(entry_id: str, user: dict = Depends(get_current_user)):
+    entry = await db.queue.find_one({"id": entry_id, "client_id": user["id"]})
+    if not entry:
+        raise HTTPException(status_code=404, detail="Queue entry not found")
+    
+    await db.queue.delete_one({"id": entry_id})
+    
+    # Update positions
+    await db.queue.update_many(
+        {"barber_id": entry["barber_id"], "status": "waiting", "position": {"$gt": entry["position"]}},
+        {"$inc": {"position": -1}}
+    )
+    
+    return {"success": True}
+
+# ==================== REVIEW ROUTES ====================
+
+@api_router.post("/reviews")
+async def create_review(barber_id: str, rating: int, comment: Optional[str] = None, user: dict = Depends(get_current_user)):
+    if user["user_type"] != "client":
+        raise HTTPException(status_code=403, detail="Only clients can leave reviews")
+    
+    if rating < 1 or rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+    
+    review = Review(
+        client_id=user["id"],
+        client_name=user["name"],
+        barber_id=barber_id,
+        rating=rating,
+        comment=comment
+    )
+    
+    doc = review.model_dump()
+    doc["created_at"] = doc["created_at"].isoformat()
+    await db.reviews.insert_one(doc)
+    
+    # Update barber rating
+    reviews = await db.reviews.find({"barber_id": barber_id}, {"rating": 1}).to_list(1000)
+    avg_rating = sum(r["rating"] for r in reviews) / len(reviews)
+    await db.users.update_one(
+        {"id": barber_id},
+        {"$set": {"rating": round(avg_rating, 1), "total_reviews": len(reviews)}}
+    )
+    
+    return {"success": True, "review": review.model_dump()}
+
+@api_router.get("/reviews/{barber_id}")
+async def get_reviews(barber_id: str):
+    reviews = await db.reviews.find({"barber_id": barber_id}, {"_id": 0}).sort("created_at", -1).to_list(50)
+    for r in reviews:
+        if isinstance(r.get("created_at"), str):
+            r["created_at"] = datetime.fromisoformat(r["created_at"])
+    return reviews
+
+# ==================== HISTORY ROUTES ====================
+
+@api_router.get("/history")
+async def get_history(user: dict = Depends(get_current_user)):
+    if user["user_type"] == "client":
+        entries = await db.queue.find(
+            {"client_id": user["id"], "status": {"$in": ["completed", "cancelled"]}},
+            {"_id": 0}
+        ).sort("created_at", -1).to_list(50)
+    else:
+        entries = await db.queue.find(
+            {"barber_id": user["id"], "status": {"$in": ["completed", "cancelled"]}},
+            {"_id": 0}
+        ).sort("created_at", -1).to_list(50)
+    
+    for e in entries:
+        if isinstance(e.get("created_at"), str):
+            e["created_at"] = datetime.fromisoformat(e["created_at"])
+    
+    return entries
+
+# ==================== SEED DATA ====================
 
 @api_router.post("/seed")
 async def seed_data():
-    """Seed database with sample data"""
+    """Seed initial barber data for testing"""
     # Check if already seeded
-    existing = await db.users.find_one({"email": "james@fadedublin.ie"})
+    existing = await db.users.find_one({"email": "carlos@barberx.com"})
     if existing:
-        return {"message": "Database already seeded"}
+        return {"message": "Already seeded"}
     
-    # Sample barbers
-    barbers_data = [
+    barbers = [
         {
-            "name": "James Murphy",
-            "email": "james@fadedublin.ie",
-            "phone": "+353851234567",
-            "shop_name": "Fade Factory Dublin",
-            "address": "123 Grafton Street, Dublin 2",
-            "specialties": ["Fade", "Beard", "Skin Fade"],
-            "price_range_min": 20,
-            "price_range_max": 45,
-            "rating": 4.9,
-            "reviews_count": 324,
-            "is_available": True,
-            "lat": 53.3412,
-            "lng": -6.2592,
-            "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200"
-        },
-        {
-            "name": "Sean O'Connor",
-            "email": "sean@craftedcut.ie",
-            "phone": "+353852345678",
-            "shop_name": "The Crafted Cut",
-            "address": "45 Camden Street, Dublin 2",
-            "specialties": ["Classic", "Styling", "Hot Towel"],
-            "price_range_min": 25,
-            "price_range_max": 55,
+            "name": "Liam O'Connor",
+            "email": "liam@barberx.com",
+            "password": hash_password("123456"),
+            "phone": "+353 87 123 4567",
+            "user_type": "barber",
+            "specialty": "Fade & Skin Fade",
+            "photo_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
+            "latitude": 53.3498,
+            "longitude": -6.2603,
+            "address": "Grafton Street 45, Dublin 2",
+            "is_online": True,
             "rating": 4.8,
-            "reviews_count": 256,
-            "is_available": True,
-            "lat": 53.3341,
-            "lng": -6.2654,
-            "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200"
+            "total_reviews": 127,
+            "offers_home_service": True,
+            "home_service_fee_per_km": 3.0,
+            "services": [
+                {"id": "1", "name": "Classic Cut", "price": 25, "duration": 30},
+                {"id": "2", "name": "Skin Fade", "price": 30, "duration": 40},
+                {"id": "3", "name": "Beard Trim", "price": 15, "duration": 25},
+                {"id": "4", "name": "Cut & Beard", "price": 38, "duration": 60}
+            ]
         },
         {
-            "name": "Patrick Kelly",
-            "email": "patrick@precision.ie",
-            "phone": "+353853456789",
-            "shop_name": "Precision Barbers",
-            "address": "78 Capel Street, Dublin 1",
-            "specialties": ["Skin Fade", "Design", "Razor"],
-            "price_range_min": 30,
-            "price_range_max": 60,
+            "name": "Sean Murphy",
+            "email": "sean@barberx.com",
+            "password": hash_password("123456"),
+            "phone": "+353 87 234 5678",
+            "user_type": "barber",
+            "specialty": "Beard & Traditional Cuts",
+            "photo_url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
+            "latitude": 53.3429,
+            "longitude": -6.2674,
+            "address": "Camden Street 78, Dublin 2",
+            "is_online": True,
+            "rating": 4.9,
+            "total_reviews": 89,
+            "offers_home_service": True,
+            "home_service_fee_per_km": 2.5,
+            "services": [
+                {"id": "1", "name": "Gentleman's Cut", "price": 22, "duration": 25},
+                {"id": "2", "name": "Full Beard Shape", "price": 18, "duration": 30},
+                {"id": "3", "name": "Premium Combo", "price": 35, "duration": 50}
+            ]
+        },
+        {
+            "name": "Conor Walsh",
+            "email": "conor@barberx.com",
+            "password": hash_password("123456"),
+            "phone": "+353 87 345 6789",
+            "user_type": "barber",
+            "specialty": "Modern Styles & Colour",
+            "photo_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
+            "latitude": 53.3558,
+            "longitude": -6.2489,
+            "address": "O'Connell Street 120, Dublin 1",
+            "is_online": False,
             "rating": 4.7,
-            "reviews_count": 189,
-            "is_available": False,
-            "lat": 53.3478,
-            "lng": -6.2672,
-            "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200"
+            "total_reviews": 64,
+            "offers_home_service": False,
+            "home_service_fee_per_km": 0,
+            "services": [
+                {"id": "1", "name": "Modern Cut", "price": 28, "duration": 35},
+                {"id": "2", "name": "Hair Colour", "price": 45, "duration": 60},
+                {"id": "3", "name": "Platinum Blonde", "price": 65, "duration": 90}
+            ]
         },
         {
-            "name": "Liam Brennan",
-            "email": "liam@sharpedge.ie",
-            "phone": "+353854567890",
-            "shop_name": "Sharp Edge Studio",
-            "address": "12 Dawson Street, Dublin 2",
-            "specialties": ["Fade", "Lines", "Color"],
-            "price_range_min": 25,
-            "price_range_max": 50,
+            "name": "Patrick Byrne",
+            "email": "patrick@barberx.com",
+            "password": hash_password("123456"),
+            "phone": "+353 87 456 7890",
+            "user_type": "barber",
+            "specialty": "Hot Towel & Razor Cuts",
+            "photo_url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300",
+            "latitude": 53.3381,
+            "longitude": -6.2592,
+            "address": "Harcourt Street 55, Dublin 2",
+            "is_online": True,
             "rating": 4.6,
-            "reviews_count": 142,
-            "is_available": True,
-            "lat": 53.3405,
-            "lng": -6.2578,
-            "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200"
-        },
+            "total_reviews": 52,
+            "offers_home_service": True,
+            "home_service_fee_per_km": 2.0,
+            "services": [
+                {"id": "1", "name": "Razor Cut", "price": 32, "duration": 45},
+                {"id": "2", "name": "Razor Shave", "price": 20, "duration": 35},
+                {"id": "3", "name": "Hot Towel Treatment", "price": 15, "duration": 20}
+            ]
+        }
     ]
     
-    for barber_data in barbers_data:
-        user_id = str(uuid.uuid4())
-        user = {
-            "id": user_id,
-            "password": hash_password("barber123"),
-            "role": "barber",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            **barber_data
-        }
-        await db.users.insert_one(user)
-        
-        # Create services for each barber
-        services = [
-            {"name": "Haircut", "description": "Classic haircut", "duration_minutes": 30, "price": barber_data["price_range_min"]},
-            {"name": "Fade", "description": "Skin fade or low fade", "duration_minutes": 40, "price": barber_data["price_range_min"] + 10},
-            {"name": "Beard Trim", "description": "Beard shaping and trim", "duration_minutes": 20, "price": 15},
-            {"name": "Haircut + Beard", "description": "Full service combo", "duration_minutes": 50, "price": barber_data["price_range_max"]},
-        ]
-        for svc in services:
-            service = Service(barber_id=user_id, **svc)
-            await db.services.insert_one(service.model_dump())
+    for barber in barbers:
+        barber["id"] = str(uuid.uuid4())
+        barber["created_at"] = datetime.now(timezone.utc).isoformat()
+        await db.users.insert_one(barber)
     
-    # Create demo client
-    client_id = str(uuid.uuid4())
-    client = {
-        "id": client_id,
-        "name": "John Doe",
-        "email": "john@example.com",
-        "phone": "+353856789012",
-        "password": hash_password("client123"),
-        "role": "client",
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
-    await db.users.insert_one(client)
-    
-    logger.info("Database seeded with sample data!")
-    return {"message": "Database seeded successfully!", "barbers": len(barbers_data), "client": "john@example.com / client123"}
+    return {"message": "Seeded 4 barbers successfully"}
 
-# Include the router
+@api_router.get("/")
+async def root():
+    return {"message": "BarberX API v1.0"}
+
 app.include_router(api_router)
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
+    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

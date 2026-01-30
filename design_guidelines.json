@@ -1,150 +1,122 @@
 {
-  "identity": {
-    "name": "E1",
-    "role": "Anti-AI Creative Designer",
-    "mission": "Create a trustworthy, modern, and emotionally resonant educational exchange platform for Dublin, avoiding generic SaaS tropes.",
-    "tone": "Professional, Welcoming, Transparent, Irish-Modern (Heritage + Tech)",
-    "principles": [
-      "Fusion: Academic Serifs + Tech Sans",
-      "Emotion: Trust through clarity and nature-inspired tones",
-      "Content: Data is beautiful (clear pricing, schedules)",
-      "Negative Space: Generous padding for readability"
-    ]
-  },
-  "typography": {
-    "primary_font": "Manrope",
-    "secondary_font": "Playfair Display",
-    "google_fonts_url": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap",
-    "usage": {
-      "headings": "font-serif tracking-tight font-semibold text-primary",
-      "body": "font-sans text-slate-600 leading-relaxed",
-      "ui_elements": "font-sans font-medium tracking-wide",
-      "hero_text": "font-serif text-5xl md:text-7xl tracking-tighter"
-    }
-  },
-  "colors": {
-    "palette": {
-      "primary": {
-        "DEFAULT": "#064e3b",
-        "foreground": "#ffffff",
-        "description": "Deep Emerald Green - Trust, Heritage, Ireland"
+  "design_system": {
+    "identity": {
+      "name": "BarberX",
+      "aesthetic": "Urban Tactical",
+      "description": "A high-precision, street-smart marketplace for modern grooming. Think 'Nike Tech Fleece' meets 'High-End Barbershop'. Sharp lines, high contrast, and industrial textures.",
+      "principles": [
+        "Speed over Decoration: Every pixel must serve the user's goal (booking or cutting).",
+        "Tactical Clarity: High contrast text, clear status indicators (Online/Offline).",
+        "Street Premium: Use raw textures (grain, concrete) mixed with sleek digital elements."
+      ]
+    },
+    "typography": {
+      "font_family": {
+        "heading": "Oswald, sans-serif",
+        "body": "Manrope, sans-serif",
+        "mono": "JetBrains Mono, monospace"
       },
-      "secondary": {
-        "DEFAULT": "#f0fdf4",
-        "foreground": "#064e3b",
-        "description": "Pale Mint Mist - Backgrounds, Soft UI"
-      },
-      "accent": {
-        "DEFAULT": "#d97706",
-        "foreground": "#ffffff",
-        "description": "Celtic Gold/Amber - CTAs, Highlights"
-      },
-      "background": "#ffffff",
-      "surface": "#f8fafc",
-      "border": "#e2e8f0",
-      "muted": "#64748b"
-    },
-    "gradients": {
-      "hero": "bg-gradient-to-b from-emerald-950 to-emerald-900",
-      "card_hover": "hover:bg-emerald-50/50"
-    }
-  },
-  "layout": {
-    "grid_system": "Bento Grid",
-    "spacing": {
-      "container_padding": "px-6 md:px-12 lg:px-24",
-      "section_gap": "gap-12 md:gap-24",
-      "card_padding": "p-6 md:p-8"
-    },
-    "strategies": {
-      "landing": "Asymmetric Bento Grid for features, Full-width Hero with search",
-      "listing": "Sidebar Filters (Sticky) + 2-col Grid (Cards)",
-      "details": "Hero Header (Image + Title) + 2/3 Content Col + 1/3 Sticky Action Col",
-      "guides": "Notion-style document layout, center-focused, max-w-3xl"
-    }
-  },
-  "components": {
-    "buttons": {
-      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-6 text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300",
-      "secondary": "bg-white text-primary border-2 border-primary/10 hover:border-primary/30 hover:bg-primary/5 rounded-full px-8 py-6 text-lg font-medium transition-all"
-    },
-    "cards": {
-      "school_card": "group relative overflow-hidden rounded-2xl border border-border bg-white hover:shadow-2xl hover:-translate-y-1 transition-all duration-300",
-      "feature_card": "bg-surface p-8 rounded-3xl border-none hover:bg-emerald-50/50 transition-colors"
-    },
-    "inputs": {
-      "style": "h-12 rounded-xl border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all"
-    },
-    "navigation": {
-      "style": "backdrop-blur-xl bg-white/80 border-b border-slate-100 sticky top-0 z-50"
-    }
-  },
-  "images": {
-    "hero_backgrounds": [
-      {
-        "url": "https://images.unsplash.com/photo-1668631629754-0ddbd0c252dd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwzfHxkdWJsaW4lMjBjaXR5JTIwY2VudHJlJTIwbGFuZG1hcmt8ZW58MHx8fHwxNzY4MTcwMTI5fDA&ixlib=rb-4.1.0&q=85",
-        "alt": "Dublin Ha'penny Bridge",
-        "category": "hero"
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1565265652027-d0a5fdf66887?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHw0fHxkdWJsaW4lMjBjaXR5JTIwY2VudHJlJTIwbGFuZG1hcmt8ZW58MHx8fHwxNzY4MTcwMTI5fDA&ixlib=rb-4.1.0&q=85",
-        "alt": "Dublin Architecture",
-        "category": "hero_secondary"
+      "imports": [
+        "https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      ],
+      "usage": {
+        "h1": "font-heading text-5xl md:text-7xl font-bold uppercase tracking-tighter leading-none",
+        "h2": "font-heading text-3xl md:text-5xl font-bold uppercase tracking-tight",
+        "h3": "font-heading text-xl md:text-2xl font-medium uppercase tracking-wide text-muted-foreground",
+        "body": "font-body text-base leading-relaxed text-zinc-300",
+        "label": "font-mono text-xs uppercase tracking-widest text-zinc-500"
       }
-    ],
-    "students": [
-      {
-        "url": "https://images.unsplash.com/photo-1758270704524-596810e891b5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxzdHVkZW50cyUyMHN0dWR5aW5nJTIwdW5pdmVyc2l0eSUyMGRpdmVyc2V8ZW58MHx8fHwxNzY4MTcwMTMzfDA&ixlib=rb-4.1.0&q=85",
-        "alt": "Happy Student",
-        "category": "testimonial"
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1758270705518-b61b40527e76?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwzfHxzdHVkZW50cyUyMHN0dWR5aW5nJTIwdW5pdmVyc2l0eSUyMGRpdmVyc2V8ZW58MHx8fHwxNzY4MTcwMTMzfDA&ixlib=rb-4.1.0&q=85",
-        "alt": "Group Study",
-        "category": "community"
-      }
-    ],
-    "transport": [
-      {
-        "url": "https://images.unsplash.com/photo-1661013455580-e0a245da2094?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwyfHxkdWJsaW4lMjBidXMlMjB0cmFuc3BvcnR8ZW58MHx8fHwxNzY4MTcwMTM1fDA&ixlib=rb-4.1.0&q=85",
-        "alt": "Dublin Bus",
-        "category": "transport_guide"
-      }
-    ]
-  },
-  "visual_enhancers": {
-    "glassmorphism": "backdrop-blur-md bg-white/70 border border-white/20 shadow-sm",
-    "shadows": "shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
-    "borders": "border border-slate-100",
-    "radius": "rounded-2xl"
-  },
-  "motion": {
-    "page_transition": {
-      "initial": { "opacity": 0, "y": 20 },
-      "animate": { "opacity": 1, "y": 0 },
-      "exit": { "opacity": 0, "y": -20 },
-      "transition": { "duration": 0.4, "ease": "easeOut" }
     },
-    "hover_lift": "hover:-translate-y-1 transition-transform duration-300"
+    "colors": {
+      "palette": {
+        "background": "#09090B",
+        "foreground": "#FAFAFA",
+        "card": "#18181B",
+        "card_foreground": "#FAFAFA",
+        "popover": "#18181B",
+        "popover_foreground": "#FAFAFA",
+        "primary": "#F59E0B",
+        "primary_foreground": "#000000",
+        "secondary": "#27272A",
+        "secondary_foreground": "#FAFAFA",
+        "muted": "#27272A",
+        "muted_foreground": "#A1A1AA",
+        "accent": "#F59E0B",
+        "accent_foreground": "#000000",
+        "destructive": "#EF4444",
+        "destructive_foreground": "#FAFAFA",
+        "border": "#27272A",
+        "input": "#27272A",
+        "ring": "#F59E0B"
+      },
+      "usage_rules": [
+        "NEVER use gradients for backgrounds. Use solid Zinc-950 (#09090B).",
+        "Use Amber-500 (#F59E0B) strictly for primary actions (Book Now, Go Online).",
+        "Use Zinc-800 (#27272A) for borders and dividers. Keep them subtle."
+      ]
+    },
+    "layout": {
+      "spacing": {
+        "container_padding": "px-6 md:px-12 lg:px-24",
+        "section_gap": "py-24 md:py-32",
+        "element_gap": "gap-6"
+      },
+      "border_radius": {
+        "default": "rounded-none",
+        "button": "rounded-sm",
+        "card": "rounded-sm",
+        "input": "rounded-none"
+      },
+      "grids": {
+        "barber_list": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+        "dashboard": "grid grid-cols-1 md:grid-cols-4 gap-6"
+      }
+    },
+    "components": {
+      "buttons": {
+        "primary": "bg-primary text-primary-foreground hover:bg-amber-400 font-heading uppercase tracking-widest px-8 py-4 rounded-sm transition-all duration-200 hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]",
+        "secondary": "bg-transparent border border-zinc-700 text-zinc-300 hover:border-primary hover:text-primary font-heading uppercase tracking-widest px-8 py-4 rounded-sm transition-all duration-200",
+        "ghost": "text-zinc-400 hover:text-white font-mono text-xs uppercase tracking-widest"
+      },
+      "cards": {
+        "barber_card": "group relative bg-zinc-900 border border-zinc-800 hover:border-primary/50 transition-all duration-300 overflow-hidden",
+        "stat_card": "bg-zinc-900/50 border border-zinc-800/50 p-6 flex flex-col gap-2"
+      },
+      "inputs": {
+        "default": "bg-zinc-950 border-b border-zinc-800 focus:border-primary px-0 py-4 rounded-none transition-colors placeholder:text-zinc-600 font-body text-lg"
+      },
+      "map": {
+        "style": "Use 'CartoDB Dark Matter' tiles for the Leaflet map to match the dark theme.",
+        "marker": "Custom markers using the Primary Color (Amber) for available barbers."
+      }
+    },
+    "motion": {
+      "transitions": "transition-all duration-300 ease-out",
+      "hover_effects": "hover:-translate-y-1 hover:shadow-lg",
+      "page_transition": "animate-in fade-in slide-in-from-bottom-4 duration-500"
+    }
   },
-  "accessibility": {
-    "contrast_check": "Ensure text on primary green is white. Ensure text on mint background is dark emerald.",
-    "focus_states": "focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600",
-    "reduced_motion": "Respect prefers-reduced-motion media query"
+  "assets": {
+    "images": {
+      "hero_bg": "https://images.pexels.com/photos/20405694/pexels-photo-20405694.jpeg",
+      "barber_action": "https://images.pexels.com/photos/12464841/pexels-photo-12464841.jpeg",
+      "customer_portrait": "https://images.pexels.com/photos/7781848/pexels-photo-7781848.jpeg",
+      "map_placeholder": "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2074"
+    },
+    "icons": "Use 'lucide-react' for all UI icons. Use 'Scissors', 'MapPin', 'Clock', 'Star', 'User' icons."
   },
   "instructions_to_main_agent": [
-    "1. INSTALL FONTS: Add the Google Fonts link to public/index.html immediately.",
-    "2. CONFIGURE TAILWIND: Update tailwind.config.js with the 'colors' and 'fontFamily' defined above.",
-    "3. SHADCN OVERRIDES: When using Shadcn components, override the default 'radius' to '0.75rem' (rounded-xl) and use the custom colors.",
-    "4. LAYOUT: Use the 'Bento Grid' philosophy. Don't just stack divs. Use col-span-X to create interesting layouts.",
-    "5. IMAGES: Use the provided Unsplash URLs. Do not use placeholders.",
-    "6. ICONS: Use 'lucide-react' for UI icons. Use 'phosphor-icons' if you need more weight.",
-    "7. DATA-TESTID: Add data-testid to all interactive elements (buttons, inputs, cards)."
+    "1. UPDATE CSS: Replace the contents of 'src/index.css' with the new Color Variables and Font Imports defined in this JSON. REMOVE 'Playfair Display' and 'Cinzel'.",
+    "2. CLEANUP: Remove 'src/App.css' custom classes if they conflict with Tailwind. Prefer Tailwind utility classes in your JSX.",
+    "3. MAP INTEGRATION: Use 'react-leaflet' for the map. Ensure the map container has a defined height (e.g., 'h-[500px]' or 'h-full').",
+    "4. ROUTING: Create separate layouts for 'Client' and 'Barber' dashboards.",
+    "5. COMPONENTS: Use the existing Shadcn components in 'src/components/ui' but style them using the 'className' prop to match the 'Urban Tactical' aesthetic (square corners, dark borders).",
+    "6. DATA-TESTID: Add 'data-testid' to all interactive elements (buttons, inputs, cards)."
   ],
   "universal_guidelines": [
-    "Avoid 'AI Slop': No generic gradients, no centered text blocks without purpose.",
-    "Spacing: Use p-8, p-12, p-16. Give content room to breathe.",
-    "Micro-interactions: Every button needs a hover state. Every page needs a transition.",
-    "Dark Mode: This design is optimized for Light Mode (Trust/Education). If implementing Dark Mode, use Slate-900, not pure black."
+    "Avoid gradients. Use solid colors.",
+    "Use uppercase fonts for headings and buttons.",
+    "Keep the UI 'flat' but use borders for separation.",
+    "Ensure high contrast for accessibility."
   ]
 }

@@ -1,32 +1,92 @@
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Toaster } from "./components/ui/sonner";
-import { AuthProvider } from "./context/AuthContext";
-import { Landing } from "./pages/Landing";
-import { Login } from "./pages/Login";
-import { Register } from "./pages/Register";
-import { ClientHome } from "./pages/ClientHome";
-import { BarberDashboard } from "./pages/BarberDashboard";
-import { BarberDetail } from "./pages/BarberDetail";
-import { Bookings } from "./pages/Bookings";
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LanguageProvider } from './contexts/LanguageContext';
+import LandingPage from './pages/LandingPage';
+import AuthPage from './pages/AuthPage';
+import ClientDashboard from './pages/ClientDashboard';
+import BarberDashboard from './pages/BarberDashboard';
+import './App.css';
+
+// Protected Route Component
+const ProtectedRoute = ({ children, allowedType }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#09090B] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  if (allowedType && user.user_type !== allowedType) {
+    return <Navigate to={user.user_type === 'barber' ? '/barber' : '/client'} replace />;
+  }
+
+  return children;
+};
+
+// Public Route - Redirect if already logged in
+const PublicRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#09090B] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (user) {
+    return <Navigate to={user.user_type === 'barber' ? '/barber' : '/client'} replace />;
+  }
+
+  return children;
+};
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={
+        <PublicRoute>
+          <LandingPage />
+        </PublicRoute>
+      } />
+      <Route path="/auth" element={
+        <PublicRoute>
+          <AuthPage />
+        </PublicRoute>
+      } />
+      <Route path="/client" element={
+        <ProtectedRoute allowedType="client">
+          <ClientDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/barber" element={
+        <ProtectedRoute allowedType="barber">
+          <BarberDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/register/barber" element={<Register isBarber />} />
-          <Route path="/home" element={<ClientHome />} />
-          <Route path="/barber/:id" element={<BarberDetail />} />
-          <Route path="/bookings" element={<Bookings />} />
-          <Route path="/dashboard" element={<BarberDashboard />} />
-        </Routes>
-        <Toaster position="top-right" richColors theme="dark" />
-      </BrowserRouter>
-    </AuthProvider>
+    <BrowserRouter>
+      <LanguageProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </LanguageProvider>
+    </BrowserRouter>
   );
 }
 

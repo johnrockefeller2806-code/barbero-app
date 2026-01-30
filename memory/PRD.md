@@ -1,113 +1,94 @@
-# ClikBarber - Plataforma de Agendamento de Barbearias
+# BarberX - Marketplace de Barbeiros em Tempo Real (Dublin, Ireland)
 
 ## Problema Original
-Aplicativo de agendamento de barbearias para Dublin, Irlanda. Usuário solicitou DUAS versões:
-1. **Mobile** - React Native/Expo (estrutura em `/app/mobile`)
-2. **Web** - React webapp (implementada em `/app/frontend`)
-
-## Logo & Branding
-- **Logo**: ClikBarber (gold/black theme)
-- **URL**: https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/kkaa9c50_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg
-- **Cores**: Gold (#d4af37 → #f4d03f), Black (#0a0a0f)
+Criar um marketplace de barbeiros em tempo real para Dublin, Irlanda. Barbeiros podem ficar Online/Offline. Clientes visualizam no mapa quem está disponível. **Nova feature**: Atendimento em domicílio com taxa de deslocamento paga pelo cliente.
 
 ## Arquitetura
-- **Backend**: FastAPI + MongoDB (Python)
-- **Frontend Web**: React + Tailwind CSS + Lucide Icons
-- **Mobile**: React Native + Expo SDK 54 (estrutura base)
-- **Auth**: JWT com roles (client, barber, admin)
-- **Design**: Dark Mode Ultra Moderno 2025 com tema Gold
+- **Frontend**: React.js + Tailwind CSS + Leaflet (mapas)
+- **Backend**: FastAPI (Python) com JWT auth
+- **Banco de Dados**: MongoDB
+- **Localização**: Dublin, Ireland
+- **Moeda**: Euro (€)
 
 ## User Personas
-1. **Cliente** - Quer encontrar barbeiro disponível AGORA
-2. **Barbeiro** - Quer receber agendamentos e gerenciar disponibilidade
+1. **Cliente**: Pessoa buscando barbeiro disponível por perto ou em domicílio
+2. **Barbeiro**: Profissional gerenciando agenda e oferecendo atendimento presencial ou em domicílio
 
-## Core Requirements (Static)
-- Ver barbeiros disponíveis em tempo real
-- Agendamento instantâneo
-- Toggle de disponibilidade para barbeiros
-- Dashboard com estatísticas
-- Reviews e avaliações
-- Serviços customizáveis por barbeiro
+## Core Requirements
+- ✅ Cadastro/Login para clientes e barbeiros
+- ✅ Toggle Online/Offline para barbeiros
+- ✅ Mapa em tempo real com barbeiros disponíveis (Dublin)
+- ✅ Sistema de fila digital
+- ✅ **Home Service** - Atendimento em domicílio com taxa de deslocamento
 
-## Implementado - Janeiro 2026
+## Implementado ✅ (29/01/2026)
 
-### Web App ✅
-- **Landing Page** - Hero moderno com logo ClikBarber
-- **Login/Register** - Fluxo separado para Cliente e Barbeiro
-- **Client Home** - Lista de barbeiros com filtros (Disponíveis/Todos/Top Avaliados)
-- **Barber Detail** - Serviços, seleção de data/hora, booking
-- **Bookings** - Lista de agendamentos do cliente
-- **Barber Dashboard** - Toggle de disponibilidade, stats do dia, bookings
-- **Interface em Português** - Todo o app traduzido para PT-BR
+### Landing Page
+- [x] Hero section em inglês
+- [x] Features section
+- [x] CTA para cadastro
 
-### Backend API (21 endpoints) ✅
-- Auth: register, register-barber, login, me
-- Barbers: available, list, detail, availability, location
-- Services: list, create, delete
-- Bookings: create, my, barber, status, cancel
-- Reviews: create, list
-- Dashboard: barber stats
-- Seed: demo data
+### Sistema de Autenticação
+- [x] Cadastro de cliente e barbeiro
+- [x] Login com JWT
+- [x] Proteção de rotas
 
-### Design System ✅
-- **Tema**: Dark Mode (#0a0a0f base)
-- **Primary**: Gold (#d4af37 → #f4d03f)
-- **Secondary**: Purple (#7c3aed → #a855f7)
-- **Efeitos**: Glassmorphism, Glow effects dourados
+### Dashboard do Cliente
+- [x] Mapa Leaflet centralizado em Dublin
+- [x] Marcadores verdes/cinza (online/offline)
+- [x] Filtro "Online only"
+- [x] Detalhes do barbeiro
+- [x] **Modal de reserva com opções**:
+  - At the barbershop
+  - Home Service (+taxa de deslocamento)
+- [x] Cálculo automático de distância e taxa
 
-### Mobile (Estrutura Base) ✅
-- Estrutura completa em `/app/mobile`
-- Telas: Login, Register, ClientHome, BarberHome
-- Componentes: BarberCard, AvailabilityToggle, Button
-- Contexts: Auth, Location
-- Pronto para `npm install && expo start`
+### Dashboard do Barbeiro
+- [x] Toggle ON/OFF
+- [x] Indicador de Home Service ativo
+- [x] Fila com badge "HOME" para atendimentos em domicílio
+- [x] Detalhes do cliente (endereço, distância, taxa)
+- [x] Estatísticas de ganhos
 
-## Credenciais de Teste
-- **Cliente**: john@example.com / client123
-- **Barbeiro**: james@fadedublin.ie / barber123
+### Home Service Feature
+- [x] Campo `offers_home_service` no barbeiro
+- [x] Taxa por km configurável (`home_service_fee_per_km`)
+- [x] Cálculo de distância (Haversine formula)
+- [x] Modal com seleção de tipo de atendimento
+- [x] Input de endereço do cliente
+- [x] Total calculado (serviço + deslocamento)
+- [x] Badge "HOME" na fila do barbeiro
 
-## Prioritized Backlog
+### Barbeiros de Dublin (Seed Data)
+| Nome | Especialidade | Home Service | Taxa/km |
+|------|--------------|--------------|---------|
+| Sean Murphy | Beard & Traditional | ✅ | €2.50 |
+| Liam O'Connor | Fade & Skin Fade | ✅ | €3.00 |
+| Patrick Byrne | Hot Towel & Razor | ✅ | €2.00 |
+| Conor Walsh | Modern Styles | ❌ | - |
 
-### P0 - Próximos Passos
-- [ ] Mapa com localização dos barbeiros (Google Maps)
-- [ ] Push notifications para novos agendamentos
-- [ ] Pagamento integrado (Stripe)
+## Testes
+- Backend: 100% ✅
+- Frontend: 85% ✅ (core features working)
 
-### P1 - Importante
+## Backlog / Próximas Features
+
+### P0 (Alta prioridade)
+- [ ] Notificações push quando chegar a vez
+- [ ] Navegação GPS para home service
+- [ ] Avaliação após atendimento
+
+### P1 (Média prioridade)
+- [ ] Histórico de atendimentos
 - [ ] Chat entre cliente e barbeiro
-- [ ] Fotos do trabalho do barbeiro (portfolio)
-- [ ] Favoritos (salvar barbeiros)
-- [ ] Histórico de cortes
+- [ ] Pagamento online integrado
 
-### P2 - Nice to Have
-- [ ] Face ID / Touch ID para login
-- [ ] PWA para web
-- [ ] Dark/Light mode toggle
-- [ ] Múltiplos idiomas (PT/EN)
+### P2 (Baixa prioridade)
+- [ ] Integração WhatsApp
+- [ ] Relatórios mensais
+- [ ] App mobile nativo
 
-## Tecnologias
-- FastAPI 0.110.1
-- React 19
-- MongoDB (motor)
-- Tailwind CSS 3.4
-- Lucide React (icons)
-- React Native + Expo SDK 54 (mobile)
-
-## Estrutura de Pastas
-```
-/app
-├── backend/          # FastAPI API
-│   └── server.py
-├── frontend/         # React Web App
-│   └── src/
-│       ├── pages/    # Landing, Login, Register, ClientHome, BarberDetail, Bookings, BarberDashboard
-│       └── context/  # AuthContext
-├── mobile/           # React Native App (estrutura pronta)
-│   ├── App.tsx
-│   └── src/
-│       ├── screens/  # auth, client, barber
-│       ├── components/
-│       ├── context/
-│       └── theme/
-└── memory/           # PRD.md
-```
+## Próximos Passos
+1. Adicionar navegação GPS para barbeiro ir ao cliente
+2. Implementar pagamento online (Stripe)
+3. Sistema de avaliações
