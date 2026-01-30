@@ -78,18 +78,18 @@ export const Landing = () => {
             </h1>
             
             <p className="text-xl text-[#a1a1aa] mb-10 max-w-lg">
-              Book instantly with top-rated barbers near you. No waiting, no hassle. 
-              Just great cuts.
+              Agende instantaneamente com os melhores barbeiros perto de você. 
+              Sem espera, sem complicação.
             </p>
 
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={() => navigate('/register')}
-                className="btn-green text-lg px-10 py-4"
+                className="bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f] font-bold text-lg px-10 py-4 rounded-2xl hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all flex items-center gap-2"
                 data-testid="find-barber-btn"
               >
                 <Zap className="w-5 h-5" />
-                Find a Barber
+                Encontrar Barbeiro
               </button>
               <button
                 onClick={() => navigate('/register/barber')}
@@ -97,7 +97,7 @@ export const Landing = () => {
                 data-testid="become-barber-btn"
               >
                 <Scissors className="w-5 h-5" />
-                I'm a Barber
+                Sou Barbeiro
               </button>
             </div>
 
