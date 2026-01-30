@@ -95,7 +95,7 @@ export const BarberDashboard = () => {
   if (isLoading || loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#7c3aed] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#d4af37] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -103,18 +103,20 @@ export const BarberDashboard = () => {
   return (
     <div className="min-h-screen bg-[#0a0a0f] relative pb-24">
       {/* Background Glow */}
-      <div className={`orb ${isAvailable ? 'orb-cyan' : 'orb-purple'} w-[400px] h-[400px] -top-32 -right-32 fixed transition-colors duration-500`} style={{ backgroundColor: isAvailable ? '#00ff88' : '#7c3aed' }} />
+      <div className={`fixed -top-32 -right-32 w-[400px] h-[400px] rounded-full transition-colors duration-500`} style={{ background: isAvailable ? '#d4af37' : '#7c3aed', filter: 'blur(80px)', opacity: 0.3 }} />
 
       <div className="relative z-10 p-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Hello, {user?.name?.split(' ')[0]} ✂️</h1>
-            <p className="text-[#71717a]">{user?.shop_name || 'Your Shop'}</p>
-          </div>
+          <img src={LOGO_URL} alt="ClikBarber" className="h-12" />
           <button className="w-12 h-12 rounded-2xl glass-card flex items-center justify-center">
             <Settings className="w-5 h-5 text-white" />
           </button>
+        </div>
+
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-white">Olá, {user?.name?.split(' ')[0]} ✂️</h1>
+          <p className="text-[#71717a]">{user?.shop_name || 'Sua Barbearia'}</p>
         </div>
 
         {/* AVAILABILITY TOGGLE - Main Feature */}
