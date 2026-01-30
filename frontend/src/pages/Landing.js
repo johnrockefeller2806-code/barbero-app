@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
-import { Scissors, MapPin, Zap, Star, Clock, Users } from 'lucide-react';
+import { MapPin, Zap, Star, Clock, Users, Scissors } from 'lucide-react';
+
+const LOGO_URL = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/kkaa9c50_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg";
 
 export const Landing = () => {
   const navigate = useNavigate();
