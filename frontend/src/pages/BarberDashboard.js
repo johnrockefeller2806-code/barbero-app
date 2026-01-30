@@ -123,11 +123,11 @@ export const BarberDashboard = () => {
         <button
           onClick={toggleAvailability}
           className={`w-full rounded-3xl p-6 mb-6 transition-all duration-300 relative overflow-hidden ${
-            isAvailable ? 'glow-green' : ''
+            isAvailable ? 'shadow-[0_0_40px_rgba(212,175,55,0.4)]' : ''
           }`}
           style={{
             background: isAvailable
-              ? 'linear-gradient(135deg, #00ff88, #00d4aa)'
+              ? 'linear-gradient(135deg, #d4af37, #f4d03f)'
               : 'rgba(255,255,255,0.05)'
           }}
           data-testid="availability-toggle"
@@ -153,14 +153,14 @@ export const BarberDashboard = () => {
                 <h2 className={`text-xl font-bold tracking-wide ${
                   isAvailable ? 'text-[#0a0a0f]' : 'text-white'
                 }`}>
-                  {isAvailable ? 'AVAILABLE NOW' : 'OFFLINE'}
+                  {isAvailable ? 'DISPONÍVEL AGORA' : 'OFFLINE'}
                 </h2>
                 <p className={`text-sm ${
                   isAvailable ? 'text-black/60' : 'text-white/60'
                 }`}>
                   {isAvailable
-                    ? 'Clients can find you on the map'
-                    : 'Tap to go online and receive bookings'}
+                    ? 'Clientes podem te encontrar no mapa'
+                    : 'Toque para ficar online e receber agendamentos'}
                 </p>
               </div>
             </div>
@@ -177,7 +177,7 @@ export const BarberDashboard = () => {
 
         {/* Today's Stats */}
         <div className="mb-6">
-          <h3 className="text-lg font-bold text-white mb-4">Today's Performance</h3>
+          <h3 className="text-lg font-bold text-white mb-4">Desempenho de Hoje</h3>
           <div className="grid grid-cols-2 gap-3">
             <div className="glass-card p-5 text-center">
               <div className="w-12 h-12 rounded-2xl bg-[#00ff88]/20 flex items-center justify-center mx-auto mb-3">
