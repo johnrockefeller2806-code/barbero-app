@@ -75,14 +75,14 @@ export const ClientHome = () => {
 
           {/* Hero Card */}
           <div className="glass-card p-6 mb-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#7c3aed]/30 to-[#06b6d4]/20" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#d4af37]/30 to-[#f4d03f]/20" />
             <div className="relative z-10">
-              <div className="available-badge mb-4">
-                <div className="pulse-dot" />
-                <span>{barbers.filter(b => b.is_available).length} Available Now</span>
+              <div className="available-badge mb-4" style={{ background: 'rgba(212,175,55,0.15)', color: '#d4af37' }}>
+                <div className="pulse-dot" style={{ background: '#d4af37' }} />
+                <span>{barbers.filter(b => b.is_available).length} Disponíveis Agora</span>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Find your<br />perfect cut</h2>
-              <p className="text-[#a1a1aa] text-sm">Book instantly with top barbers</p>
+              <h2 className="text-2xl font-bold text-white mb-2">Encontre seu<br />corte perfeito</h2>
+              <p className="text-[#a1a1aa] text-sm">Agende instantaneamente com os melhores</p>
             </div>
           </div>
 
