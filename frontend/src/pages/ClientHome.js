@@ -225,8 +225,8 @@ export const ClientHome = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/90 to-transparent h-28 -top-8" />
         <div className="relative glass-card mx-4 mb-6 p-2">
           <div className="flex justify-around">
-            <button className="w-12 h-12 rounded-xl gradient-purple flex items-center justify-center">
-              <Home className="w-5 h-5 text-white" />
+            <button className="w-12 h-12 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] flex items-center justify-center">
+              <Home className="w-5 h-5 text-[#0a0a0f]" />
             </button>
             <button className="w-12 h-12 rounded-xl flex items-center justify-center text-[#52525e] hover:text-white transition-colors">
               <Search className="w-5 h-5" />
