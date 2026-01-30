@@ -96,7 +96,7 @@ export const BarberDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#7c3aed] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#d4af37] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -106,15 +106,19 @@ export const BarberDetail = () => {
   return (
     <div className="min-h-screen bg-[#0a0a0f] relative pb-32">
       {/* Background */}
-      <div className="orb orb-purple w-[300px] h-[300px] -top-24 -right-24 fixed" />
+      <div className="orb w-[300px] h-[300px] -top-24 -right-24 fixed" style={{ background: '#d4af37', filter: 'blur(80px)', opacity: 0.3 }} />
 
       {/* Header */}
       <div className="p-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="w-12 h-12 rounded-2xl glass-card flex items-center justify-center mb-6"
-        >
-          <ArrowLeft className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-12 h-12 rounded-2xl glass-card flex items-center justify-center"
+          >
+            <ArrowLeft className="w-5 h-5 text-white" />
+          </button>
+          <img src={LOGO_URL} alt="ClikBarber" className="h-10" />
+        </div>
         </button>
 
         {/* Barber Card */}
