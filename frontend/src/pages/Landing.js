@@ -37,10 +37,11 @@ export const Landing = () => {
         {/* Navbar */}
         <nav className="flex items-center justify-between mb-20">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl gradient-purple flex items-center justify-center glow-purple">
-              <Scissors className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-white">QuickCut</span>
+            <img 
+              src={LOGO_URL} 
+              alt="ClikBarber" 
+              className="h-14 w-auto object-contain"
+            />
           </div>
           <div className="flex items-center gap-4">
             <button
