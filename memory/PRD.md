@@ -1,16 +1,21 @@
-# QuickCut - Barber Booking Platform
+# ClikBarber - Plataforma de Agendamento de Barbearias
 
 ## Problema Original
 Aplicativo de agendamento de barbearias para Dublin, Irlanda. Usuário solicitou DUAS versões:
 1. **Mobile** - React Native/Expo (estrutura em `/app/mobile`)
 2. **Web** - React webapp (implementada em `/app/frontend`)
 
+## Logo & Branding
+- **Logo**: ClikBarber (gold/black theme)
+- **URL**: https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/kkaa9c50_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg
+- **Cores**: Gold (#d4af37 → #f4d03f), Black (#0a0a0f)
+
 ## Arquitetura
 - **Backend**: FastAPI + MongoDB (Python)
 - **Frontend Web**: React + Tailwind CSS + Lucide Icons
 - **Mobile**: React Native + Expo SDK 54 (estrutura base)
 - **Auth**: JWT com roles (client, barber, admin)
-- **Design**: Dark Mode Ultra Moderno 2025
+- **Design**: Dark Mode Ultra Moderno 2025 com tema Gold
 
 ## User Personas
 1. **Cliente** - Quer encontrar barbeiro disponível AGORA
@@ -27,12 +32,13 @@ Aplicativo de agendamento de barbearias para Dublin, Irlanda. Usuário solicitou
 ## Implementado - Janeiro 2026
 
 ### Web App ✅
-- **Landing Page** - Hero moderno com glassmorphism
+- **Landing Page** - Hero moderno com logo ClikBarber
 - **Login/Register** - Fluxo separado para Cliente e Barbeiro
-- **Client Home** - Lista de barbeiros com filtros (Available/All/Top Rated)
+- **Client Home** - Lista de barbeiros com filtros (Disponíveis/Todos/Top Avaliados)
 - **Barber Detail** - Serviços, seleção de data/hora, booking
 - **Bookings** - Lista de agendamentos do cliente
 - **Barber Dashboard** - Toggle de disponibilidade, stats do dia, bookings
+- **Interface em Português** - Todo o app traduzido para PT-BR
 
 ### Backend API (21 endpoints) ✅
 - Auth: register, register-barber, login, me
@@ -45,10 +51,9 @@ Aplicativo de agendamento de barbearias para Dublin, Irlanda. Usuário solicitou
 
 ### Design System ✅
 - **Tema**: Dark Mode (#0a0a0f base)
-- **Primary**: Electric Violet (#7c3aed → #a855f7)
-- **Secondary**: Neon Cyan (#06b6d4 → #22d3ee)
-- **Accent**: Neon Green (#00ff88) para disponibilidade
-- **Efeitos**: Glassmorphism, Glow effects, Animated orbs
+- **Primary**: Gold (#d4af37 → #f4d03f)
+- **Secondary**: Purple (#7c3aed → #a855f7)
+- **Efeitos**: Glassmorphism, Glow effects dourados
 
 ### Mobile (Estrutura Base) ✅
 - Estrutura completa em `/app/mobile`
