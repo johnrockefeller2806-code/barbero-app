@@ -220,14 +220,14 @@ export const BarberDetail = () => {
                 onClick={() => setSelectedDate(d.value)}
                 className={`flex-shrink-0 w-16 py-3 rounded-2xl text-center transition-all ${
                   selectedDate === d.value
-                    ? 'gradient-purple'
+                    ? 'bg-gradient-to-r from-[#d4af37] to-[#f4d03f]'
                     : 'glass-card hover:bg-white/10'
                 }`}
               >
-                <div className={`text-xs ${selectedDate === d.value ? 'text-white/70' : 'text-[#71717a]'}`}>
+                <div className={`text-xs ${selectedDate === d.value ? 'text-[#0a0a0f]/70' : 'text-[#71717a]'}`}>
                   {d.day}
                 </div>
-                <div className={`text-xl font-bold ${selectedDate === d.value ? 'text-white' : 'text-white'}`}>
+                <div className={`text-xl font-bold ${selectedDate === d.value ? 'text-[#0a0a0f]' : 'text-white'}`}>
                   {d.date}
                 </div>
               </button>
@@ -237,7 +237,7 @@ export const BarberDetail = () => {
 
         {/* Time Selection */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-white mb-4">Select Time</h2>
+          <h2 className="text-lg font-bold text-white mb-4">Selecione o Horário</h2>
           <div className="grid grid-cols-4 gap-2">
             {times.map(time => (
               <button
@@ -245,7 +245,7 @@ export const BarberDetail = () => {
                 onClick={() => setSelectedTime(time)}
                 className={`py-3 rounded-xl text-sm font-medium transition-all ${
                   selectedTime === time
-                    ? 'gradient-purple text-white'
+                    ? 'bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f]'
                     : 'glass-card text-[#a1a1aa] hover:text-white'
                 }`}
               >
@@ -261,7 +261,7 @@ export const BarberDetail = () => {
         <button
           onClick={handleBook}
           disabled={booking || !selectedService || !selectedDate || !selectedTime}
-          className="btn-green w-full py-4 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-4 text-lg rounded-xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f] font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all"
           data-testid="book-button"
         >
           {booking ? (
@@ -273,7 +273,7 @@ export const BarberDetail = () => {
           ) : (
             <>
               <Zap className="w-5 h-5" />
-              Book Now {selectedService && `- €${selectedService.price}`}
+              Agendar Agora {selectedService && `- €${selectedService.price}`}
             </>
           )}
         </button>
