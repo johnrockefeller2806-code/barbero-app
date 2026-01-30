@@ -54,11 +54,12 @@ export const Login = () => {
       <div className="relative z-10 w-full max-w-md animate-slide-up">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="w-20 h-20 rounded-3xl gradient-purple flex items-center justify-center mx-auto mb-4 glow-purple">
-            <Scissors className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-4xl font-extrabold text-white">QuickCut</h1>
-          <p className="text-[#71717a] mt-2">Book your perfect cut instantly</p>
+          <img 
+            src={LOGO_URL} 
+            alt="ClikBarber" 
+            className="h-24 mx-auto mb-4"
+          />
+          <p className="text-[#71717a] mt-2">Agende seu corte perfeito</p>
         </div>
 
         {/* Login Card */}
