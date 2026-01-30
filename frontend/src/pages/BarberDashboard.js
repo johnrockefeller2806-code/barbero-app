@@ -180,32 +180,32 @@ export const BarberDashboard = () => {
           <h3 className="text-lg font-bold text-white mb-4">Desempenho de Hoje</h3>
           <div className="grid grid-cols-2 gap-3">
             <div className="glass-card p-5 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-[#00ff88]/20 flex items-center justify-center mx-auto mb-3">
-                <DollarSign className="w-6 h-6 text-[#00ff88]" />
+              <div className="w-12 h-12 rounded-2xl bg-[#d4af37]/20 flex items-center justify-center mx-auto mb-3">
+                <DollarSign className="w-6 h-6 text-[#d4af37]" />
               </div>
               <div className="text-2xl font-bold text-white">€{dashboard?.today?.earnings || 0}</div>
-              <div className="text-[#71717a] text-sm">Earnings</div>
+              <div className="text-[#71717a] text-sm">Ganhos</div>
             </div>
             <div className="glass-card p-5 text-center">
               <div className="w-12 h-12 rounded-2xl bg-[#a855f7]/20 flex items-center justify-center mx-auto mb-3">
                 <Users className="w-6 h-6 text-[#a855f7]" />
               </div>
               <div className="text-2xl font-bold text-white">{dashboard?.today?.clients || 0}</div>
-              <div className="text-[#71717a] text-sm">Clients</div>
+              <div className="text-[#71717a] text-sm">Clientes</div>
             </div>
             <div className="glass-card p-5 text-center">
               <div className="w-12 h-12 rounded-2xl bg-[#fbbf24]/20 flex items-center justify-center mx-auto mb-3">
                 <Star className="w-6 h-6 text-[#fbbf24]" />
               </div>
               <div className="text-2xl font-bold text-white">{dashboard?.rating || 5.0}</div>
-              <div className="text-[#71717a] text-sm">Rating</div>
+              <div className="text-[#71717a] text-sm">Avaliação</div>
             </div>
             <div className="glass-card p-5 text-center">
               <div className="w-12 h-12 rounded-2xl bg-[#22d3ee]/20 flex items-center justify-center mx-auto mb-3">
                 <Clock className="w-6 h-6 text-[#22d3ee]" />
               </div>
               <div className="text-2xl font-bold text-white">{dashboard?.today?.pending || 0}</div>
-              <div className="text-[#71717a] text-sm">Pending</div>
+              <div className="text-[#71717a] text-sm">Pendentes</div>
             </div>
           </div>
         </div>
@@ -213,44 +213,44 @@ export const BarberDashboard = () => {
         {/* Upcoming Bookings */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold text-white">Upcoming</h3>
-            <button className="text-[#a855f7] text-sm font-medium">See all</button>
+            <h3 className="text-lg font-bold text-white">Próximos</h3>
+            <button className="text-[#d4af37] text-sm font-medium">Ver todos</button>
           </div>
 
           {!dashboard?.today?.bookings?.length ? (
             <div className="glass-card p-8 text-center">
               <Calendar className="w-12 h-12 text-[#52525e] mx-auto mb-3" />
-              <p className="text-[#71717a]">No bookings today</p>
+              <p className="text-[#71717a]">Sem agendamentos hoje</p>
             </div>
           ) : (
             <div className="space-y-3">
               {dashboard.today.bookings.map(booking => (
                 <div key={booking.id} className="glass-card p-4">
                   <div className="flex items-center gap-4">
-                    <div className="px-3 py-2 rounded-xl bg-[#7c3aed]/20">
-                      <span className="text-[#a855f7] font-bold text-sm">{booking.time}</span>
+                    <div className="px-3 py-2 rounded-xl bg-[#d4af37]/20">
+                      <span className="text-[#d4af37] font-bold text-sm">{booking.time}</span>
                     </div>
                     <div className="flex-1">
                       <h4 className="text-white font-medium">{booking.client_name}</h4>
                       <p className="text-[#71717a] text-sm">{booking.service_name}</p>
                     </div>
                     <div className="text-right">
-                      <div className="text-[#00ff88] font-bold">€{booking.service_price}</div>
+                      <div className="text-[#d4af37] font-bold">€{booking.service_price}</div>
                     </div>
                     {booking.status === 'pending' && (
                       <button
                         onClick={() => confirmBooking(booking.id)}
-                        className="w-11 h-11 rounded-xl bg-[#00ff88]/20 flex items-center justify-center hover:bg-[#00ff88]/30 transition-colors"
+                        className="w-11 h-11 rounded-xl bg-[#d4af37]/20 flex items-center justify-center hover:bg-[#d4af37]/30 transition-colors"
                       >
-                        <Check className="w-5 h-5 text-[#00ff88]" />
+                        <Check className="w-5 h-5 text-[#d4af37]" />
                       </button>
                     )}
                     {booking.status === 'confirmed' && (
                       <button
                         onClick={() => completeBooking(booking.id)}
-                        className="w-11 h-11 rounded-xl gradient-purple flex items-center justify-center"
+                        className="w-11 h-11 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] flex items-center justify-center"
                       >
-                        <Check className="w-5 h-5 text-white" />
+                        <Check className="w-5 h-5 text-[#0a0a0f]" />
                       </button>
                     )}
                   </div>
@@ -262,19 +262,19 @@ export const BarberDashboard = () => {
 
         {/* Quick Actions */}
         <div>
-          <h3 className="text-lg font-bold text-white mb-4">Quick Actions</h3>
+          <h3 className="text-lg font-bold text-white mb-4">Ações Rápidas</h3>
           <div className="grid grid-cols-4 gap-3">
             <button className="flex flex-col items-center">
-              <div className="w-full aspect-square rounded-2xl gradient-purple flex items-center justify-center mb-2">
-                <Calendar className="w-7 h-7 text-white" />
+              <div className="w-full aspect-square rounded-2xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] flex items-center justify-center mb-2">
+                <Calendar className="w-7 h-7 text-[#0a0a0f]" />
               </div>
-              <span className="text-[#71717a] text-xs">Schedule</span>
+              <span className="text-[#71717a] text-xs">Agenda</span>
             </button>
             <button className="flex flex-col items-center">
               <div className="w-full aspect-square rounded-2xl gradient-cyan flex items-center justify-center mb-2">
                 <Scissors className="w-7 h-7 text-white" />
               </div>
-              <span className="text-[#71717a] text-xs">Services</span>
+              <span className="text-[#71717a] text-xs">Serviços</span>
             </button>
             <button className="flex flex-col items-center">
               <div className="w-full aspect-square rounded-2xl gradient-pink flex items-center justify-center mb-2">
@@ -286,7 +286,7 @@ export const BarberDashboard = () => {
               <div className="w-full aspect-square rounded-2xl bg-gradient-to-br from-[#f97316] to-[#fb923c] flex items-center justify-center mb-2">
                 <Wallet className="w-7 h-7 text-white" />
               </div>
-              <span className="text-[#71717a] text-xs">Earnings</span>
+              <span className="text-[#71717a] text-xs">Ganhos</span>
             </button>
           </div>
         </div>
@@ -297,8 +297,8 @@ export const BarberDashboard = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/90 to-transparent h-28 -top-8" />
         <div className="relative glass-card mx-4 mb-6 p-2">
           <div className="flex justify-around">
-            <button className="w-12 h-12 rounded-xl gradient-purple flex items-center justify-center">
-              <Home className="w-5 h-5 text-white" />
+            <button className="w-12 h-12 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] flex items-center justify-center">
+              <Home className="w-5 h-5 text-[#0a0a0f]" />
             </button>
             <button className="w-12 h-12 rounded-xl flex items-center justify-center text-[#52525e]">
               <Calendar className="w-5 h-5" />
