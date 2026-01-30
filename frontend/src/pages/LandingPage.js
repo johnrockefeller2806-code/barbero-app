@@ -182,10 +182,9 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
-              <Scissors className="w-6 h-6 text-amber-500" />
-              <span className="font-heading text-xl font-bold text-white">BARBER<span className="text-amber-500">X</span></span>
+              <img src={LOGO_URL} alt="ClickBarber" className="h-10 w-auto object-contain" />
             </div>
-            <p className="text-zinc-500 text-sm">© 2024 BarberX. {t('footer_rights')}</p>
+            <p className="text-zinc-500 text-sm">© 2025 ClickBarber. {t('footer_rights')}</p>
           </div>
         </div>
       </footer>
