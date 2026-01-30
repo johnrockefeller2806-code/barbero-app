@@ -64,8 +64,8 @@ export const Login = () => {
 
         {/* Login Card */}
         <div className="glass-card p-8">
-          <h2 className="text-2xl font-bold text-white mb-2">Welcome back</h2>
-          <p className="text-[#71717a] mb-8">Sign in to continue</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Bem-vindo de volta</h2>
+          <p className="text-[#71717a] mb-8">Entre para continuar</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
@@ -75,7 +75,7 @@ export const Login = () => {
               </div>
               <input
                 type="email"
-                placeholder="Email address"
+                placeholder="E-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input-dark pl-12"
@@ -90,7 +90,7 @@ export const Login = () => {
               </div>
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
+                placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input-dark pl-12 pr-12"
@@ -106,8 +106,8 @@ export const Login = () => {
             </div>
 
             <div className="text-right">
-              <button type="button" className="text-sm text-[#a855f7] hover:text-[#c084fc] font-medium">
-                Forgot password?
+              <button type="button" className="text-sm text-[#d4af37] hover:text-[#f4d03f] font-medium">
+                Esqueceu a senha?
               </button>
             </div>
 
@@ -115,7 +115,7 @@ export const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full justify-center text-lg py-4"
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f] font-bold text-lg flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all disabled:opacity-50"
               data-testid="login-submit"
             >
               {loading ? (
