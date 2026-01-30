@@ -80,12 +80,14 @@ export const Register = ({ isBarber: isBarberProp }) => {
       <div className="relative z-10 w-full max-w-md animate-slide-up">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className={`w-20 h-20 rounded-3xl ${isBarber ? 'gradient-green' : 'gradient-purple'} flex items-center justify-center mx-auto mb-4 ${isBarber ? 'glow-green' : 'glow-purple'}`}>
-            <Scissors className={`w-10 h-10 ${isBarber ? 'text-[#0a0a0f]' : 'text-white'}`} />
-          </div>
-          <h1 className="text-3xl font-extrabold text-white">Join QuickCut</h1>
+          <img 
+            src={LOGO_URL} 
+            alt="ClikBarber" 
+            className="h-20 mx-auto mb-4"
+          />
+          <h1 className="text-3xl font-extrabold text-white">Junte-se ao ClikBarber</h1>
           <p className="text-[#71717a] mt-2">
-            {isBarber ? 'Start getting bookings today' : 'Find your perfect barber'}
+            {isBarber ? 'Comece a receber agendamentos' : 'Encontre seu barbeiro perfeito'}
           </p>
         </div>
 
@@ -94,11 +96,11 @@ export const Register = ({ isBarber: isBarberProp }) => {
           <Link
             to="/register"
             className={`flex-1 py-3 rounded-xl text-center font-medium transition-all ${
-              !isBarber ? 'gradient-purple text-white' : 'text-[#71717a] hover:text-white'
+              !isBarber ? 'bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f]' : 'text-[#71717a] hover:text-white'
             }`}
           >
             <User className="w-4 h-4 inline mr-2" />
-            Client
+            Cliente
           </Link>
           <Link
             to="/register/barber"
@@ -107,7 +109,7 @@ export const Register = ({ isBarber: isBarberProp }) => {
             }`}
           >
             <Scissors className="w-4 h-4 inline mr-2" />
-            Barber
+            Barbeiro
           </Link>
         </div>
 
