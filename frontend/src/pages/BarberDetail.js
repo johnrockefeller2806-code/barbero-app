@@ -119,7 +119,6 @@ export const BarberDetail = () => {
           </button>
           <img src={LOGO_URL} alt="ClikBarber" className="h-10" />
         </div>
-        </button>
 
         {/* Barber Card */}
         <div className="glass-card p-6 mb-6">
