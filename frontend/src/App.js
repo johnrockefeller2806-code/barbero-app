@@ -1,53 +1,118 @@
-import { useEffect } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Toaster } from "./components/ui/sonner";
+import { AuthProvider } from "./context/AuthContext";
+import { LanguageProvider } from "./context/LanguageContext";
+import { Navbar } from "./components/Navbar";
+import { Footer } from "./components/Footer";
+import { Landing } from "./pages/Landing";
+import { Schools } from "./pages/Schools";
+import { SchoolDetail } from "./pages/SchoolDetail";
+import { Login, Register } from "./pages/Auth";
+import { PinLogin } from "./pages/PinLogin";
+import { PinSetup } from "./pages/PinSetup";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { Dashboard } from "./pages/Dashboard";
+import { PaymentSuccess } from "./pages/PaymentSuccess";
+import { Transport } from "./pages/Transport";
+import { Services } from "./pages/Services";
+import { PPSGuide, GNIBGuide, PassportGuide, DrivingLicenseGuide } from "./pages/Guides";
+import { AdminDashboard } from "./pages/AdminDashboard";
+import { SchoolDashboard } from "./pages/SchoolDashboard";
+import { SchoolRegister } from "./pages/SchoolRegister";
+import { SchoolSubscription } from "./pages/SchoolSubscription";
+import { StuffDuvidas } from "./pages/StuffDuvidas";
+import { StudentGuide } from "./pages/StudentGuide";
+import { About } from "./pages/About";
+import { Flights } from "./pages/Flights";
+import { Insurance } from "./pages/Insurance";
+import { Chat } from "./pages/Chat";
+import { Profile } from "./pages/Profile";
+import { PlusPaywall } from "./pages/PlusPaywall";
+import { PlusSuccess } from "./pages/PlusSuccess";
+import { Tourism } from "./pages/Tourism";
+import { Emergency } from "./pages/Emergency";
+import { PrivacyPolicy } from "./pages/PrivacyPolicy";
+import { TermsOfService } from "./pages/TermsOfService";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
+// Layout component to conditionally show navbar/footer
+const AppLayout = ({ children }) => {
+  const location = useLocation();
+  const isChat = location.pathname === '/chat';
+  const isPinPage = location.pathname === '/pin-login' || location.pathname === '/pin-setup' || location.pathname === '/login';
+  
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
+    <div className={`App ${isChat || isPinPage ? '' : 'min-h-screen flex flex-col'}`}>
+      {!isChat && !isPinPage && <Navbar />}
+      <main className={isChat || isPinPage ? '' : 'flex-1'}>
+        {children}
+      </main>
+      {!isChat && !isPinPage && <Footer />}
     </div>
   );
 };
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <LanguageProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppLayout>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Landing />} />
+              <Route path="/schools" element={<Schools />} />
+              <Route path="/schools/:id" element={<SchoolDetail />} />
+              <Route path="/transport" element={<Transport />} />
+              <Route path="/tourism" element={<Tourism />} />
+              <Route path="/emergency" element={<Emergency />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/services/pps" element={<PPSGuide />} />
+              <Route path="/services/gnib" element={<GNIBGuide />} />
+              <Route path="/services/passport" element={<PassportGuide />} />
+              <Route path="/services/driving-license" element={<DrivingLicenseGuide />} />
+              <Route path="/duvidas" element={<StuffDuvidas />} />
+              <Route path="/guia-estudante" element={<StudentGuide />} />
+              <Route path="/sobre" element={<About />} />
+              <Route path="/passagens" element={<Flights />} />
+              <Route path="/seguro" element={<Insurance />} />
+              <Route path="/chat" element={<Chat />} />
+              
+              {/* Auth Routes */}
+              <Route path="/login" element={<PinLogin />} />
+              <Route path="/login-password" element={<Login />} />
+              <Route path="/pin-login" element={<PinLogin />} />
+              <Route path="/pin-setup" element={<PinSetup />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/register-school" element={<SchoolRegister />} />
+              
+              {/* User Routes */}
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/payment/success" element={<PaymentSuccess />} />
+              
+              {/* PLUS Plan Routes */}
+              <Route path="/plus" element={<PlusPaywall />} />
+              <Route path="/plus/success" element={<PlusSuccess />} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminDashboard />} />
+              
+              {/* School Routes */}
+              <Route path="/school" element={<SchoolDashboard />} />
+              <Route path="/school/subscription" element={<SchoolSubscription />} />
+              <Route path="/school/subscription/success" element={<SchoolSubscription />} />
+              
+              {/* Legal Pages */}
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+            </Routes>
+          </AppLayout>
+          <Toaster position="top-right" richColors />
+        </BrowserRouter>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
 
