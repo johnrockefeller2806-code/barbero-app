@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
-import { Scissors, Mail, Lock, Eye, EyeOff, ArrowRight, Fingerprint } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Fingerprint } from 'lucide-react';
+
+const LOGO_URL = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/kkaa9c50_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg";
 
 export const Login = () => {
   const navigate = useNavigate();
