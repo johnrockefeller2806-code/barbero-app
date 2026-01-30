@@ -113,13 +113,13 @@ export const Bookings = () => {
         {filteredBookings.length === 0 ? (
           <div className="text-center py-16">
             <Calendar className="w-16 h-16 text-[#52525e] mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">No bookings yet</h3>
-            <p className="text-[#71717a] mb-6">Find a barber and book your first cut!</p>
+            <h3 className="text-xl font-bold text-white mb-2">Nenhum agendamento</h3>
+            <p className="text-[#71717a] mb-6">Encontre um barbeiro e faça seu primeiro agendamento!</p>
             <button
               onClick={() => navigate('/home')}
-              className="btn-primary"
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f] font-bold"
             >
-              Find Barbers
+              Encontrar Barbeiros
             </button>
           </div>
         ) : (
@@ -132,7 +132,7 @@ export const Bookings = () => {
                     <p className="text-[#71717a] text-sm">{booking.shop_name}</p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${getStatusColor(booking.status)}`}>
-                    {booking.status}
+                    {booking.status === 'pending' ? 'Pendente' : booking.status === 'confirmed' ? 'Confirmado' : booking.status === 'completed' ? 'Concluído' : 'Cancelado'}
                   </span>
                 </div>
 
@@ -159,13 +159,13 @@ export const Bookings = () => {
                       onClick={() => cancelBooking(booking.id)}
                       className="px-4 py-2 rounded-xl bg-[#ff3366]/20 text-[#ff3366] text-sm font-medium hover:bg-[#ff3366]/30 transition-colors"
                     >
-                      Cancel
+                      Cancelar
                     </button>
                   )}
                   
                   {booking.status === 'completed' && (
-                    <button className="px-4 py-2 rounded-xl gradient-purple text-white text-sm font-medium">
-                      Leave Review
+                    <button className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f] text-sm font-bold">
+                      Avaliar
                     </button>
                   )}
                 </div>
