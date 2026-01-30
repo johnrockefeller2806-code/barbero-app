@@ -145,12 +145,9 @@ export const Navbar = () => {
             <Link to="/" className="flex items-center gap-3" data-testid="nav-logo">
               <img 
                 src={LOGO_URL} 
-                alt="STUFF Intercâmbio" 
-                className="h-10 w-auto object-contain bg-white rounded-lg p-1"
+                alt="ClickBarber" 
+                className="h-12 w-auto object-contain"
               />
-              <span className="text-white font-bold text-lg hidden sm:block">
-                STUFF Intercâmbio
-              </span>
             </Link>
 
             {/* Right side - Language and Auth */}
