@@ -68,25 +68,28 @@ export const Bookings = () => {
   if (isLoading || loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#7c3aed] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#d4af37] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] relative">
-      <div className="orb orb-purple w-[300px] h-[300px] -top-24 -right-24 fixed" />
+      <div className="orb w-[300px] h-[300px] -top-24 -right-24 fixed" style={{ background: '#d4af37', filter: 'blur(80px)', opacity: 0.3 }} />
 
       <div className="relative z-10 p-6">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <button
-            onClick={() => navigate('/home')}
-            className="w-12 h-12 rounded-2xl glass-card flex items-center justify-center"
-          >
-            <ArrowLeft className="w-5 h-5 text-white" />
-          </button>
-          <h1 className="text-2xl font-bold text-white">My Bookings</h1>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate('/home')}
+              className="w-12 h-12 rounded-2xl glass-card flex items-center justify-center"
+            >
+              <ArrowLeft className="w-5 h-5 text-white" />
+            </button>
+            <h1 className="text-2xl font-bold text-white">Meus Agendamentos</h1>
+          </div>
+          <img src={LOGO_URL} alt="ClikBarber" className="h-10" />
         </div>
 
         {/* Filter Tabs */}
@@ -97,11 +100,11 @@ export const Bookings = () => {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
                 filter === f
-                  ? 'gradient-purple text-white'
+                  ? 'bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f]'
                   : 'glass-card text-[#71717a] hover:text-white'
               }`}
             >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
+              {f === 'all' ? 'Todos' : f === 'pending' ? 'Pendente' : f === 'confirmed' ? 'Confirmado' : f === 'completed' ? 'Concluído' : 'Cancelado'}
             </button>
           ))}
         </div>
