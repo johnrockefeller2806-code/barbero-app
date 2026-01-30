@@ -166,7 +166,7 @@ export const BarberDetail = () => {
           {/* Specialties */}
           <div className="flex gap-2 flex-wrap mt-4 pt-4 border-t border-[#24242e]">
             {barber.specialties?.map(spec => (
-              <span key={spec} className="px-3 py-1.5 rounded-lg bg-[#7c3aed]/20 text-[#c084fc] text-sm font-medium">
+              <span key={spec} className="px-3 py-1.5 rounded-lg bg-[#d4af37]/20 text-[#d4af37] text-sm font-medium">
                 {spec}
               </span>
             ))}
@@ -175,7 +175,7 @@ export const BarberDetail = () => {
 
         {/* Services */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-white mb-4">Services</h2>
+          <h2 className="text-lg font-bold text-white mb-4">Serviços</h2>
           <div className="space-y-3">
             {services.map(service => (
               <button
@@ -183,7 +183,7 @@ export const BarberDetail = () => {
                 onClick={() => setSelectedService(service)}
                 className={`w-full glass-card p-4 text-left transition-all ${
                   selectedService?.id === service.id
-                    ? 'border-[#7c3aed] ring-2 ring-[#7c3aed]/30'
+                    ? 'border-[#d4af37] ring-2 ring-[#d4af37]/30'
                     : 'hover:bg-white/5'
                 }`}
                 data-testid={`service-${service.id}`}
@@ -199,8 +199,8 @@ export const BarberDetail = () => {
                   <div className="text-right">
                     <div className="text-xl font-bold text-white">€{service.price}</div>
                     {selectedService?.id === service.id && (
-                      <div className="w-6 h-6 rounded-full gradient-purple flex items-center justify-center mt-1 ml-auto">
-                        <Check className="w-4 h-4 text-white" />
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#d4af37] to-[#f4d03f] flex items-center justify-center mt-1 ml-auto">
+                        <Check className="w-4 h-4 text-[#0a0a0f]" />
                       </div>
                     )}
                   </div>
@@ -212,7 +212,7 @@ export const BarberDetail = () => {
 
         {/* Date Selection */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-white mb-4">Select Date</h2>
+          <h2 className="text-lg font-bold text-white mb-4">Selecione a Data</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-6 px-6">
             {dates.map(d => (
               <button
