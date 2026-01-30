@@ -70,10 +70,10 @@ export const Landing = () => {
             </div>
             
             <h1 className="text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6">
-              Find a Barber.
+              Seu Barbeiro.
               <br />
-              <span className="bg-gradient-to-r from-[#7c3aed] to-[#a855f7] bg-clip-text text-transparent">
-                Right Now.
+              <span className="bg-gradient-to-r from-[#d4af37] to-[#f4d03f] bg-clip-text text-transparent">
+                Em um Clik.
               </span>
             </h1>
             
