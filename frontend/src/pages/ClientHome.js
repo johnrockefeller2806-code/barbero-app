@@ -62,18 +62,14 @@ export const ClientHome = () => {
         {/* Header */}
         <div className="p-6 pb-0">
           <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-white">{getGreeting()} ✨</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="w-2 h-2 bg-[#00ff88] rounded-full" />
-                <span className="text-[#71717a] text-sm">Dublin, Ireland</span>
-              </div>
+            <div className="flex items-center gap-3">
+              <img src={LOGO_URL} alt="ClikBarber" className="h-10" />
             </div>
             <button 
               onClick={() => navigate('/bookings')}
-              className="w-12 h-12 rounded-2xl gradient-purple flex items-center justify-center"
+              className="w-12 h-12 rounded-2xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] flex items-center justify-center"
             >
-              <span className="text-white font-bold">{user?.name?.charAt(0) || 'U'}</span>
+              <span className="text-[#0a0a0f] font-bold">{user?.name?.charAt(0) || 'U'}</span>
             </button>
           </div>
 
