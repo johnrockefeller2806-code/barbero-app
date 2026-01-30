@@ -4,6 +4,8 @@ import { Scissors, MapPin, Users, ArrowRight, Zap } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
 
+const LOGO_URL = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/7tsbrqqb_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg";
+
 const LandingPage = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -15,8 +17,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Scissors className="w-8 h-8 text-amber-500" />
-              <span className="font-heading text-2xl font-bold text-white">BARBER<span className="text-amber-500">X</span></span>
+              <img src={LOGO_URL} alt="ClickBarber" className="h-12 w-auto object-contain" />
             </div>
             <div className="flex items-center gap-4">
               <LanguageToggle />
