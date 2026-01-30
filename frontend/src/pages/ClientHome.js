@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Scissors, MapPin, Star, Zap, Search, Filter, Home, Calendar, Heart, User, Clock } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
+const LOGO_URL = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/kkaa9c50_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg";
 
 export const ClientHome = () => {
   const navigate = useNavigate();
