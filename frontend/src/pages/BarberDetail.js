@@ -131,7 +131,7 @@ export const BarberDetail = () => {
                 className="w-24 h-24 rounded-2xl object-cover"
               />
               {barber.is_available && (
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#00ff88] rounded-full border-[3px] border-[#1a1a24] flex items-center justify-center">
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#d4af37] rounded-full border-[3px] border-[#1a1a24] flex items-center justify-center">
                   <Check className="w-3 h-3 text-[#0a0a0f]" />
                 </div>
               )}
@@ -140,8 +140,8 @@ export const BarberDetail = () => {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 {barber.is_available && (
-                  <span className="px-2 py-0.5 rounded-full bg-[#00ff88]/20 text-[#00ff88] text-[10px] font-bold">
-                    AVAILABLE
+                  <span className="px-2 py-0.5 rounded-full bg-[#d4af37]/20 text-[#d4af37] text-[10px] font-bold">
+                    DISPONÍVEL
                   </span>
                 )}
               </div>
