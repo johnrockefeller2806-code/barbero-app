@@ -109,7 +109,7 @@ export const ClientHome = () => {
                 onClick={() => setFilter(f.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap transition-all ${
                   filter === f.id
-                    ? 'gradient-purple text-white'
+                    ? 'bg-gradient-to-r from-[#d4af37] to-[#f4d03f] text-[#0a0a0f]'
                     : 'glass-card text-[#71717a] hover:text-white'
                 }`}
               >
@@ -121,8 +121,8 @@ export const ClientHome = () => {
 
           {/* Section Title */}
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold text-white">Barbers Near You</h3>
-            <button className="text-sm text-[#a855f7] font-medium">See all</button>
+            <h3 className="text-lg font-bold text-white">Barbeiros Perto de Você</h3>
+            <button className="text-sm text-[#d4af37] font-medium">Ver todos</button>
           </div>
         </div>
 
