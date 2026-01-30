@@ -90,8 +90,7 @@ const BarberDashboard = () => {
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Scissors className="w-8 h-8 text-amber-500" />
-              <span className="font-heading text-2xl font-bold text-white">BARBER<span className="text-amber-500">X</span></span>
+              <img src={LOGO_URL} alt="ClickBarber" className="h-12 w-auto object-contain" />
               <span className="text-zinc-500 text-sm hidden sm:block">/ Painel do Barbeiro</span>
             </div>
             <div className="flex items-center gap-4">
