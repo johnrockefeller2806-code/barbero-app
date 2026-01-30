@@ -105,15 +105,15 @@ export const Landing = () => {
             <div className="flex gap-12 mt-12 pt-12 border-t border-[#24242e]">
               <div>
                 <div className="text-3xl font-bold text-white">500+</div>
-                <div className="text-[#71717a]">Happy Clients</div>
+                <div className="text-[#71717a]">Clientes Felizes</div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-white">50+</div>
-                <div className="text-[#71717a]">Pro Barbers</div>
+                <div className="text-[#71717a]">Barbeiros Pro</div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-white">4.9</div>
-                <div className="text-[#71717a]">Avg Rating</div>
+                <div className="text-[#71717a]">Avaliação Média</div>
               </div>
             </div>
           </div>
@@ -121,11 +121,11 @@ export const Landing = () => {
           {/* Feature Cards */}
           <div className="grid gap-6">
             <div className="glass-card p-8 card-hover animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              <div className="w-14 h-14 rounded-2xl gradient-green flex items-center justify-center mb-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-[#d4af37] to-[#f4d03f] flex items-center justify-center mb-4">
                 <MapPin className="w-7 h-7 text-[#0a0a0f]" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Real-Time Availability</h3>
-              <p className="text-[#a1a1aa]">See which barbers are available right now on the map.</p>
+              <h3 className="text-xl font-bold text-white mb-2">Disponibilidade em Tempo Real</h3>
+              <p className="text-[#a1a1aa]">Veja quais barbeiros estão disponíveis agora no mapa.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
@@ -133,16 +133,16 @@ export const Landing = () => {
                 <div className="w-12 h-12 rounded-xl gradient-purple flex items-center justify-center mb-3">
                   <Clock className="w-6 h-6 text-white" />
                 </div>
-                <h4 className="font-bold text-white mb-1">Instant Booking</h4>
-                <p className="text-sm text-[#71717a]">Book in seconds, no calls needed</p>
+                <h4 className="font-bold text-white mb-1">Agendamento Rápido</h4>
+                <p className="text-sm text-[#71717a]">Agende em segundos, sem ligações</p>
               </div>
 
               <div className="glass-card p-6 card-hover animate-slide-up" style={{ animationDelay: '0.3s' }}>
                 <div className="w-12 h-12 rounded-xl gradient-cyan flex items-center justify-center mb-3">
                   <Star className="w-6 h-6 text-white" />
                 </div>
-                <h4 className="font-bold text-white mb-1">Top Rated</h4>
-                <p className="text-sm text-[#71717a]">Only verified professionals</p>
+                <h4 className="font-bold text-white mb-1">Top Avaliados</h4>
+                <p className="text-sm text-[#71717a]">Apenas profissionais verificados</p>
               </div>
             </div>
 
@@ -150,19 +150,20 @@ export const Landing = () => {
               <div className="w-14 h-14 rounded-2xl gradient-pink flex items-center justify-center mb-4">
                 <Users className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">For Barbers Too</h3>
-              <p className="text-[#a1a1aa]">Manage your schedule, go online when you're ready, get paid instantly.</p>
+              <h3 className="text-xl font-bold text-white mb-2">Para Barbeiros Também</h3>
+              <p className="text-[#a1a1aa]">Gerencie sua agenda, fique online quando quiser, receba pagamentos.</p>
             </div>
           </div>
         </div>
 
         {/* Footer */}
         <footer className="mt-24 pt-12 border-t border-[#24242e] text-center">
+          <img src={LOGO_URL} alt="ClikBarber" className="h-16 mx-auto mb-4" />
           <div className="flex items-center justify-center gap-2 text-[#71717a]">
-            <MapPin className="w-4 h-4 text-[#00ff88]" />
+            <MapPin className="w-4 h-4 text-[#d4af37]" />
             <span>Dublin, Ireland 🇮🇪</span>
           </div>
-          <p className="mt-4 text-[#52525e]">© 2025 QuickCut. All rights reserved.</p>
+          <p className="mt-4 text-[#52525e]">© 2025 ClikBarber. Todos os direitos reservados.</p>
         </footer>
       </div>
     </div>
