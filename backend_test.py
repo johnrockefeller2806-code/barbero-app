@@ -82,6 +82,7 @@ class BarberXAPITester:
 
     def test_barber_login(self):
         """Test barber login with password"""
+        print(f"   🔍 Testing login with email: {self.test_email}, password: {self.test_password}")
         success, response = self.run_test(
             "Barber Login (Password)",
             "POST",
@@ -91,6 +92,7 @@ class BarberXAPITester:
         )
         if success and 'token' in response:
             self.barber_token = response['token']
+            print(f"   🔑 Token received: {self.barber_token[:20]}...")
             return True, response
         return False, {}
 
