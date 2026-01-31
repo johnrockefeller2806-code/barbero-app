@@ -479,14 +479,9 @@ const BarberDashboard = () => {
               </button>
               {/* Refresh Button */}
               <button 
-                onClick={() => {
-                  fetchQueue();
-                  fetchSchedules();
-                  fetchTips();
-                  fetchHomeServiceInterests();
-                }}
+                onClick={() => window.location.reload()}
                 className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
-                title="Atualizar"
+                title="Atualizar página"
                 data-testid="btn-refresh"
               >
                 <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
