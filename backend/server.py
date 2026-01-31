@@ -82,7 +82,7 @@ class UserRegister(BaseModel):
     instagram: Optional[str] = None  # Instagram username
     # Home service fields
     offers_home_service: bool = False
-    home_service_fee_per_km: float = 2.0  # € per km
+    home_service_fee_per_km: float = 1.0  # € per km
     # Referral
     referral_code: Optional[str] = None  # Code used during registration
 
