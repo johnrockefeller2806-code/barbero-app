@@ -331,7 +331,7 @@ const ClientDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090B]" data-testid="client-dashboard">
+    <div className="min-h-screen bg-[#09090B] pb-24" data-testid="client-dashboard">
       {/* Header */}
       <header className="bg-zinc-900/80 backdrop-blur-md border-b border-zinc-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
