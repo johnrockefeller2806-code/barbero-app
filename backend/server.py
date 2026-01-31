@@ -5,8 +5,9 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import asyncio
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional, Dict
 import uuid
 from datetime import datetime, timezone, timedelta
@@ -16,6 +17,7 @@ import math
 import random
 import string
 import base64
+import resend
 
 # Stripe integration
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
@@ -33,6 +35,12 @@ security = HTTPBearer(auto_error=False)
 
 JWT_SECRET = os.environ.get('JWT_SECRET', 'barberx-secret-key-2024')
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+
+# Resend configuration
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
 
 # ==================== SUBSCRIPTION PLANS ====================
 SUBSCRIPTION_PLANS = {
