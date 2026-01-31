@@ -457,6 +457,26 @@ const BarberDashboard = () => {
               <span className="font-heading text-2xl text-white uppercase tracking-wider">Click<span className="text-amber-500">Barber</span></span>
             </div>
             <div className="flex items-center gap-3">
+              {/* Share Button */}
+              <button 
+                onClick={() => {
+                  const shareText = '💈 Sou barbeiro no ClickBarber! Faça seu agendamento comigo em Dublin! 🇮🇪\n\n✂️ Atendimento na barbearia ou em casa\n📍 Me encontre no mapa em tempo real\n\nAcesse: ' + window.location.origin;
+                  if (navigator.share) {
+                    navigator.share({
+                      title: 'ClickBarber',
+                      text: shareText,
+                      url: window.location.origin
+                    });
+                  } else {
+                    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+                  }
+                }}
+                className="p-2 bg-green-500/20 hover:bg-green-500/30 rounded-full transition-colors"
+                title="Compartilhar"
+                data-testid="btn-share"
+              >
+                <Share2 className="w-5 h-5 text-green-400" />
+              </button>
               {/* Refresh Button */}
               <button 
                 onClick={() => {
