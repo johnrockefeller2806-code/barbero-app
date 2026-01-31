@@ -216,10 +216,11 @@ const AuthPage = () => {
       const data = { ...formData, user_type: userType };
       if (userType === 'barber') {
         data.services = [
-          { id: '1', name: 'Corte', price: 45, duration: 30 },
-          { id: '2', name: 'Barba', price: 35, duration: 25 },
-          { id: '3', name: 'Combo', price: 70, duration: 50 }
+          { id: '1', name: 'Corte', price: 30, duration: 30 },
+          { id: '2', name: 'Barba', price: 15, duration: 20 },
+          { id: '3', name: 'Combo (Corte + Barba)', price: 40, duration: 45 }
         ];
+        data.home_service_fee_per_km = 1.0; // €1 por km
       }
       const result = await register(data);
       setPendingUser(result);
