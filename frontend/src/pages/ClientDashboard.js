@@ -78,6 +78,50 @@ const ClientDashboard = () => {
   const [completedServices, setCompletedServices] = useState([]);
   const [showTipModal, setShowTipModal] = useState(false);
   const [selectedTipEntry, setSelectedTipEntry] = useState(null);
+  
+  // Photo upload state
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef(null);
+
+  // Photo upload function
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione uma imagem');
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('A imagem deve ter no máximo 5MB');
+      return;
+    }
+    
+    setUploadingPhoto(true);
+    
+    try {
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64 = reader.result;
+          const res = await axios.post(`${API}/users/photo`, { photo_base64: base64 });
+          setUser({ ...user, photo_url: res.data.photo_url });
+          alert('✅ Foto atualizada com sucesso!');
+        } catch (err) {
+          alert(err.response?.data?.detail || 'Erro ao fazer upload da foto');
+        }
+        setUploadingPhoto(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      alert('Erro ao processar a imagem');
+      setUploadingPhoto(false);
+    }
+  };
 
   useEffect(() => {
     // Get user location
