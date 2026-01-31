@@ -367,7 +367,143 @@ async def login(input: UserLogin):
     if isinstance(user.get("created_at"), str):
         user["created_at"] = datetime.fromisoformat(user["created_at"])
     
+    # Check if PIN is set
+    pin_set = user.get("pin_set", False)
+    
+    return {"token": token, "user": user, "pin_set": pin_set}
+
+@api_router.post("/auth/login-pin")
+async def login_with_pin(input: PinLogin):
+    """Login with 6-digit PIN (quick access)"""
+    user = await db.users.find_one({"email": input.email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    if not user.get("pin_set") or not user.get("pin"):
+        raise HTTPException(status_code=400, detail="PIN not set. Please login with password first.")
+    
+    if user["pin"] != hash_password(input.pin):
+        raise HTTPException(status_code=401, detail="Invalid PIN")
+    
+    token = create_token(user["id"], user["user_type"])
+    del user["password"]
+    if "pin" in user:
+        del user["pin"]
+    
+    if isinstance(user.get("created_at"), str):
+        user["created_at"] = datetime.fromisoformat(user["created_at"])
+    
     return {"token": token, "user": user}
+
+@api_router.post("/auth/set-pin")
+async def set_pin(input: SetPin, user: dict = Depends(get_current_user)):
+    """Set or update 6-digit PIN"""
+    if len(input.pin) != 6 or not input.pin.isdigit():
+        raise HTTPException(status_code=400, detail="PIN must be exactly 6 digits")
+    
+    hashed_pin = hash_password(input.pin)
+    
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"pin": hashed_pin, "pin_set": True}}
+    )
+    
+    return {"success": True, "message": "PIN set successfully"}
+
+@api_router.get("/auth/check-pin")
+async def check_pin_status(email: str):
+    """Check if user has PIN set"""
+    user = await db.users.find_one({"email": email}, {"_id": 0, "pin_set": 1})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"pin_set": user.get("pin_set", False)}
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(input: ForgotPassword):
+    """Send password reset code via email"""
+    user = await db.users.find_one({"email": input.email}, {"_id": 0})
+    if not user:
+        # Don't reveal if email exists or not for security
+        return {"success": True, "message": "If the email exists, a reset code will be sent"}
+    
+    # Generate 6-digit code
+    reset_code = ''.join(random.choices(string.digits, k=6))
+    reset_expires = (datetime.now(timezone.utc) + timedelta(minutes=15)).isoformat()
+    
+    # Save code to database
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"reset_code": reset_code, "reset_code_expires": reset_expires}}
+    )
+    
+    # Send email via Resend
+    if RESEND_API_KEY:
+        try:
+            html_content = f"""
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                    <h1 style="color: white; margin: 0; font-size: 28px;">ClickBarber</h1>
+                </div>
+                <div style="background: #18181B; padding: 30px; border-radius: 0 0 10px 10px;">
+                    <h2 style="color: #F59E0B; margin-top: 0;">Password Reset</h2>
+                    <p style="color: #A1A1AA; font-size: 16px;">Hello {user['name']},</p>
+                    <p style="color: #A1A1AA; font-size: 16px;">Your password reset code is:</p>
+                    <div style="background: #27272A; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+                        <span style="color: #F59E0B; font-size: 36px; font-weight: bold; letter-spacing: 8px;">{reset_code}</span>
+                    </div>
+                    <p style="color: #71717A; font-size: 14px;">This code expires in 15 minutes.</p>
+                    <p style="color: #71717A; font-size: 14px;">If you didn't request this, please ignore this email.</p>
+                </div>
+            </div>
+            """
+            
+            params = {
+                "from": SENDER_EMAIL,
+                "to": [input.email],
+                "subject": "ClickBarber - Password Reset Code",
+                "html": html_content
+            }
+            
+            await asyncio.to_thread(resend.Emails.send, params)
+            
+        except Exception as e:
+            logging.error(f"Failed to send email: {str(e)}")
+            raise HTTPException(status_code=500, detail="Failed to send email")
+    else:
+        raise HTTPException(status_code=500, detail="Email service not configured")
+    
+    return {"success": True, "message": "Reset code sent to your email"}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(input: ResetPassword):
+    """Reset password using code from email"""
+    user = await db.users.find_one({"email": input.email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check code
+    if not user.get("reset_code") or user["reset_code"] != input.code:
+        raise HTTPException(status_code=400, detail="Invalid reset code")
+    
+    # Check expiration
+    if user.get("reset_code_expires"):
+        expires = datetime.fromisoformat(user["reset_code_expires"])
+        if datetime.now(timezone.utc) > expires:
+            raise HTTPException(status_code=400, detail="Reset code expired")
+    
+    # Update password
+    new_password_hash = hash_password(input.new_password)
+    
+    await db.users.update_one(
+        {"id": user["id"]},
+        {
+            "$set": {"password": new_password_hash},
+            "$unset": {"reset_code": "", "reset_code_expires": ""}
+        }
+    )
+    
+    return {"success": True, "message": "Password reset successfully"}
 
 @api_router.get("/auth/me")
 async def get_me(user: dict = Depends(get_current_user)):
