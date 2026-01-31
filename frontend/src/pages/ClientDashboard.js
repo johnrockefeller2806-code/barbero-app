@@ -388,7 +388,22 @@ const ClientDashboard = () => {
               <img src={LOGO_URL} alt="ClickBarber" className="h-12 w-auto object-contain" />
               <span className="font-heading text-2xl text-white uppercase tracking-wider">Click<span className="text-amber-500">Barber</span></span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              {/* Refresh Button */}
+              <button 
+                onClick={() => {
+                  fetchBarbers();
+                  fetchMyQueue();
+                  fetchCompletedServices();
+                }}
+                className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
+                title="Atualizar"
+                data-testid="btn-refresh"
+              >
+                <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
               {/* Profile Photo */}
               <div className="relative group">
                 <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-zinc-700 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
