@@ -211,23 +211,21 @@ class BarberXAPITester:
         # Test get barber profile/dashboard
         success1, _ = self.run_test("Get Barber Profile", "GET", "/api/auth/me", 200, headers=headers)
         
-        # Test update barber status (online/offline)
+        # Test update barber status (online/offline) - using query parameters
         success2, _ = self.run_test(
             "Update Barber Status", 
             "PUT", 
-            "/api/barbers/status", 
+            "/api/barbers/status?is_online=true", 
             200,
-            data={"is_online": True},
             headers=headers
         )
         
-        # Test home service status
+        # Test home service status - using query parameters
         success3, _ = self.run_test(
             "Update Home Service Status", 
             "PUT", 
-            "/api/barbers/home-service-status", 
+            "/api/barbers/home-service-status?is_home_service_online=true", 
             200,
-            data={"is_home_service_online": True},
             headers=headers
         )
         
