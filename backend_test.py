@@ -19,7 +19,7 @@ class BarberXAPITester:
         
         # Test credentials
         self.test_email = "liam@barberx.com"
-        self.test_password = "newpass123"
+        self.test_password = "123456"  # Seeded password
         self.test_pin = "123456"
 
     def log_result(self, test_name, success, details=""):
