@@ -10,6 +10,7 @@ import ShareButton from '../components/ShareButton';
 import ReviewModal from '../components/ReviewModal';
 import ReferralSection from '../components/ReferralSection';
 import TipModal from '../components/TipModal';
+import Footer from '../components/Footer';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const LOGO_URL = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/7tsbrqqb_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg";
