@@ -1071,9 +1071,9 @@ const ClientDashboard = () => {
       {/* Home Service Request Modal - General Request */}
       {showHomeRequestModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" data-testid="home-request-modal">
-          <div className="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-lg overflow-hidden">
+          <div className="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-lg overflow-hidden max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="bg-green-500 p-4">
+            <div className="bg-green-500 p-4 sticky top-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Home className="w-6 h-6 text-white" />
@@ -1092,7 +1092,7 @@ const ClientDashboard = () => {
               </div>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-5 space-y-5">
               {/* Address Input */}
               <div>
                 <label className="text-zinc-400 text-sm mb-2 block">📍 Seu endereço</label>
@@ -1109,26 +1109,26 @@ const ClientDashboard = () => {
               {/* Service Selection */}
               <div>
                 <label className="text-zinc-400 text-sm mb-3 block">💈 Escolha o serviço</label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   {[
                     { id: 'barba', name: 'Barba', price: 15, icon: '🧔' },
                     { id: 'corte', name: 'Corte', price: 30, icon: '✂️' },
                     { id: 'corte-barba', name: 'Corte e Barba', price: 40, icon: '💈' },
-                    { id: 'combo', name: 'Combo Completo', price: 50, icon: '⭐' }
+                    { id: 'combo', name: 'Combo', price: 50, icon: '⭐' }
                   ].map((service) => (
                     <button
                       key={service.id}
                       onClick={() => setHomeServiceSelected(service.name)}
-                      className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      className={`p-3 rounded-lg border-2 transition-all text-left ${
                         homeServiceSelected === service.name
                           ? 'border-green-500 bg-green-500/10'
                           : 'border-zinc-700 bg-zinc-800 hover:border-zinc-600'
                       }`}
                       data-testid={`btn-service-${service.id}`}
                     >
-                      <div className="text-2xl mb-1">{service.icon}</div>
-                      <div className="text-white font-medium">{service.name}</div>
-                      <div className="text-green-400 text-sm">€{service.price}</div>
+                      <div className="text-xl mb-1">{service.icon}</div>
+                      <div className="text-white font-medium text-sm">{service.name}</div>
+                      <div className="text-green-400 text-xs">€{service.price}</div>
                     </button>
                   ))}
                 </div>
@@ -1156,15 +1156,15 @@ const ClientDashboard = () => {
                   }
                 }}
                 disabled={!homeServiceAddress || !homeServiceSelected}
-                className="w-full bg-green-500 hover:bg-green-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-green-500 hover:bg-green-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
                 data-testid="btn-submit-home-service"
               >
                 <Home className="w-5 h-5" />
                 Solicitar Atendimento
               </button>
 
-              <p className="text-zinc-500 text-xs text-center">
-                Os barbeiros online para home service receberão seu pedido e entrarão em contato.
+              <p className="text-zinc-500 text-xs text-center pb-2">
+                Os barbeiros online receberão seu pedido.
               </p>
             </div>
           </div>
