@@ -1068,9 +1068,9 @@ const ClientDashboard = () => {
         </div>
       )}
 
-      {/* Home Service Request Modal */}
-      {showHomeServiceModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" data-testid="home-service-modal">
+      {/* Home Service Request Modal - General Request */}
+      {showHomeRequestModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" data-testid="home-request-modal">
           <div className="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-lg overflow-hidden">
             {/* Modal Header */}
             <div className="bg-green-500 p-4">
@@ -1081,7 +1081,7 @@ const ClientDashboard = () => {
                 </div>
                 <button 
                   onClick={() => {
-                    setShowHomeServiceModal(false);
+                    setShowHomeRequestModal(false);
                     setHomeServiceAddress('');
                     setHomeServiceSelected('');
                   }}
@@ -1148,7 +1148,7 @@ const ClientDashboard = () => {
                   try {
                     const res = await axios.post(`${API}/home-service-interest?client_address=${encodeURIComponent(homeServiceAddress)}&client_latitude=${userLocation.lat}&client_longitude=${userLocation.lng}&service_name=${encodeURIComponent(homeServiceSelected)}`);
                     alert(`✅ Pedido enviado!\n\n${res.data.online_barbers} barbeiro(s) online para home service receberão sua solicitação.`);
-                    setShowHomeServiceModal(false);
+                    setShowHomeRequestModal(false);
                     setHomeServiceAddress('');
                     setHomeServiceSelected('');
                   } catch (e) {
