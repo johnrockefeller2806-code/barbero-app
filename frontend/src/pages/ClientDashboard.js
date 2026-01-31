@@ -574,7 +574,7 @@ const ClientDashboard = () => {
           <div className="flex gap-2">
             {/* Home Service Request Button */}
             <button
-              onClick={() => setShowHomeServiceModal(true)}
+              onClick={() => setShowHomeRequestModal(true)}
               className="px-4 py-3 bg-green-500 hover:bg-green-400 text-white transition-colors flex items-center gap-2 font-medium"
               data-testid="btn-request-home-service"
             >
