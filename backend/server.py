@@ -1064,6 +1064,9 @@ async def register_home_service_interest(
     if existing:
         raise HTTPException(status_code=400, detail="You already have a pending request. Wait for a barber to respond.")
     
+    # Get full user info to include photo
+    client_user = await db.users.find_one({"id": user["id"]}, {"_id": 0})
+    
     interest = HomeServiceInterest(
         client_id=user["id"],
         client_name=user["name"],
@@ -1079,6 +1082,7 @@ async def register_home_service_interest(
     
     doc = interest.model_dump()
     doc["created_at"] = doc["created_at"].isoformat()
+    doc["client_photo_url"] = client_user.get("photo_url")  # Add client photo
     await db.home_service_interests.insert_one(doc)
     
     # Count barbers online for home service
