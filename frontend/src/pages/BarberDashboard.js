@@ -1451,9 +1451,6 @@ const BarberDashboard = () => {
           <ReferralSection />
         </div>
       </div>
-      
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };
