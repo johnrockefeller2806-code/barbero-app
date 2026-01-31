@@ -674,7 +674,7 @@ const ClientDashboard = () => {
                           className="w-20 h-20 rounded-sm object-cover"
                         />
                         <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-zinc-900 ${
-                          barber.is_online ? 'bg-green-500' : 'bg-zinc-500'
+                          barber.is_online ? 'bg-green-500' : 'bg-red-500'
                         }`}></div>
                       </div>
                       <div className="flex-1">
