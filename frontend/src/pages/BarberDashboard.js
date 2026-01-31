@@ -623,8 +623,18 @@ const BarberDashboard = () => {
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                          <User className="w-5 h-5 text-white" />
+                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-green-500">
+                          {interest.client_photo_url ? (
+                            <img 
+                              src={interest.client_photo_url} 
+                              alt={interest.client_name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-green-500 flex items-center justify-center">
+                              <User className="w-6 h-6 text-white" />
+                            </div>
+                          )}
                         </div>
                         <div>
                           <p className="text-white font-medium flex items-center gap-2">
