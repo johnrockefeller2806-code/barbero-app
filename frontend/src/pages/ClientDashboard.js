@@ -1070,7 +1070,7 @@ const ClientDashboard = () => {
 
       {/* Home Service Request Modal - General Request */}
       {showHomeRequestModal && (
-        <div className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4" data-testid="home-request-modal">
+        <div className="fixed inset-0 bg-black/95 flex items-center justify-center p-4" style={{zIndex: 9999}} data-testid="home-request-modal">
           <div className="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-lg overflow-hidden max-h-[85vh] flex flex-col">
             {/* Modal Header */}
             <div className="bg-green-500 p-4 flex-shrink-0">
