@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Search, MapPin, Star, Clock, Users, LogOut, Filter, Navigation, Scissors, User, Home, Car, Banknote, CreditCard, Share2, Gift, Instagram, Radio, MapPinOff, Calendar, CalendarClock, Heart, X } from 'lucide-react';
+import { Search, MapPin, Star, Clock, Users, LogOut, Filter, Navigation, Scissors, User, Home, Car, Banknote, CreditCard, Share2, Gift, Instagram, Radio, MapPinOff, Calendar, CalendarClock, Heart, X, Camera } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import ReviewModal from '../components/ReviewModal';
 import ReferralSection from '../components/ReferralSection';
