@@ -575,18 +575,7 @@ const ClientDashboard = () => {
           <div className="flex gap-2">
             {/* Home Service Request Button */}
             <button
-              onClick={async () => {
-                const address = prompt('📍 Digite seu endereço para receber atendimento em casa:');
-                if (address) {
-                  const service = prompt('💈 Qual serviço você deseja? (ex: Corte, Barba, etc.)');
-                  try {
-                    const res = await axios.post(`${API}/home-service-interest?client_address=${encodeURIComponent(address)}&client_latitude=${userLocation.lat}&client_longitude=${userLocation.lng}&service_name=${encodeURIComponent(service || 'Corte')}`);
-                    alert(`✅ Pedido enviado!\n\n${res.data.online_barbers} barbeiro(s) online para home service receberão sua solicitação.`);
-                  } catch (e) {
-                    alert(e.response?.data?.detail || 'Erro ao enviar pedido');
-                  }
-                }
-              }}
+              onClick={() => setShowHomeServiceModal(true)}
               className="px-4 py-3 bg-green-500 hover:bg-green-400 text-white transition-colors flex items-center gap-2 font-medium"
               data-testid="btn-request-home-service"
             >
