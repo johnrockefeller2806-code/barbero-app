@@ -1,7 +1,6 @@
 # ClickBarber - Marketplace de Barbeiros (Dublin, Ireland)
 
-## Problema Original
-Marketplace de barbeiros em tempo real para Dublin. Barbeiros ficam Online/Offline, clientes visualizam no mapa. Atendimento em domicílio com taxa de deslocamento.
+## Última Atualização: 31/01/2026
 
 ## Arquitetura
 - **Frontend**: React.js + Tailwind CSS + Leaflet (mapas)
@@ -12,43 +11,48 @@ Marketplace de barbeiros em tempo real para Dublin. Barbeiros ficam Online/Offli
 
 ## Features Implementadas ✅
 
+### Header Atualizado (31/01/2026)
+- [x] Logo + Nome "ClickBarber" no header
+- [x] "CLICK" em branco, "BARBER" em dourado
+- [x] Aplicado em ambos dashboards (cliente e barbeiro)
+
+### Sincronização de Status Online/Offline (31/01/2026)
+- [x] Marcador VERDE no mapa = Barbeiro ONLINE
+- [x] Marcador VERMELHO no mapa = Barbeiro OFFLINE
+- [x] Bolinha vermelha na lista quando offline
+- [x] Atualização automática a cada 10 segundos
+
+### Valores Atualizados (31/01/2026)
+- [x] Taxa de deslocamento: €1/km (era €2/km)
+- [x] Corte: €30
+- [x] Barba: €15
+- [x] Combo: €40
+
 ### Sistema de Segurança (31/01/2026)
 - [x] Recuperação de senha por email (Resend)
-- [x] Código de 6 dígitos enviado por email
-- [x] Reset de senha com validação de código
 - [x] PIN de 6 dígitos para login rápido
-- [x] Configuração de PIN após primeiro login
 - [x] Login com PIN (estilo app de banco)
-- [x] Detecção automática se usuário tem PIN
 
 ### Sistema de Notificação Sonora (31/01/2026)
-- [x] Som de alerta quando novo cliente entra na fila
-- [x] Som de alerta para interesse em Home Service
-- [x] Botão toggle no header (Volume2/VolumeX icons)
-- [x] Preferência salva no localStorage
-- [x] Notificação push do navegador
+- [x] Som de alerta para novos clientes
+- [x] Botão toggle no header
+- [x] Compatível com iOS/Safari
 
-### Features Anteriores
-- Landing Page em inglês
+### Features Base
+- Landing Page
 - Sistema de Autenticação JWT
 - Dashboard Cliente/Barbeiro
 - Mapa em tempo real com Leaflet
 - Rastreamento GPS bidirecional
 - Sistema de agendamento
 - Gorjetas (Tips)
-- Home Service com interesse
+- Home Service
 - Upload de foto de perfil
 - Integração Stripe
 - Sistema de referral
 
-## Configuração Resend
-- API Key configurada no backend
-- Emails enviados via onboarding@resend.dev (modo teste)
-- Para produção: verificar domínio próprio no Resend
-
 ## Próximas Features (Backlog)
-- [ ] Verificar domínio no Resend para emails em produção
+- [ ] Verificar domínio no Resend para produção
 - [ ] Notificações push nativas (PWA)
 - [ ] WhatsApp direto no perfil
-- [ ] Compartilhar no Instagram Stories
 - [ ] App mobile nativo
