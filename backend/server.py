@@ -132,7 +132,7 @@ class User(BaseModel):
     total_reviews: int = 0
     # Home service fields
     offers_home_service: bool = False
-    home_service_fee_per_km: float = 2.0
+    home_service_fee_per_km: float = 1.0  # €1 per km
     # Referral system
     referral_code: Optional[str] = None  # User's own code to share
     referred_by: Optional[str] = None  # Who referred this user
