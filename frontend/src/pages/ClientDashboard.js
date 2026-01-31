@@ -40,7 +40,7 @@ const userIcon = createIcon('#F59E0B', 28);  // Amarelo para usuário
 
 const ClientDashboard = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, setUser } = useAuth();
   const [barbers, setBarbers] = useState([]);
   const [filteredBarbers, setFilteredBarbers] = useState([]);
   const [search, setSearch] = useState('');
