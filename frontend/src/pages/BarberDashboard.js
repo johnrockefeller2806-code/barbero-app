@@ -140,6 +140,20 @@ const BarberDashboard = () => {
   
   // Home Service Interests state
   const [homeServiceInterests, setHomeServiceInterests] = useState({ interests: [], unread_count: 0, total_count: 0 });
+  
+  // Sound notification state
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const saved = localStorage.getItem('barberSoundEnabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const previousQueueRef = useRef([]);
+  const previousInterestsRef = useRef([]);
+  const { playNotificationSound } = useNotificationSound();
+  
+  // Save sound preference
+  useEffect(() => {
+    localStorage.setItem('barberSoundEnabled', JSON.stringify(soundEnabled));
+  }, [soundEnabled]);
 
   useEffect(() => {
     fetchQueue();
@@ -154,6 +168,55 @@ const BarberDashboard = () => {
     }, showMap ? 3000 : 10000);
     return () => clearInterval(interval);
   }, [showMap]);
+  
+  // Check for new clients and play sound
+  useEffect(() => {
+    if (!soundEnabled) return;
+    
+    // Check for new queue entries
+    const previousIds = previousQueueRef.current.map(q => q.id);
+    const newClients = queue.filter(q => !previousIds.includes(q.id));
+    
+    if (newClients.length > 0 && previousQueueRef.current.length > 0) {
+      playNotificationSound();
+      // Show browser notification if permitted
+      if (Notification.permission === 'granted') {
+        new Notification('🔔 Novo cliente!', {
+          body: `${newClients[0].client_name} entrou na fila`,
+          icon: LOGO_URL
+        });
+      }
+    }
+    
+    previousQueueRef.current = queue;
+  }, [queue, soundEnabled, playNotificationSound]);
+  
+  // Check for new home service interests
+  useEffect(() => {
+    if (!soundEnabled) return;
+    
+    const previousIds = previousInterestsRef.current.map(i => i.id);
+    const newInterests = (homeServiceInterests.interests || []).filter(i => !previousIds.includes(i.id));
+    
+    if (newInterests.length > 0 && previousInterestsRef.current.length > 0) {
+      playNotificationSound();
+      if (Notification.permission === 'granted') {
+        new Notification('🏠 Interesse em Home Service!', {
+          body: `${newInterests[0].client_name} quer atendimento em casa`,
+          icon: LOGO_URL
+        });
+      }
+    }
+    
+    previousInterestsRef.current = homeServiceInterests.interests || [];
+  }, [homeServiceInterests, soundEnabled, playNotificationSound]);
+  
+  // Request notification permission
+  useEffect(() => {
+    if (Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
 
   const fetchHomeServiceInterests = async () => {
     try {
