@@ -53,6 +53,7 @@ const ClientDashboard = () => {
   
   // Home service state
   const [showHomeServiceModal, setShowHomeServiceModal] = useState(false);
+  const [showHomeRequestModal, setShowHomeRequestModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [homeServiceAddress, setHomeServiceAddress] = useState('');
   const [isHomeService, setIsHomeService] = useState(false);
