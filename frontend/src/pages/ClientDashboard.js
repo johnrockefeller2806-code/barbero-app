@@ -338,6 +338,7 @@ const ClientDashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src={LOGO_URL} alt="ClickBarber" className="h-12 w-auto object-contain" />
+              <span className="font-heading text-2xl text-white uppercase tracking-wider">Click<span className="text-amber-500">Barber</span></span>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-zinc-400 hidden sm:block">Olá, {user?.name}</span>
