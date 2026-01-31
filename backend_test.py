@@ -78,105 +78,153 @@ class BarberXAPITester:
         """Seed database with test data"""
         return self.run_test("Seed Database", "POST", "/api/seed", 200)
 
-    def test_client_login(self):
-        """Test client login"""
-        success, response = self.run_test(
-            "Client Login",
-            "POST",
-            "/api/auth/login",
-            200,
-            data={"email": "john@example.com", "password": "client123"}
-        )
-        if success and 'access_token' in response:
-            self.client_token = response['access_token']
-            return True
-        return False
-
     def test_barber_login(self):
-        """Test barber login"""
+        """Test barber login with password"""
         success, response = self.run_test(
-            "Barber Login",
+            "Barber Login (Password)",
             "POST",
             "/api/auth/login",
             200,
-            data={"email": "james@fadedublin.ie", "password": "barber123"}
+            data={"email": self.test_email, "password": self.test_password}
         )
-        if success and 'access_token' in response:
-            self.barber_token = response['access_token']
-            return True
-        return False
+        if success and 'token' in response:
+            self.barber_token = response['token']
+            return True, response
+        return False, {}
 
-    def test_get_available_barbers(self):
-        """Test getting available barbers"""
-        return self.run_test("Get Available Barbers", "GET", "/api/barbers/available", 200)
+    def test_check_pin_status(self):
+        """Test checking if user has PIN set"""
+        return self.run_test(
+            "Check PIN Status",
+            "GET",
+            f"/api/auth/check-pin?email={self.test_email}",
+            200
+        )
 
-    def test_get_all_barbers(self):
-        """Test getting all barbers"""
-        return self.run_test("Get All Barbers", "GET", "/api/barbers", 200)
-
-    def test_client_auth_endpoints(self):
-        """Test client authenticated endpoints"""
-        if not self.client_token:
-            self.log_result("Client Auth Test", False, "No client token available")
-            return False
-
-        headers = {'Authorization': f'Bearer {self.client_token}'}
-        
-        # Test get profile
-        success1, _ = self.run_test("Get Client Profile", "GET", "/api/auth/me", 200, headers=headers)
-        
-        # Test get bookings
-        success2, _ = self.run_test("Get Client Bookings", "GET", "/api/bookings/my", 200, headers=headers)
-        
-        return success1 and success2
-
-    def test_barber_auth_endpoints(self):
-        """Test barber authenticated endpoints"""
+    def test_set_pin(self):
+        """Test setting PIN for user"""
         if not self.barber_token:
-            self.log_result("Barber Auth Test", False, "No barber token available")
+            self.log_result("Set PIN", False, "No barber token available")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.barber_token}'}
+        return self.run_test(
+            "Set PIN",
+            "POST",
+            "/api/auth/set-pin",
+            200,
+            data={"pin": self.test_pin},
+            headers=headers
+        )
+
+    def test_pin_login(self):
+        """Test login with PIN"""
+        success, response = self.run_test(
+            "PIN Login",
+            "POST",
+            "/api/auth/login-pin",
+            200,
+            data={"email": self.test_email, "pin": self.test_pin}
+        )
+        if success and 'token' in response:
+            return True, response
+        return False, {}
+
+    def test_forgot_password(self):
+        """Test forgot password flow"""
+        success, response = self.run_test(
+            "Forgot Password",
+            "POST",
+            "/api/auth/forgot-password",
+            200,
+            data={"email": self.test_email}
+        )
+        
+        # Extract test code if available
+        test_code = None
+        if success and response.get('test_code'):
+            test_code = response['test_code']
+            print(f"   📧 Test code received: {test_code}")
+        
+        return success, test_code
+
+    def test_reset_password(self, reset_code):
+        """Test password reset with code"""
+        if not reset_code:
+            self.log_result("Reset Password", False, "No reset code available")
+            return False
+            
+        new_password = "newpass456"
+        success, response = self.run_test(
+            "Reset Password",
+            "POST",
+            "/api/auth/reset-password",
+            200,
+            data={
+                "email": self.test_email,
+                "code": reset_code,
+                "new_password": new_password
+            }
+        )
+        
+        # Test login with new password
+        if success:
+            login_success, _ = self.run_test(
+                "Login with New Password",
+                "POST",
+                "/api/auth/login",
+                200,
+                data={"email": self.test_email, "password": new_password}
+            )
+            
+            # Reset password back to original
+            if login_success:
+                self.run_test(
+                    "Reset Password Back",
+                    "POST",
+                    "/api/auth/reset-password",
+                    200,
+                    data={
+                        "email": self.test_email,
+                        "code": reset_code,
+                        "new_password": self.test_password
+                    }
+                )
+        
+        return success
+
+    def test_barber_dashboard_features(self):
+        """Test barber dashboard and sound notification features"""
+        if not self.barber_token:
+            self.log_result("Barber Dashboard Features", False, "No barber token available")
             return False
 
         headers = {'Authorization': f'Bearer {self.barber_token}'}
         
-        # Test get profile
+        # Test get barber profile/dashboard
         success1, _ = self.run_test("Get Barber Profile", "GET", "/api/auth/me", 200, headers=headers)
         
-        # Test get dashboard
-        success2, _ = self.run_test("Get Barber Dashboard", "GET", "/api/barber/dashboard", 200, headers=headers)
-        
-        # Test availability toggle
-        success3, _ = self.run_test(
-            "Toggle Availability", 
-            "POST", 
-            "/api/barbers/availability", 
+        # Test update barber status (online/offline)
+        success2, _ = self.run_test(
+            "Update Barber Status", 
+            "PUT", 
+            "/api/barbers/status", 
             200,
-            data={"available": True},
+            data={"is_online": True},
+            headers=headers
+        )
+        
+        # Test home service status
+        success3, _ = self.run_test(
+            "Update Home Service Status", 
+            "PUT", 
+            "/api/barbers/home-service-status", 
+            200,
+            data={"is_home_service_online": True},
             headers=headers
         )
         
         return success1 and success2 and success3
-
-    def test_barber_services(self):
-        """Test barber services endpoints"""
-        # First get a barber ID from all barbers
-        success, response = self.run_test("Get Barbers for Services", "GET", "/api/barbers", 200)
-        if not success or not response:
-            return False
-            
-        if not response or len(response) == 0:
-            self.log_result("Test Barber Services", False, "No barbers found")
-            return False
-            
-        barber_id = response[0]['id']
-        
-        # Test get barber services
-        success, _ = self.run_test(
-            "Get Barber Services", 
-            "GET", 
-            f"/api/barbers/{barber_id}/services", 
-            200
-        )
-        return success
 
     def run_all_tests(self):
         """Run all API tests"""
