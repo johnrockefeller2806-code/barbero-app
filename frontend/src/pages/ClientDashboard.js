@@ -1287,9 +1287,6 @@ const ClientDashboard = () => {
           onTipGiven={handleTipGiven}
         />
       )}
-      
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };
