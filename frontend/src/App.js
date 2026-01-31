@@ -97,6 +97,7 @@ function App() {
       <LanguageProvider>
         <AuthProvider>
           <AppRoutes />
+          <Footer />
         </AuthProvider>
       </LanguageProvider>
     </BrowserRouter>
