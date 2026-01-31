@@ -389,7 +389,39 @@ const ClientDashboard = () => {
               <span className="font-heading text-2xl text-white uppercase tracking-wider">Click<span className="text-amber-500">Barber</span></span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-zinc-400 hidden sm:block">Olá, {user?.name}</span>
+              {/* Profile Photo */}
+              <div className="relative group">
+                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-zinc-700 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                  {user?.photo_url ? (
+                    <img src={user.photo_url} alt={user?.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                      <User className="w-5 h-5 text-zinc-500" />
+                    </div>
+                  )}
+                  {uploadingPhoto && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                    </div>
+                  )}
+                </div>
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center"
+                  title="Alterar foto"
+                >
+                  <Camera className="w-3 h-3 text-black" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                  data-testid="input-photo-upload"
+                />
+              </div>
+              <span className="text-zinc-400 hidden sm:block">{user?.name}</span>
               <button onClick={handleLogout} className="text-zinc-500 hover:text-white transition-colors" data-testid="btn-logout">
                 <LogOut className="w-5 h-5" />
               </button>
