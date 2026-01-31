@@ -11,48 +11,56 @@
 
 ## Features Implementadas ✅
 
-### Header Atualizado (31/01/2026)
-- [x] Logo + Nome "ClickBarber" no header
-- [x] "CLICK" em branco, "BARBER" em dourado
-- [x] Aplicado em ambos dashboards (cliente e barbeiro)
+### Header Completo (31/01/2026)
+- [x] Logo + Nome "ClickBarber" 
+- [x] Botão Compartilhar (verde) - WhatsApp/Share nativo
+- [x] Botão Refresh - Recarrega a página
+- [x] Foto do perfil com câmera para upload
+- [x] Botão de som (barbeiro) - notificações sonoras
+- [x] Logout
 
-### Sincronização de Status Online/Offline (31/01/2026)
-- [x] Marcador VERDE no mapa = Barbeiro ONLINE
-- [x] Marcador VERMELHO no mapa = Barbeiro OFFLINE
-- [x] Bolinha vermelha na lista quando offline
-- [x] Atualização automática a cada 10 segundos
+### Foto do Cliente (31/01/2026)
+- [x] Cliente pode adicionar foto no perfil
+- [x] Foto aparece no header do cliente
+- [x] Barbeiro vê foto do cliente nos pedidos Home Service
 
-### Valores Atualizados (31/01/2026)
-- [x] Taxa de deslocamento: €1/km (era €2/km)
-- [x] Corte: €30
-- [x] Barba: €15
-- [x] Combo: €40
+### Modal Home Service Melhorado (31/01/2026)
+- [x] Seleção de serviço com botões (não precisa digitar)
+- [x] Opções: Barba, Corte, Corte e Barba, Combo
+- [x] Campo de endereço para copiar/colar
+- [x] Preços visíveis em cada opção
 
 ### Sistema de Segurança (31/01/2026)
 - [x] Recuperação de senha por email (Resend)
 - [x] PIN de 6 dígitos para login rápido
 - [x] Login com PIN (estilo app de banco)
 
-### Sistema de Notificação Sonora (31/01/2026)
-- [x] Som de alerta para novos clientes
-- [x] Botão toggle no header
-- [x] Compatível com iOS/Safari
+### Sincronização Mapa (31/01/2026)
+- [x] Marcador VERDE = Barbeiro ONLINE
+- [x] Marcador VERMELHO = Barbeiro OFFLINE
+- [x] Atualização automática a cada 10 segundos
+
+### Valores Atualizados
+- Taxa de deslocamento: €1/km
+- Corte: €30, Barba: €15, Combo: €40
 
 ### Features Base
 - Landing Page
-- Sistema de Autenticação JWT
+- Autenticação JWT
 - Dashboard Cliente/Barbeiro
-- Mapa em tempo real com Leaflet
-- Rastreamento GPS bidirecional
-- Sistema de agendamento
-- Gorjetas (Tips)
+- Mapa em tempo real
+- Rastreamento GPS
+- Agendamento
+- Gorjetas
 - Home Service
-- Upload de foto de perfil
-- Integração Stripe
-- Sistema de referral
+- Stripe
+- Referral
+
+## Credenciais de Teste
+- Barbeiro: test@barber.com / 123456
+- Cliente: client@test.com / 123456
 
 ## Próximas Features (Backlog)
-- [ ] Verificar domínio no Resend para produção
 - [ ] Notificações push nativas (PWA)
 - [ ] WhatsApp direto no perfil
 - [ ] App mobile nativo
