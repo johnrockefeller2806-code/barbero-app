@@ -457,6 +457,25 @@ const BarberDashboard = () => {
               <span className="text-zinc-500 text-sm hidden sm:block">/ Painel do Barbeiro</span>
             </div>
             <div className="flex items-center gap-4">
+              {/* Sound Toggle Button */}
+              <button 
+                onClick={() => {
+                  setSoundEnabled(!soundEnabled);
+                  if (!soundEnabled) {
+                    // Play test sound when enabling
+                    playNotificationSound();
+                  }
+                }}
+                className={`p-2 rounded-lg transition-all ${
+                  soundEnabled 
+                    ? 'bg-amber-500/20 text-amber-500 hover:bg-amber-500/30' 
+                    : 'bg-zinc-800 text-zinc-500 hover:bg-zinc-700'
+                }`}
+                title={soundEnabled ? 'Som ativado - Clique para desativar' : 'Som desativado - Clique para ativar'}
+                data-testid="btn-sound-toggle"
+              >
+                {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+              </button>
               <span className="text-zinc-400 hidden sm:block">{user?.name}</span>
               <button onClick={handleLogout} className="text-zinc-500 hover:text-white transition-colors" data-testid="btn-logout">
                 <LogOut className="w-5 h-5" />
