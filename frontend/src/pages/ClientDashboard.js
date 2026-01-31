@@ -721,7 +721,7 @@ const ClientDashboard = () => {
                       className="w-24 h-24 rounded-full object-cover mx-auto"
                     />
                     <div className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-4 border-zinc-900 ${
-                      selectedBarber.is_online ? 'bg-green-500' : 'bg-zinc-500'
+                      selectedBarber.is_online ? 'bg-green-500' : 'bg-red-500'
                     }`}></div>
                   </div>
                   <h3 className="font-heading text-xl text-white uppercase mt-4">{selectedBarber.name}</h3>
