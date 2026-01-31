@@ -228,28 +228,45 @@ class BarberXAPITester:
 
     def run_all_tests(self):
         """Run all API tests"""
-        print("🚀 Starting QuickCut Backend API Tests...")
+        print("🚀 Starting BarberX Backend API Tests...")
         print("=" * 50)
 
         # Basic tests
         self.test_root_endpoint()
         self.test_seed_data()
         
-        # Authentication tests
-        client_login_success = self.test_client_login()
-        barber_login_success = self.test_barber_login()
+        # Authentication flow tests
+        print("\n🔐 Testing Authentication Features...")
         
-        # Public endpoints
-        self.test_get_available_barbers()
-        self.test_get_all_barbers()
-        self.test_barber_services()
+        # 1. Test initial login with password
+        login_success, login_response = self.test_barber_login()
         
-        # Authenticated endpoints
-        if client_login_success:
-            self.test_client_auth_endpoints()
+        # 2. Check PIN status (should be false initially)
+        pin_status_success, pin_status = self.test_check_pin_status()
         
-        if barber_login_success:
-            self.test_barber_auth_endpoints()
+        # 3. Set PIN after login
+        if login_success:
+            set_pin_success = self.test_set_pin()
+            
+            # 4. Check PIN status again (should be true now)
+            if set_pin_success:
+                self.test_check_pin_status()
+                
+                # 5. Test PIN login
+                pin_login_success, _ = self.test_pin_login()
+        
+        # 6. Test forgot password flow
+        print("\n📧 Testing Password Recovery...")
+        forgot_success, reset_code = self.test_forgot_password()
+        
+        # 7. Test password reset
+        if forgot_success and reset_code:
+            self.test_reset_password(reset_code)
+        
+        # 8. Test barber dashboard features
+        print("\n🏪 Testing Barber Dashboard Features...")
+        if login_success:
+            self.test_barber_dashboard_features()
 
         # Print results
         print("\n" + "=" * 50)
@@ -263,7 +280,7 @@ class BarberXAPITester:
             return 1
 
 def main():
-    tester = QuickCutAPITester()
+    tester = BarberXAPITester()
     return tester.run_all_tests()
 
 if __name__ == "__main__":
