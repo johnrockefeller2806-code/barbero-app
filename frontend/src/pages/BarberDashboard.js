@@ -179,8 +179,8 @@ const BarberDashboard = () => {
     
     if (newClients.length > 0 && previousQueueRef.current.length > 0) {
       playNotificationSound();
-      // Show browser notification if permitted
-      if (Notification.permission === 'granted') {
+      // Show browser notification if permitted (check if API exists first)
+      if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         new Notification('🔔 Novo cliente!', {
           body: `${newClients[0].client_name} entrou na fila`,
           icon: LOGO_URL
@@ -200,7 +200,7 @@ const BarberDashboard = () => {
     
     if (newInterests.length > 0 && previousInterestsRef.current.length > 0) {
       playNotificationSound();
-      if (Notification.permission === 'granted') {
+      if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         new Notification('🏠 Interesse em Home Service!', {
           body: `${newInterests[0].client_name} quer atendimento em casa`,
           icon: LOGO_URL
@@ -211,9 +211,9 @@ const BarberDashboard = () => {
     previousInterestsRef.current = homeServiceInterests.interests || [];
   }, [homeServiceInterests, soundEnabled, playNotificationSound]);
   
-  // Request notification permission
+  // Request notification permission (only if API exists)
   useEffect(() => {
-    if (Notification.permission === 'default') {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
       Notification.requestPermission();
     }
   }, []);
