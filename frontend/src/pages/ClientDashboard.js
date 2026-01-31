@@ -61,9 +61,7 @@ const ClientDashboard = () => {
   const [isTracking, setIsTracking] = useState(false);
   const [trackingStatus, setTrackingStatus] = useState('idle'); // idle, tracking, arrived
   
-  // Home Service Request Modal
-  const [showHomeServiceModal, setShowHomeServiceModal] = useState(false);
-  const [homeServiceAddress, setHomeServiceAddress] = useState('');
+  // Home Service Request Modal - service selection
   const [homeServiceSelected, setHomeServiceSelected] = useState('');
   
   // Scheduling state
