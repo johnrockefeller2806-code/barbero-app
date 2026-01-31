@@ -1070,10 +1070,10 @@ const ClientDashboard = () => {
 
       {/* Home Service Request Modal - General Request */}
       {showHomeRequestModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" data-testid="home-request-modal">
-          <div className="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-lg overflow-hidden max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4" data-testid="home-request-modal">
+          <div className="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-lg overflow-hidden max-h-[85vh] flex flex-col">
             {/* Modal Header */}
-            <div className="bg-green-500 p-4 sticky top-0">
+            <div className="bg-green-500 p-4 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Home className="w-6 h-6 text-white" />
@@ -1092,7 +1092,7 @@ const ClientDashboard = () => {
               </div>
             </div>
 
-            <div className="p-5 space-y-5">
+            <div className="p-5 space-y-5 overflow-y-auto flex-1">
               {/* Address Input */}
               <div>
                 <label className="text-zinc-400 text-sm mb-2 block">📍 Seu endereço</label>
