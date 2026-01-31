@@ -1,12 +1,79 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Power, Users, Clock, Star, DollarSign, LogOut, Scissors, CheckCircle, XCircle, User, Home, MapPin, Car, Banknote, CreditCard, Crown, History, Gift, Instagram, Edit2, Save, Navigation, Map, MapPinOff, CalendarClock, Heart, Camera, Upload, Image, Bell, Phone, X } from 'lucide-react';
+import { Power, Users, Clock, Star, DollarSign, LogOut, Scissors, CheckCircle, XCircle, User, Home, MapPin, Car, Banknote, CreditCard, Crown, History, Gift, Instagram, Edit2, Save, Navigation, Map, MapPinOff, CalendarClock, Heart, Camera, Upload, Image, Bell, Phone, X, Volume2, VolumeX } from 'lucide-react';
 import ReferralSection from '../components/ReferralSection';
+
+// Sound notification system
+const useNotificationSound = () => {
+  const audioContextRef = useRef(null);
+  
+  const playNotificationSound = useCallback(() => {
+    try {
+      // Create audio context on demand (required by browsers)
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      
+      const ctx = audioContextRef.current;
+      
+      // Resume audio context if suspended
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+      
+      // Create a pleasant notification sound
+      const now = ctx.currentTime;
+      
+      // First tone - higher pitch
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.frequency.setValueAtTime(880, now); // A5
+      osc1.type = 'sine';
+      gain1.gain.setValueAtTime(0.3, now);
+      gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      osc1.start(now);
+      osc1.stop(now + 0.3);
+      
+      // Second tone - medium pitch
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.frequency.setValueAtTime(1174.66, now + 0.15); // D6
+      osc2.type = 'sine';
+      gain2.gain.setValueAtTime(0, now);
+      gain2.gain.setValueAtTime(0.3, now + 0.15);
+      gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+      osc2.start(now + 0.15);
+      osc2.stop(now + 0.45);
+      
+      // Third tone - highest pitch (completion)
+      const osc3 = ctx.createOscillator();
+      const gain3 = ctx.createGain();
+      osc3.connect(gain3);
+      gain3.connect(ctx.destination);
+      osc3.frequency.setValueAtTime(1318.51, now + 0.3); // E6
+      osc3.type = 'sine';
+      gain3.gain.setValueAtTime(0, now);
+      gain3.gain.setValueAtTime(0.3, now + 0.3);
+      gain3.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+      osc3.start(now + 0.3);
+      osc3.stop(now + 0.6);
+      
+    } catch (error) {
+      console.error('Error playing notification sound:', error);
+    }
+  }, []);
+  
+  return { playNotificationSound };
+};
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const LOGO_URL = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/7tsbrqqb_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg";
