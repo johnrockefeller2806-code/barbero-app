@@ -179,19 +179,22 @@ class BarberXAPITester:
                 data={"email": self.test_email, "password": new_password}
             )
             
-            # Reset password back to original
+            # Reset password back to original (get new code first)
             if login_success:
-                self.run_test(
-                    "Reset Password Back",
-                    "POST",
-                    "/api/auth/reset-password",
-                    200,
-                    data={
-                        "email": self.test_email,
-                        "code": reset_code,
-                        "new_password": self.test_password
-                    }
-                )
+                # Get new reset code
+                forgot_success, new_reset_code = self.test_forgot_password()
+                if forgot_success and new_reset_code:
+                    self.run_test(
+                        "Reset Password Back",
+                        "POST",
+                        "/api/auth/reset-password",
+                        200,
+                        data={
+                            "email": self.test_email,
+                            "code": new_reset_code,
+                            "new_password": self.test_password
+                        }
+                    )
         
         return success
 
