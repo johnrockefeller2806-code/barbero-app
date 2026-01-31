@@ -1447,10 +1447,13 @@ const BarberDashboard = () => {
         </div>
 
         {/* Referral Section */}
-        <div className="mt-6 pb-24">
+        <div className="mt-6 pb-16">
           <ReferralSection />
         </div>
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
