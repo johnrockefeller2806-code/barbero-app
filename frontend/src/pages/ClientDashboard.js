@@ -93,6 +93,14 @@ const ClientDashboard = () => {
     fetchBarbers();
     fetchMyQueue();
     fetchCompletedServices();
+    
+    // Atualizar lista de barbeiros a cada 10 segundos para sincronizar status online/offline
+    const interval = setInterval(() => {
+      fetchBarbers();
+      fetchMyQueue();
+    }, 10000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   // Live location tracking for queue
