@@ -1,15 +1,15 @@
 {
-  "name": "STUFF Intercâmbio",
-  "short_name": "STUFF",
-  "description": "Plataforma completa para brasileiros que querem estudar na Irlanda. Escolas, guias, serviços e comunidade.",
+  "name": "ClickBarber",
+  "short_name": "ClickBarber",
+  "description": "Encontre barbeiros em Dublin. Agende cortes na barbearia ou em casa!",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#f97316",
+  "background_color": "#09090B",
+  "theme_color": "#F59E0B",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "pt-BR",
-  "categories": ["education", "travel", "lifestyle"],
+  "categories": ["beauty", "lifestyle", "business"],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -66,36 +66,29 @@
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Tela inicial do STUFF Intercâmbio"
+      "label": "Mapa de barbeiros em Dublin"
     },
     {
       "src": "/screenshots/screenshot2.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Escolas de inglês em Dublin"
+      "label": "Lista de barbeiros disponíveis"
     }
   ],
   "shortcuts": [
     {
-      "name": "Escolas",
-      "short_name": "Escolas",
-      "description": "Ver escolas de inglês",
-      "url": "/schools",
+      "name": "Encontrar Barbeiro",
+      "short_name": "Barbeiros",
+      "description": "Ver barbeiros próximos",
+      "url": "/client",
       "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Guia PPS",
-      "short_name": "PPS",
-      "description": "Guia do PPS Number",
-      "url": "/guia/pps",
-      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
-    },
-    {
-      "name": "Chat",
-      "short_name": "Chat",
-      "description": "Chat da comunidade",
-      "url": "/chat",
+      "name": "Home Service",
+      "short_name": "Home",
+      "description": "Atendimento em casa",
+      "url": "/client",
       "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ],
