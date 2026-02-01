@@ -8,6 +8,7 @@ import ClientDashboard from './pages/ClientDashboard';
 import BarberDashboard from './pages/BarberDashboard';
 import SubscriptionPage from './pages/SubscriptionPage';
 import ClientHistoryPage from './pages/ClientHistoryPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import Footer from './components/Footer';
 import './App.css';
 
