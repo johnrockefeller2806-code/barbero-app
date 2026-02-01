@@ -87,6 +87,7 @@ function AppRoutes() {
           <ClientHistoryPage />
         </ProtectedRoute>
       } />
+      <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
