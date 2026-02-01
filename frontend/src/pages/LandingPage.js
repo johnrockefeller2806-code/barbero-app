@@ -184,7 +184,12 @@ const LandingPage = () => {
             <div className="flex items-center gap-2">
               <img src={LOGO_URL} alt="ClickBarber" className="h-10 w-auto object-contain" />
             </div>
-            <p className="text-zinc-500 text-sm">© 2025 ClickBarber. {t('footer_rights')}</p>
+            <div className="flex items-center gap-6">
+              <Link to="/privacy" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">
+                Política de Privacidade
+              </Link>
+              <p className="text-zinc-500 text-sm">© 2026 ClickBarber. {t('footer_rights')}</p>
+            </div>
           </div>
         </div>
       </footer>
