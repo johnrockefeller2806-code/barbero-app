@@ -520,8 +520,13 @@ const ClientDashboard = () => {
                 />
               </div>
               <span className="text-zinc-400 hidden sm:block">{user?.name}</span>
-              <button onClick={handleLogout} className="text-zinc-500 hover:text-white transition-colors" data-testid="btn-logout">
-                <LogOut className="w-5 h-5" />
+              <button 
+                onClick={handleLogout} 
+                className="flex items-center gap-2 bg-red-500/20 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-3 py-2 rounded-sm transition-colors" 
+                data-testid="btn-logout"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:block text-sm font-medium">Sair</span>
               </button>
             </div>
           </div>
