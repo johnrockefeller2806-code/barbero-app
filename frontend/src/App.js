@@ -56,6 +56,14 @@ const PublicRoute = ({ children }) => {
 };
 
 function AppRoutes() {
+  const location = useLocation();
+  
+  // Check URL fragment for session_id (Google OAuth callback)
+  // REMINDER: This must be checked synchronously during render to prevent race conditions
+  if (location.hash?.includes('session_id=')) {
+    return <AuthCallback />;
+  }
+
   return (
     <Routes>
       <Route path="/" element={
@@ -68,6 +76,7 @@ function AppRoutes() {
           <AuthPage />
         </PublicRoute>
       } />
+      <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/client" element={
         <ProtectedRoute allowedType="client">
           <ClientDashboard />
