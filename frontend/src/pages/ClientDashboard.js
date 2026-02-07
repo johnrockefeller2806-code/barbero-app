@@ -58,7 +58,7 @@ const ClientDashboard = () => {
   const [filteredBarbers, setFilteredBarbers] = useState([]);
   const [search, setSearch] = useState('');
   const [onlineOnly, setOnlineOnly] = useState(false);
-  const [userLocation, setUserLocation] = useState({ lat: 53.3498, lng: -6.2603 });
+  const [userLocation, setUserLocation] = useState({ lat: DUBLIN_METRO.center.lat, lng: DUBLIN_METRO.center.lng });
   const [selectedBarber, setSelectedBarber] = useState(null);
   const [myQueue, setMyQueue] = useState([]);
   const [view, setView] = useState('map'); // 'map' or 'list'
