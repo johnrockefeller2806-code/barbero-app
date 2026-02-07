@@ -850,27 +850,176 @@ const BarberDashboard = () => {
                 Sua Localização
               </h2>
               <p className="text-zinc-500 text-sm">
-                {isOnline ? (
-                  <span className="text-green-400 flex items-center gap-1">
-                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    Visível para clientes no mapa
+                {user?.address ? (
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    {user.address}
                   </span>
                 ) : (
-                  'Você está offline - não aparece no mapa'
+                  <span className="text-amber-400">⚠️ Localização não configurada</span>
                 )}
               </p>
+              {isOnline && user?.latitude && (
+                <p className="text-green-400 text-xs mt-1 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  Visível para clientes no mapa
+                </p>
+              )}
             </div>
-            <button
-              onClick={() => setShowMap(!showMap)}
-              className={`px-4 py-2 border transition-colors flex items-center gap-2 ${
-                showMap ? 'bg-amber-500/20 border-amber-500 text-amber-400' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white'
-              }`}
-              data-testid="btn-toggle-map"
-            >
-              <Navigation className="w-4 h-4" />
-              {showMap ? 'Ocultar Mapa' : 'Ver Mapa'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setLocationForm({
+                    address: user?.address || '',
+                    latitude: user?.latitude || '',
+                    longitude: user?.longitude || ''
+                  });
+                  setEditingLocation(true);
+                }}
+                className="px-4 py-2 bg-blue-500/20 border border-blue-500 text-blue-400 hover:bg-blue-500/30 transition-colors flex items-center gap-2"
+                data-testid="btn-edit-location"
+              >
+                <Edit2 className="w-4 h-4" />
+                Editar
+              </button>
+              <button
+                onClick={() => setShowMap(!showMap)}
+                className={`px-4 py-2 border transition-colors flex items-center gap-2 ${
+                  showMap ? 'bg-amber-500/20 border-amber-500 text-amber-400' : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white'
+                }`}
+                data-testid="btn-toggle-map"
+              >
+                <Navigation className="w-4 h-4" />
+                {showMap ? 'Ocultar Mapa' : 'Ver Mapa'}
+              </button>
+            </div>
           </div>
+
+          {/* Location Edit Modal */}
+          {editingLocation && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" data-testid="location-edit-modal">
+              <div className="bg-zinc-900 border border-zinc-700 rounded-sm w-full max-w-lg">
+                <div className="p-4 border-b border-zinc-700 flex items-center justify-between">
+                  <h3 className="font-heading text-lg text-white uppercase flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-amber-500" />
+                    Editar Localização
+                  </h3>
+                  <button
+                    onClick={() => setEditingLocation(false)}
+                    className="text-zinc-400 hover:text-white"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                <div className="p-4 space-y-4">
+                  {/* Address */}
+                  <div>
+                    <label className="block text-sm text-zinc-400 mb-1">Endereço Completo</label>
+                    <input
+                      type="text"
+                      value={locationForm.address}
+                      onChange={(e) => setLocationForm(prev => ({ ...prev, address: e.target.value }))}
+                      placeholder="Ex: Grafton Street 45, Dublin 2"
+                      className="w-full bg-zinc-800 border border-zinc-700 text-white px-4 py-3 focus:outline-none focus:border-amber-500"
+                      data-testid="input-address"
+                    />
+                  </div>
+
+                  {/* Get Current Location Button */}
+                  <button
+                    onClick={handleGetCurrentLocation}
+                    disabled={gettingCurrentLocation}
+                    className="w-full bg-green-500/20 border border-green-500 text-green-400 px-4 py-3 flex items-center justify-center gap-2 hover:bg-green-500/30 transition-colors disabled:opacity-50"
+                    data-testid="btn-get-location"
+                  >
+                    {gettingCurrentLocation ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin"></div>
+                        Obtendo localização...
+                      </>
+                    ) : (
+                      <>
+                        <Navigation className="w-4 h-4" />
+                        Usar Minha Localização Atual (GPS)
+                      </>
+                    )}
+                  </button>
+
+                  {/* Coordinates */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-zinc-400 mb-1">Latitude</label>
+                      <input
+                        type="number"
+                        step="0.000001"
+                        value={locationForm.latitude}
+                        onChange={(e) => setLocationForm(prev => ({ ...prev, latitude: e.target.value }))}
+                        placeholder="53.3498"
+                        className="w-full bg-zinc-800 border border-zinc-700 text-white px-4 py-3 focus:outline-none focus:border-amber-500"
+                        data-testid="input-latitude"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-zinc-400 mb-1">Longitude</label>
+                      <input
+                        type="number"
+                        step="0.000001"
+                        value={locationForm.longitude}
+                        onChange={(e) => setLocationForm(prev => ({ ...prev, longitude: e.target.value }))}
+                        placeholder="-6.2603"
+                        className="w-full bg-zinc-800 border border-zinc-700 text-white px-4 py-3 focus:outline-none focus:border-amber-500"
+                        data-testid="input-longitude"
+                      />
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-zinc-500">
+                    💡 Dica: Clique em "Usar Minha Localização" para preencher as coordenadas automaticamente, 
+                    ou busque seu endereço no Google Maps e copie as coordenadas.
+                  </p>
+
+                  {/* Dublin Metro Info */}
+                  <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-sm">
+                    <p className="text-amber-400 text-sm flex items-center gap-2">
+                      <Map className="w-4 h-4" />
+                      Área de cobertura: Região Metropolitana de Dublin
+                    </p>
+                    <p className="text-zinc-500 text-xs mt-1">
+                      Dublin, Swords, Lucan, Bray, Greystones, Rathcoole, Dun Laoghaire e arredores
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-4 border-t border-zinc-700 flex gap-3">
+                  <button
+                    onClick={() => setEditingLocation(false)}
+                    className="flex-1 bg-zinc-800 border border-zinc-700 text-zinc-400 py-3 hover:text-white transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleSaveLocation}
+                    disabled={savingLocation}
+                    className="flex-1 bg-amber-500 text-black py-3 font-heading uppercase flex items-center justify-center gap-2 hover:bg-amber-400 transition-colors disabled:opacity-50"
+                    data-testid="btn-save-location"
+                  >
+                    {savingLocation ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                        Salvando...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        Salvar Localização
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {showMap && user?.latitude && user?.longitude && (
             <div className="space-y-4">
