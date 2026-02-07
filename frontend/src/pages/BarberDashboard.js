@@ -808,14 +808,17 @@ const BarberDashboard = () => {
                 <MapContainer
                   center={homeServiceClients.length > 0 
                     ? [(user.latitude + homeServiceClients[0].client_latitude) / 2, (user.longitude + homeServiceClients[0].client_longitude) / 2]
-                    : [user.latitude, user.longitude]
+                    : [DUBLIN_METRO.center.lat, DUBLIN_METRO.center.lng]
                   }
-                  zoom={homeServiceClients.length > 0 ? 12 : 14}
+                  zoom={homeServiceClients.length > 0 ? 12 : DUBLIN_METRO.zoom}
                   style={{ height: '100%', width: '100%' }}
+                  maxBounds={[[DUBLIN_METRO.bounds.south, DUBLIN_METRO.bounds.west], [DUBLIN_METRO.bounds.north, DUBLIN_METRO.bounds.east]]}
+                  minZoom={9}
+                  maxZoom={18}
                 >
                   <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    attribution='&copy; OpenStreetMap'
+                    attribution='&copy; OpenStreetMap | Dublin Metro'
                   />
                   
                   {/* Barber Location */}
