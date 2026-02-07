@@ -1021,16 +1021,18 @@ const BarberDashboard = () => {
             </div>
           )}
 
-          {showMap && user?.latitude && user?.longitude && (
+          {showMap && (
             <div className="space-y-4">
               {/* Map */}
               <div className="h-[350px] rounded-sm overflow-hidden border border-zinc-700" data-testid="barber-map">
                 <MapContainer
-                  center={homeServiceClients.length > 0 
-                    ? [(user.latitude + homeServiceClients[0].client_latitude) / 2, (user.longitude + homeServiceClients[0].client_longitude) / 2]
+                  center={user?.latitude && user?.longitude 
+                    ? (homeServiceClients.length > 0 
+                      ? [(user.latitude + homeServiceClients[0].client_latitude) / 2, (user.longitude + homeServiceClients[0].client_longitude) / 2]
+                      : [user.latitude, user.longitude])
                     : [DUBLIN_METRO.center.lat, DUBLIN_METRO.center.lng]
                   }
-                  zoom={homeServiceClients.length > 0 ? 12 : DUBLIN_METRO.zoom}
+                  zoom={homeServiceClients.length > 0 ? 12 : (user?.latitude ? 14 : DUBLIN_METRO.zoom)}
                   style={{ height: '100%', width: '100%' }}
                   maxBounds={[[DUBLIN_METRO.bounds.south, DUBLIN_METRO.bounds.west], [DUBLIN_METRO.bounds.north, DUBLIN_METRO.bounds.east]]}
                   minZoom={9}
@@ -1042,20 +1044,22 @@ const BarberDashboard = () => {
                   />
                   
                   {/* Barber Location */}
-                  <Marker 
-                    position={[user.latitude, user.longitude]} 
-                    icon={isOnline ? barberIcon : barberOfflineIcon}
-                  >
-                    <Popup>
-                      <div className="text-black font-medium">
-                        <p className="font-bold">📍 Você está aqui</p>
-                        <p className="text-sm">{user.address}</p>
-                        <p className={`text-sm ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
-                          {isOnline ? '🟢 Online' : '⚫ Offline'}
-                        </p>
-                      </div>
-                    </Popup>
-                  </Marker>
+                  {user?.latitude && user?.longitude && (
+                    <Marker 
+                      position={[user.latitude, user.longitude]} 
+                      icon={isOnline ? barberIcon : barberOfflineIcon}
+                    >
+                      <Popup>
+                        <div className="text-black font-medium">
+                          <p className="font-bold">📍 Você está aqui</p>
+                          <p className="text-sm">{user.address}</p>
+                          <p className={`text-sm ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
+                            {isOnline ? '🟢 Online' : '⚫ Offline'}
+                          </p>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  )}
 
                   {/* Home Service Clients */}
                   {homeServiceClients.map((client) => (
