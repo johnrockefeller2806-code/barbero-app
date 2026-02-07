@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stuff-intercambio-v1';
+const CACHE_NAME = 'clickbarber-v1';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -12,7 +12,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
+        console.log('ClickBarber cache opened');
         return cache.addAll(urlsToCache);
       })
       .catch((error) => {
@@ -84,7 +84,7 @@ self.addEventListener('fetch', (event) => {
 // Handle push notifications
 self.addEventListener('push', (event) => {
   const options = {
-    body: event.data ? event.data.text() : 'Nova notificação do STUFF Intercâmbio',
+    body: event.data ? event.data.text() : 'Nova notificação do ClickBarber',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-72x72.png',
     vibrate: [100, 50, 100],
@@ -99,7 +99,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('STUFF Intercâmbio', options)
+    self.registration.showNotification('ClickBarber', options)
   );
 });
 
