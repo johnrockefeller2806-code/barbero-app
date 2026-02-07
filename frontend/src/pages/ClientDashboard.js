@@ -729,13 +729,16 @@ const ClientDashboard = () => {
             {view === 'map' ? (
               <div className="h-[500px] rounded-sm overflow-hidden border border-zinc-800" data-testid="map-container">
                 <MapContainer
-                  center={[userLocation.lat, userLocation.lng]}
-                  zoom={14}
+                  center={[DUBLIN_METRO.center.lat, DUBLIN_METRO.center.lng]}
+                  zoom={DUBLIN_METRO.zoom}
                   style={{ height: '100%', width: '100%' }}
+                  maxBounds={[[DUBLIN_METRO.bounds.south, DUBLIN_METRO.bounds.west], [DUBLIN_METRO.bounds.north, DUBLIN_METRO.bounds.east]]}
+                  minZoom={9}
+                  maxZoom={18}
                 >
                   <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | Dublin Metro'
                   />
                   
                   {/* User Location */}
