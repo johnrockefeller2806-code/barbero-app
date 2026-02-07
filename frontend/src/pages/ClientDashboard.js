@@ -478,33 +478,33 @@ const ClientDashboard = () => {
               {/* Refresh Button */}
               <button 
                 onClick={() => window.location.reload()}
-                className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
+                className="p-2 bg-green-500/20 hover:bg-green-500/30 rounded-full transition-colors"
                 title="Atualizar página"
                 data-testid="btn-refresh"
               >
-                <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               </button>
               {/* Profile Photo */}
               <div className="relative group">
-                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-zinc-700 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-green-500 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                   {user?.photo_url ? (
                     <img src={user.photo_url} alt={user?.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
-                      <User className="w-5 h-5 text-zinc-500" />
+                      <User className="w-5 h-5 text-green-400" />
                     </div>
                   )}
                   {uploadingPhoto && (
                     <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      <div className="animate-spin w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full"></div>
                     </div>
                   )}
                 </div>
                 <button 
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center"
+                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center"
                   title="Alterar foto"
                 >
                   <Camera className="w-3 h-3 text-black" />
@@ -518,10 +518,9 @@ const ClientDashboard = () => {
                   data-testid="input-photo-upload"
                 />
               </div>
-              <span className="text-zinc-400 hidden sm:block">{user?.name}</span>
               <button 
                 onClick={handleLogout} 
-                className="flex items-center gap-2 bg-red-500/20 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-3 py-2 rounded-sm transition-colors" 
+                className="flex items-center gap-2 bg-green-500/20 border border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-3 py-2 rounded-sm transition-colors" 
                 data-testid="btn-logout"
               >
                 <LogOut className="w-4 h-4" />
