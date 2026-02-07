@@ -875,19 +875,6 @@ const BarberDashboard = () => {
           </div>
         )}
 
-        {/* Message when Home Service is OFF */}
-        {!isHomeServiceOnline && (
-          <div className="bg-zinc-800/50 border border-zinc-700 p-4 mb-6 rounded">
-            <div className="flex items-center gap-3">
-              <Home className="w-6 h-6 text-zinc-500" />
-              <div>
-                <p className="text-zinc-400 text-sm">Home Service está <span className="text-red-400">desativado</span></p>
-                <p className="text-zinc-600 text-xs">Ative para receber solicitações de atendimento em casa</p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Online Toggle */}
         <div className="bg-zinc-900 border border-zinc-800 p-6 mb-6" data-testid="online-toggle-section">
           <div className="flex items-center justify-between">
@@ -897,53 +884,23 @@ const BarberDashboard = () => {
                 {isOnline ? 'You are receiving clients' : 'You are invisible to clients'}
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              {/* Home Service Toggle */}
-              <div className="text-center">
-                <p className="text-zinc-500 text-xs mb-2 uppercase">Home Service</p>
-                <button
-                  onClick={async () => {
-                    try {
-                      const newValue = !user?.offers_home_service;
-                      await axios.put(`${API}/barbers/profile?offers_home_service=${newValue}`);
-                      setUser({ ...user, offers_home_service: newValue });
-                    } catch (e) {
-                      alert('Erro ao atualizar Home Service');
-                    }
-                  }}
-                  className={`relative w-24 h-12 rounded-sm transition-all duration-300 ${
-                    user?.offers_home_service ? 'bg-blue-500' : 'bg-zinc-700'
-                  }`}
-                  data-testid="btn-toggle-home-service"
-                >
-                  <div className={`absolute top-1.5 ${user?.offers_home_service ? 'right-1.5' : 'left-1.5'} w-9 h-9 bg-white rounded-sm transition-all duration-300 flex items-center justify-center`}>
-                    <Home className={`w-5 h-5 ${user?.offers_home_service ? 'text-blue-500' : 'text-zinc-500'}`} />
-                  </div>
-                  <span className={`absolute ${user?.offers_home_service ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 font-heading text-xs uppercase ${user?.offers_home_service ? 'text-white' : 'text-zinc-400'}`}>
-                    {user?.offers_home_service ? 'ON' : 'OFF'}
-                  </span>
-                </button>
-              </div>
-              
-              {/* Online/Offline Toggle */}
-              <div className="text-center">
-                <p className="text-zinc-500 text-xs mb-2 uppercase">Status</p>
-                <button
-                  onClick={toggleOnline}
-                  disabled={loading}
-                  className={`relative w-24 h-12 rounded-sm transition-all duration-300 ${
-                    isOnline ? 'bg-green-500' : 'bg-zinc-700'
-                  }`}
-                  data-testid="btn-toggle-online"
-                >
-                  <div className={`absolute top-1.5 ${isOnline ? 'right-1.5' : 'left-1.5'} w-9 h-9 bg-white rounded-sm transition-all duration-300 flex items-center justify-center`}>
-                    <Power className={`w-5 h-5 ${isOnline ? 'text-green-500' : 'text-zinc-500'}`} />
-                  </div>
-                  <span className={`absolute ${isOnline ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 font-heading text-xs uppercase ${isOnline ? 'text-white' : 'text-zinc-400'}`}>
-                    {isOnline ? 'ON' : 'OFF'}
-                  </span>
-                </button>
-              </div>
+            <div className="text-center">
+              <p className="text-zinc-500 text-xs mb-2 uppercase">Status</p>
+              <button
+                onClick={toggleOnline}
+                disabled={loading}
+                className={`relative w-24 h-12 rounded-sm transition-all duration-300 ${
+                  isOnline ? 'bg-green-500' : 'bg-zinc-700'
+                }`}
+                data-testid="btn-toggle-online"
+              >
+                <div className={`absolute top-1.5 ${isOnline ? 'right-1.5' : 'left-1.5'} w-9 h-9 bg-white rounded-sm transition-all duration-300 flex items-center justify-center`}>
+                  <Power className={`w-5 h-5 ${isOnline ? 'text-green-500' : 'text-zinc-500'}`} />
+                </div>
+                <span className={`absolute ${isOnline ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 font-heading text-xs uppercase ${isOnline ? 'text-white' : 'text-zinc-400'}`}>
+                  {isOnline ? 'ON' : 'OFF'}
+                </span>
+              </button>
             </div>
           </div>
         </div>
