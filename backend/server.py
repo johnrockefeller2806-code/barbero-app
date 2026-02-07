@@ -1334,13 +1334,14 @@ async def get_history(user: dict = Depends(get_current_user)):
 
 @api_router.post("/seed")
 async def seed_data():
-    """Seed initial barber data for testing"""
+    """Seed initial barber data for testing - Dublin Metropolitan Region"""
     # Check if already seeded
-    existing = await db.users.find_one({"email": "carlos@barberx.com"})
+    existing = await db.users.find_one({"email": "liam@barberx.com"})
     if existing:
         return {"message": "Already seeded"}
     
     barbers = [
+        # Dublin City Center
         {
             "name": "Liam O'Connor",
             "email": "liam@barberx.com",
@@ -1368,6 +1369,7 @@ async def seed_data():
                 {"id": "4", "name": "Cut & Beard", "price": 38, "duration": 60}
             ]
         },
+        # Camden Street - Dublin 2
         {
             "name": "Sean Murphy",
             "email": "sean@barberx.com",
@@ -1394,6 +1396,7 @@ async def seed_data():
                 {"id": "3", "name": "Premium Combo", "price": 35, "duration": 50}
             ]
         },
+        # Swords - North Dublin
         {
             "name": "Conor Walsh",
             "email": "conor@barberx.com",
@@ -1402,24 +1405,25 @@ async def seed_data():
             "user_type": "barber",
             "specialty": "Modern Styles & Colour",
             "photo_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
-            "latitude": 53.3558,
-            "longitude": -6.2489,
-            "address": "O'Connell Street 120, Dublin 1",
-            "is_online": False,
+            "latitude": 53.4597,
+            "longitude": -6.2181,
+            "address": "Main Street 32, Swords, Co. Dublin",
+            "is_online": True,
             "rating": 4.7,
             "total_reviews": 64,
-            "offers_home_service": False,
-            "home_service_fee_per_km": 0,
+            "offers_home_service": True,
+            "home_service_fee_per_km": 2.0,
             "instagram": "conor_styles",
             "referral_code": generate_referral_code(),
             "subscription_plan": "basic",
-            "subscription_status": "trial",
+            "subscription_status": "active",
             "services": [
                 {"id": "1", "name": "Modern Cut", "price": 28, "duration": 35},
                 {"id": "2", "name": "Hair Colour", "price": 45, "duration": 60},
                 {"id": "3", "name": "Platinum Blonde", "price": 65, "duration": 90}
             ]
         },
+        # Lucan - West Dublin
         {
             "name": "Patrick Byrne",
             "email": "patrick@barberx.com",
@@ -1428,15 +1432,15 @@ async def seed_data():
             "user_type": "barber",
             "specialty": "Hot Towel & Razor Cuts",
             "photo_url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300",
-            "latitude": 53.3381,
-            "longitude": -6.2592,
-            "address": "Harcourt Street 55, Dublin 2",
+            "latitude": 53.3538,
+            "longitude": -6.4490,
+            "address": "Main Street 15, Lucan, Co. Dublin",
             "is_online": True,
             "rating": 4.6,
             "total_reviews": 52,
             "offers_home_service": True,
             "home_service_fee_per_km": 2.0,
-            "instagram": "patrick_razor_dublin",
+            "instagram": "patrick_razor_lucan",
             "referral_code": generate_referral_code(),
             "subscription_plan": "premium",
             "subscription_status": "active",
@@ -1444,6 +1448,114 @@ async def seed_data():
                 {"id": "1", "name": "Razor Cut", "price": 32, "duration": 45},
                 {"id": "2", "name": "Razor Shave", "price": 20, "duration": 35},
                 {"id": "3", "name": "Hot Towel Treatment", "price": 15, "duration": 20}
+            ]
+        },
+        # Bray - South Dublin/Wicklow Coast
+        {
+            "name": "Declan Kelly",
+            "email": "declan@barberx.com",
+            "password": hash_password("123456"),
+            "phone": "+353 87 567 8901",
+            "user_type": "barber",
+            "specialty": "Classic & Executive Cuts",
+            "photo_url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300",
+            "latitude": 53.2028,
+            "longitude": -6.0984,
+            "address": "Main Street 88, Bray, Co. Wicklow",
+            "is_online": True,
+            "rating": 4.9,
+            "total_reviews": 78,
+            "offers_home_service": True,
+            "home_service_fee_per_km": 2.5,
+            "instagram": "declan_bray_barber",
+            "referral_code": generate_referral_code(),
+            "subscription_plan": "premium",
+            "subscription_status": "active",
+            "services": [
+                {"id": "1", "name": "Executive Cut", "price": 35, "duration": 40},
+                {"id": "2", "name": "Classic Trim", "price": 25, "duration": 30},
+                {"id": "3", "name": "Beard & Cut Combo", "price": 45, "duration": 55}
+            ]
+        },
+        # Greystones - South Coast
+        {
+            "name": "Niall Doyle",
+            "email": "niall@barberx.com",
+            "password": hash_password("123456"),
+            "phone": "+353 87 678 9012",
+            "user_type": "barber",
+            "specialty": "Surfer & Beach Styles",
+            "photo_url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300",
+            "latitude": 53.1459,
+            "longitude": -6.0633,
+            "address": "Church Road 22, Greystones, Co. Wicklow",
+            "is_online": False,
+            "rating": 4.5,
+            "total_reviews": 45,
+            "offers_home_service": True,
+            "home_service_fee_per_km": 3.0,
+            "instagram": "niall_greystones",
+            "referral_code": generate_referral_code(),
+            "subscription_plan": "basic",
+            "subscription_status": "active",
+            "services": [
+                {"id": "1", "name": "Beach Wave Cut", "price": 28, "duration": 35},
+                {"id": "2", "name": "Textured Style", "price": 30, "duration": 40},
+                {"id": "3", "name": "Summer Trim", "price": 22, "duration": 25}
+            ]
+        },
+        # Rathcoole - Southwest
+        {
+            "name": "Eoin McCarthy",
+            "email": "eoin@barberx.com",
+            "password": hash_password("123456"),
+            "phone": "+353 87 789 0123",
+            "user_type": "barber",
+            "specialty": "Precision & Detail Work",
+            "photo_url": "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=300",
+            "latitude": 53.2823,
+            "longitude": -6.4663,
+            "address": "Main Street 5, Rathcoole, Co. Dublin",
+            "is_online": True,
+            "rating": 4.7,
+            "total_reviews": 38,
+            "offers_home_service": True,
+            "home_service_fee_per_km": 2.0,
+            "instagram": "eoin_precision_cuts",
+            "referral_code": generate_referral_code(),
+            "subscription_plan": "basic",
+            "subscription_status": "active",
+            "services": [
+                {"id": "1", "name": "Precision Cut", "price": 30, "duration": 40},
+                {"id": "2", "name": "Detail Fade", "price": 35, "duration": 45},
+                {"id": "3", "name": "Line Up", "price": 15, "duration": 20}
+            ]
+        },
+        # Dun Laoghaire - East Coast
+        {
+            "name": "Cian O'Brien",
+            "email": "cian@barberx.com",
+            "password": hash_password("123456"),
+            "phone": "+353 87 890 1234",
+            "user_type": "barber",
+            "specialty": "Premium Grooming",
+            "photo_url": "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=300",
+            "latitude": 53.2945,
+            "longitude": -6.1340,
+            "address": "George's Street 45, Dun Laoghaire, Co. Dublin",
+            "is_online": True,
+            "rating": 4.8,
+            "total_reviews": 92,
+            "offers_home_service": True,
+            "home_service_fee_per_km": 3.0,
+            "instagram": "cian_grooming",
+            "referral_code": generate_referral_code(),
+            "subscription_plan": "premium",
+            "subscription_status": "active",
+            "services": [
+                {"id": "1", "name": "Premium Cut", "price": 40, "duration": 45},
+                {"id": "2", "name": "Luxury Shave", "price": 30, "duration": 35},
+                {"id": "3", "name": "VIP Package", "price": 65, "duration": 75}
             ]
         }
     ]
@@ -1454,7 +1566,7 @@ async def seed_data():
         barber["subscription_end"] = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
         await db.users.insert_one(barber)
     
-    return {"message": "Seeded 4 barbers successfully"}
+    return {"message": "Seeded 8 barbers across Dublin Metropolitan Region successfully"}
 
 # ==================== REFERRAL ROUTES ====================
 
