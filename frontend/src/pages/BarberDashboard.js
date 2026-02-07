@@ -787,11 +787,11 @@ const BarberDashboard = () => {
             )}
             
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
-                <Bell className="w-6 h-6 text-green-400" />
+              <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
+                <Bell className="w-6 h-6 text-blue-400" />
               </div>
               <div>
-                <h2 className="font-heading text-lg text-green-400 uppercase">
+                <h2 className="font-heading text-lg text-blue-400 uppercase">
                   Clientes Querem Home Service
                 </h2>
                 <p className="text-zinc-500 text-sm">
@@ -813,11 +813,11 @@ const BarberDashboard = () => {
                 {homeServiceInterests.interests.map((interest) => (
                   <div 
                     key={interest.id}
-                    className="p-4 rounded border bg-zinc-800/50 border-zinc-700 hover:border-green-500/50 transition-colors"
+                    className="p-4 rounded border bg-zinc-800/50 border-zinc-700 hover:border-blue-500/50 transition-colors"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-green-500">
+                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-500">
                           {interest.client_photo_url ? (
                             <img 
                               src={interest.client_photo_url} 
