@@ -518,6 +518,79 @@ async def reset_password(input: ResetPassword):
     
     return {"success": True, "message": "Password reset successfully"}
 
+# Google OAuth Callback
+class GoogleAuthData(BaseModel):
+    id: str
+    email: str
+    name: str
+    picture: Optional[str] = None
+    session_token: str
+
+@api_router.post("/auth/google-callback")
+async def google_callback(data: GoogleAuthData, response: Response):
+    """Handle Google OAuth callback - create/update user and set session"""
+    
+    # Check if user exists
+    existing_user = await db.users.find_one({"email": data.email}, {"_id": 0})
+    
+    if existing_user:
+        # Update existing user with Google data
+        await db.users.update_one(
+            {"email": data.email},
+            {"$set": {
+                "google_id": data.id,
+                "photo_url": data.picture if data.picture else existing_user.get("photo_url"),
+                "name": data.name if not existing_user.get("name") else existing_user["name"]
+            }}
+        )
+        user = await db.users.find_one({"email": data.email}, {"_id": 0, "password": 0, "pin": 0})
+    else:
+        # Create new user as client by default
+        user_id = str(uuid.uuid4())
+        new_user = {
+            "id": user_id,
+            "google_id": data.id,
+            "email": data.email,
+            "name": data.name,
+            "phone": "",
+            "user_type": "client",  # Default to client, can be changed later
+            "photo_url": data.picture,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "is_online": False,
+            "referral_code": generate_referral_code(),
+            "referral_balance": 0
+        }
+        await db.users.insert_one(new_user)
+        user = {k: v for k, v in new_user.items() if k not in ["password", "pin", "_id"]}
+    
+    # Store session
+    session_expires = datetime.now(timezone.utc) + timedelta(days=7)
+    await db.user_sessions.update_one(
+        {"user_id": user["id"]},
+        {"$set": {
+            "session_token": data.session_token,
+            "expires_at": session_expires,
+            "created_at": datetime.now(timezone.utc)
+        }},
+        upsert=True
+    )
+    
+    # Set httpOnly cookie
+    response.set_cookie(
+        key="session_token",
+        value=data.session_token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/",
+        max_age=7*24*60*60  # 7 days
+    )
+    
+    # Generate JWT token for compatibility with existing system
+    token = create_token(user["id"], user["user_type"])
+    
+    return {"token": token, "user": user}
+
 @api_router.get("/auth/me")
 async def get_me(user: dict = Depends(get_current_user)):
     return user
