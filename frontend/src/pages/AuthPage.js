@@ -766,7 +766,7 @@ const AuthPage = () => {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 pb-24">
         {/* Language Toggle */}
         <div className="absolute top-4 right-4">
           <LanguageToggle />
@@ -779,6 +779,9 @@ const AuthPage = () => {
           </div>
 
           {renderContent()}
+          
+          {/* Spacer for Made with Emergent badge */}
+          <div className="h-16 lg:hidden"></div>
         </div>
       </div>
     </div>
