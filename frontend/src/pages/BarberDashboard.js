@@ -133,6 +133,16 @@ const BarberDashboard = () => {
   const [editingInstagram, setEditingInstagram] = useState(false);
   const [instagramValue, setInstagramValue] = useState(user?.instagram || '');
   
+  // Location edit state
+  const [editingLocation, setEditingLocation] = useState(false);
+  const [locationForm, setLocationForm] = useState({
+    address: user?.address || '',
+    latitude: user?.latitude || '',
+    longitude: user?.longitude || ''
+  });
+  const [savingLocation, setSavingLocation] = useState(false);
+  const [gettingCurrentLocation, setGettingCurrentLocation] = useState(false);
+  
   // Map state
   const [showMap, setShowMap] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
