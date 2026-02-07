@@ -1,9 +1,10 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
+import AuthCallback from './pages/AuthCallback';
 import ClientDashboard from './pages/ClientDashboard';
 import BarberDashboard from './pages/BarberDashboard';
 import SubscriptionPage from './pages/SubscriptionPage';
