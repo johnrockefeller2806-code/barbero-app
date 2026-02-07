@@ -732,28 +732,53 @@ const BarberDashboard = () => {
                   <Image className="w-4 h-4" />
                   Trocar foto
                 </button>
-                
-                {/* Home Service Toggle */}
-                <button
-                  onClick={toggleHomeServiceOnline}
-                  className={`px-4 py-2 text-sm rounded flex items-center gap-2 transition-all ${
-                    isHomeServiceOnline 
-                      ? 'bg-green-500 hover:bg-green-400 text-white' 
-                      : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400'
-                  }`}
-                  data-testid="btn-toggle-home-service"
-                >
-                  <Home className="w-4 h-4" />
-                  {isHomeServiceOnline ? '🟢 Home Service ON' : '⚫ Home Service OFF'}
-                </button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Home Service Section */}
+        <div className="bg-zinc-900 border border-zinc-800 p-6 mb-6" data-testid="home-service-section">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-heading text-2xl text-white uppercase flex items-center gap-2">
+                <Home className="w-6 h-6 text-blue-500" />
+                Home Service
+              </h2>
+              <p className="text-zinc-500">
+                {isHomeServiceOnline 
+                  ? 'Você está recebendo pedidos de atendimento em casa' 
+                  : 'Ative para receber pedidos de atendimento em casa'}
+              </p>
+              {user?.home_service_fee_per_km > 0 && (
+                <p className="text-blue-400 text-sm mt-1">
+                  Taxa de deslocamento: €{user?.home_service_fee_per_km}/km
+                </p>
+              )}
+            </div>
+            <div className="text-center">
+              <p className="text-zinc-500 text-xs mb-2 uppercase">Home Service</p>
+              <button
+                onClick={toggleHomeServiceOnline}
+                className={`relative w-24 h-12 rounded-sm transition-all duration-300 ${
+                  isHomeServiceOnline ? 'bg-blue-500' : 'bg-zinc-700'
+                }`}
+                data-testid="btn-toggle-home-service-main"
+              >
+                <div className={`absolute top-1.5 ${isHomeServiceOnline ? 'right-1.5' : 'left-1.5'} w-9 h-9 bg-white rounded-sm transition-all duration-300 flex items-center justify-center`}>
+                  <Home className={`w-5 h-5 ${isHomeServiceOnline ? 'text-blue-500' : 'text-zinc-500'}`} />
+                </div>
+                <span className={`absolute ${isHomeServiceOnline ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 font-heading text-xs uppercase ${isHomeServiceOnline ? 'text-white' : 'text-zinc-400'}`}>
+                  {isHomeServiceOnline ? 'ON' : 'OFF'}
+                </span>
+              </button>
             </div>
           </div>
         </div>
 
         {/* Home Service Interests Section - Only show when online for home service */}
         {isHomeServiceOnline && (
-          <div className="bg-green-500/10 border border-green-500/30 p-6 mb-6 relative" data-testid="interests-section">
+          <div className="bg-blue-500/10 border border-blue-500/30 p-6 mb-6 relative" data-testid="interests-section">
             {/* Notification Badge */}
             {homeServiceInterests.unread_count > 0 && (
               <div className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
