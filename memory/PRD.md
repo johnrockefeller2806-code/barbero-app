@@ -1,6 +1,6 @@
 # ClickBarber - Marketplace de Barbeiros (Dublin, Ireland)
 
-## Última Atualização: 31/01/2026
+## Última Atualização: 04/02/2026
 
 ## Arquitetura
 - **Frontend**: React.js + Tailwind CSS + Leaflet (mapas)
@@ -10,6 +10,21 @@
 - **Email**: Resend
 
 ## Features Implementadas ✅
+
+### Mapa Região Metropolitana de Dublin (04/02/2026)
+- [x] Mapa centralizado na região metropolitana de Dublin
+- [x] Zoom configurado para mostrar toda a área (nível 11)
+- [x] Limites: Swords (norte), Greystones (sul), Lucan/Rathcoole (oeste), Costa (leste)
+- [x] Cidades cobertas: Dublin, Swords, Lucan, Bray, Greystones, Rathcoole, Dun Laoghaire
+- [x] Rodovias visíveis: M50, N7, M11
+
+### Edição de Localização do Barbeiro (04/02/2026)
+- [x] Modal para editar localização
+- [x] Campo de endereço completo
+- [x] Botão "Usar Minha Localização Atual (GPS)"
+- [x] Campos manuais de Latitude/Longitude
+- [x] Info sobre área de cobertura
+- [x] Validação antes de salvar
 
 ### Header Completo (31/01/2026)
 - [x] Logo + Nome "ClickBarber" 
@@ -56,9 +71,9 @@
 - Stripe
 - Referral
 
-## Credenciais de Teste
-- Barbeiro: test@barber.com / 123456
-- Cliente: client@test.com / 123456
+## Banco de Dados
+- Limpo para cadastro de profissionais reais
+- Sem barbeiros de teste
 
 ## Próximas Features (Backlog)
 - [ ] Notificações push nativas (PWA)
