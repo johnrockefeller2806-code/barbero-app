@@ -451,11 +451,10 @@ const ClientDashboard = () => {
       <header className="bg-zinc-900/80 backdrop-blur-md border-b border-zinc-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src={LOGO_URL} alt="ClickBarber" className="h-12 w-auto object-contain" />
-              <span className="font-heading text-2xl text-white uppercase tracking-wider">Click<span className="text-amber-500">Barber</span></span>
+            <div className="flex items-center gap-2">
+              <img src={LOGO_URL} alt="ClickBarber" className="h-10 w-auto object-contain" />
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {/* Share Button */}
               <button 
                 onClick={() => {
