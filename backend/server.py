@@ -442,12 +442,12 @@ async def forgot_password(input: ForgotPassword):
     # Try to send email via Resend
     if RESEND_API_KEY:
         try:
-            logo_url = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/7tsbrqqb_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg"
+            logo_url = "https://customer-assets.emergentagent.com/job_ocular-insight/artifacts/58zigzi9_WhatsApp%20Image%202026-02-07%20at%2017.52.20.jpeg"
             html_content = f"""
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 0; background: #000000;">
                 <!-- Header com Logo - Fundo Preto -->
                 <div style="background: #000000; padding: 40px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <img src="{logo_url}" alt="ClickBarber" style="height: 100px;" />
+                    <img src="{logo_url}" alt="ClickBarber" style="height: 120px;" />
                 </div>
                 <!-- Content - Fundo Preto -->
                 <div style="background: #000000; padding: 30px; border-radius: 0 0 10px 10px;">
