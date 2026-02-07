@@ -91,6 +91,60 @@ const DUBLIN_METRO = {
   }
 };
 
+// Dublin County Boundary Polygon (área de cobertura)
+const DUBLIN_BOUNDARY = [
+  // Norte - Dublin Airport / Swords area
+  [53.52, -6.35],
+  [53.51, -6.25],
+  [53.50, -6.15],
+  [53.48, -6.10],
+  // Nordeste - Portmarnock / Howth
+  [53.45, -6.08],
+  [53.42, -6.05],
+  [53.39, -6.05],
+  [53.38, -6.03],
+  // Costa Leste - Dublin Bay
+  [53.35, -6.05],
+  [53.32, -6.08],
+  [53.30, -6.10],
+  [53.28, -6.08],
+  // Sudeste - Dun Laoghaire / Dalkey
+  [53.27, -6.10],
+  [53.25, -6.10],
+  [53.23, -6.12],
+  // Sul - Bray / Enniskerry
+  [53.20, -6.10],
+  [53.18, -6.12],
+  [53.16, -6.10],
+  [53.14, -6.08],
+  // Greystones
+  [53.12, -6.06],
+  [53.10, -6.08],
+  // Wicklow Mountains border
+  [53.12, -6.18],
+  [53.15, -6.25],
+  [53.18, -6.30],
+  // Sudoeste - Rockbrook / Kilternan
+  [53.22, -6.28],
+  [53.25, -6.32],
+  // Rathcoole area
+  [53.27, -6.40],
+  [53.28, -6.45],
+  [53.30, -6.48],
+  // Oeste - Lucan / Clondalkin
+  [53.33, -6.50],
+  [53.35, -6.48],
+  [53.38, -6.45],
+  // Noroeste - Blanchardstown / Clonee
+  [53.40, -6.42],
+  [53.42, -6.40],
+  [53.45, -6.38],
+  [53.48, -6.36],
+  [53.50, -6.35],
+  // Fecha o polígono
+  [53.52, -6.35]
+];
+
 // Fix Leaflet marker icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
