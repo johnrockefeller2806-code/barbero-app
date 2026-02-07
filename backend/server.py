@@ -463,9 +463,12 @@ async def forgot_password(input: ForgotPassword):
                     <p style="color: #666666; font-size: 14px; margin: 0 0 15px 0;">⏱️ Este código expira em 15 minutos.</p>
                     <p style="color: #666666; font-size: 14px; margin: 0 0 25px 0;">Se você não solicitou esta recuperação, ignore este email.</p>
                     <hr style="border: none; border-top: 1px solid #CCCCCC; margin: 20px 0;" />
-                    <p style="color: #888888; font-size: 14px; text-align: center; margin: 0;">
+                    <p style="color: #888888; font-size: 14px; text-align: center; margin: 0 0 15px 0;">
                         ClickBarber - Dublin, Ireland 🇮🇪<br/>
                         Seu marketplace de barbeiros
+                    </p>
+                    <p style="color: #999999; font-size: 12px; text-align: center; margin: 0;">
+                        Você recebeu este e-mail porque está cadastrado na ClickBarber com o endereço {input.email}
                     </p>
                 </div>
             </div>
