@@ -871,27 +871,55 @@ const BarberDashboard = () => {
               <p className="text-zinc-500">
                 {isOnline ? 'You are receiving clients' : 'You are invisible to clients'}
               </p>
-              {user?.offers_home_service && (
-                <p className="text-green-400 text-sm mt-1 flex items-center gap-1">
-                  <Home className="w-4 h-4" /> Home service enabled (€{user?.home_service_fee_per_km}/km)
-                </p>
-              )}
             </div>
-            <button
-              onClick={toggleOnline}
-              disabled={loading}
-              className={`relative w-32 h-16 rounded-sm transition-all duration-300 ${
-                isOnline ? 'bg-green-500' : 'bg-zinc-700'
-              }`}
-              data-testid="btn-toggle-online"
-            >
-              <div className={`absolute top-2 ${isOnline ? 'right-2' : 'left-2'} w-12 h-12 bg-white rounded-sm transition-all duration-300 flex items-center justify-center`}>
-                <Power className={`w-6 h-6 ${isOnline ? 'text-green-500' : 'text-zinc-500'}`} />
+            <div className="flex items-center gap-4">
+              {/* Home Service Toggle */}
+              <div className="text-center">
+                <p className="text-zinc-500 text-xs mb-2 uppercase">Home Service</p>
+                <button
+                  onClick={async () => {
+                    try {
+                      const newValue = !user?.offers_home_service;
+                      await axios.put(`${API}/barbers/profile?offers_home_service=${newValue}`);
+                      setUser({ ...user, offers_home_service: newValue });
+                    } catch (e) {
+                      alert('Erro ao atualizar Home Service');
+                    }
+                  }}
+                  className={`relative w-24 h-12 rounded-sm transition-all duration-300 ${
+                    user?.offers_home_service ? 'bg-blue-500' : 'bg-zinc-700'
+                  }`}
+                  data-testid="btn-toggle-home-service"
+                >
+                  <div className={`absolute top-1.5 ${user?.offers_home_service ? 'right-1.5' : 'left-1.5'} w-9 h-9 bg-white rounded-sm transition-all duration-300 flex items-center justify-center`}>
+                    <Home className={`w-5 h-5 ${user?.offers_home_service ? 'text-blue-500' : 'text-zinc-500'}`} />
+                  </div>
+                  <span className={`absolute ${user?.offers_home_service ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 font-heading text-xs uppercase ${user?.offers_home_service ? 'text-white' : 'text-zinc-400'}`}>
+                    {user?.offers_home_service ? 'ON' : 'OFF'}
+                  </span>
+                </button>
               </div>
-              <span className={`absolute ${isOnline ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 font-heading text-sm uppercase ${isOnline ? 'text-white' : 'text-zinc-400'}`}>
-                {isOnline ? 'ON' : 'OFF'}
-              </span>
-            </button>
+              
+              {/* Online/Offline Toggle */}
+              <div className="text-center">
+                <p className="text-zinc-500 text-xs mb-2 uppercase">Status</p>
+                <button
+                  onClick={toggleOnline}
+                  disabled={loading}
+                  className={`relative w-24 h-12 rounded-sm transition-all duration-300 ${
+                    isOnline ? 'bg-green-500' : 'bg-zinc-700'
+                  }`}
+                  data-testid="btn-toggle-online"
+                >
+                  <div className={`absolute top-1.5 ${isOnline ? 'right-1.5' : 'left-1.5'} w-9 h-9 bg-white rounded-sm transition-all duration-300 flex items-center justify-center`}>
+                    <Power className={`w-5 h-5 ${isOnline ? 'text-green-500' : 'text-zinc-500'}`} />
+                  </div>
+                  <span className={`absolute ${isOnline ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 font-heading text-xs uppercase ${isOnline ? 'text-white' : 'text-zinc-400'}`}>
+                    {isOnline ? 'ON' : 'OFF'}
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
