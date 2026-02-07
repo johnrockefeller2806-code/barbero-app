@@ -1091,10 +1091,27 @@ const BarberDashboard = () => {
                   maxBounds={[[DUBLIN_METRO.bounds.south, DUBLIN_METRO.bounds.west], [DUBLIN_METRO.bounds.north, DUBLIN_METRO.bounds.east]]}
                   minZoom={9}
                   maxZoom={18}
+                  dragging={true}
+                  touchZoom={true}
+                  scrollWheelZoom={true}
+                  doubleClickZoom={true}
                 >
                   <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                     attribution='&copy; OpenStreetMap | Dublin Metro'
+                  />
+                  
+                  {/* Dublin County Boundary - Área de Cobertura */}
+                  <Polygon
+                    positions={DUBLIN_BOUNDARY}
+                    pathOptions={{
+                      color: '#00CED1', // Cyan/Turquesa como na imagem
+                      weight: 3,
+                      opacity: 0.8,
+                      fillColor: '#00CED1',
+                      fillOpacity: 0.05,
+                      dashArray: '5, 5'
+                    }}
                   />
                   
                   {/* Barber Location */}
