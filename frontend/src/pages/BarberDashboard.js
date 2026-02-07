@@ -368,6 +368,67 @@ const BarberDashboard = () => {
     }
   };
 
+  // Location functions
+  const handleGetCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocalização não suportada pelo navegador');
+      return;
+    }
+    
+    setGettingCurrentLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocationForm(prev => ({
+          ...prev,
+          latitude: latitude.toFixed(6),
+          longitude: longitude.toFixed(6)
+        }));
+        setGettingCurrentLocation(false);
+      },
+      (error) => {
+        console.error('Erro ao obter localização:', error);
+        alert('Erro ao obter sua localização. Verifique as permissões do navegador.');
+        setGettingCurrentLocation(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  const handleSaveLocation = async () => {
+    if (!locationForm.address.trim()) {
+      alert('Por favor, informe o endereço');
+      return;
+    }
+    if (!locationForm.latitude || !locationForm.longitude) {
+      alert('Por favor, informe as coordenadas ou use "Usar Minha Localização"');
+      return;
+    }
+
+    setSavingLocation(true);
+    try {
+      const params = new URLSearchParams();
+      params.append('address', locationForm.address);
+      params.append('latitude', parseFloat(locationForm.latitude));
+      params.append('longitude', parseFloat(locationForm.longitude));
+      
+      await axios.put(`${API}/barbers/profile?${params.toString()}`);
+      
+      setUser({ 
+        ...user, 
+        address: locationForm.address,
+        latitude: parseFloat(locationForm.latitude),
+        longitude: parseFloat(locationForm.longitude)
+      });
+      setEditingLocation(false);
+      alert('✅ Localização atualizada com sucesso!');
+    } catch (e) {
+      alert('Erro ao salvar localização');
+    } finally {
+      setSavingLocation(false);
+    }
+  };
+
   const handlePhotoUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
