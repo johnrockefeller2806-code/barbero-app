@@ -909,11 +909,11 @@ const BarberDashboard = () => {
         <div className="bg-zinc-900 border border-zinc-800 p-6 mb-6" data-testid="map-section">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-heading text-2xl text-white uppercase flex items-center gap-2">
-                <Map className="w-6 h-6 text-amber-500" />
+              <h2 className="font-heading text-lg text-white uppercase flex items-center gap-2">
+                <Map className="w-5 h-5 text-amber-500" />
                 Sua Localização
               </h2>
-              <p className="text-zinc-500">
+              <p className="text-zinc-500 text-sm mt-1">
                 {user?.address ? (
                   <span className="flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
@@ -923,56 +923,43 @@ const BarberDashboard = () => {
                   'Configure sua localização para aparecer no mapa'
                 )}
               </p>
-              {isOnline && user?.latitude && (
-                <p className="text-green-400 text-xs mt-1 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                  Visível para clientes no mapa
-                </p>
-              )}
             </div>
-            <div className="flex items-center gap-4">
-              {/* Editar Toggle */}
-              <div className="text-center">
-                <p className="text-zinc-500 text-xs mb-2 uppercase">Editar</p>
-                <button
-                  onClick={() => {
-                    setLocationForm({
-                      address: user?.address || '',
-                      latitude: user?.latitude || '',
-                      longitude: user?.longitude || ''
-                    });
-                    setEditingLocation(true);
-                  }}
-                  className="relative w-24 h-12 rounded-sm transition-all duration-300 bg-amber-500 hover:bg-amber-400"
-                  data-testid="btn-edit-location"
-                >
-                  <div className="absolute top-1.5 right-1.5 w-9 h-9 bg-white rounded-sm flex items-center justify-center">
-                    <Edit2 className="w-5 h-5 text-amber-500" />
-                  </div>
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 font-heading text-xs uppercase text-white">
-                    GPS
-                  </span>
-                </button>
-              </div>
+            <div className="flex flex-col gap-2">
+              {/* Mapa Toggle - Em cima */}
+              <button
+                onClick={() => setShowMap(!showMap)}
+                className={`relative w-20 h-16 rounded-sm transition-all duration-300 flex flex-col items-center justify-center ${
+                  showMap ? 'bg-amber-500' : 'bg-zinc-700'
+                }`}
+                data-testid="btn-toggle-map"
+              >
+                <Navigation className={`w-6 h-6 ${showMap ? 'text-black' : 'text-white'}`} />
+                <span className={`font-heading text-xs uppercase mt-1 ${showMap ? 'text-black' : 'text-zinc-400'}`}>
+                  MAPA
+                </span>
+                <span className={`font-heading text-xs uppercase ${showMap ? 'text-black/70' : 'text-zinc-500'}`}>
+                  {showMap ? 'ON' : 'OFF'}
+                </span>
+              </button>
               
-              {/* Ver Mapa Toggle */}
-              <div className="text-center">
-                <p className="text-zinc-500 text-xs mb-2 uppercase">Mapa</p>
-                <button
-                  onClick={() => setShowMap(!showMap)}
-                  className={`relative w-24 h-12 rounded-sm transition-all duration-300 ${
-                    showMap ? 'bg-amber-500' : 'bg-zinc-700'
-                  }`}
-                  data-testid="btn-toggle-map"
-                >
-                  <div className={`absolute top-1.5 ${showMap ? 'right-1.5' : 'left-1.5'} w-9 h-9 bg-white rounded-sm transition-all duration-300 flex items-center justify-center`}>
-                    <Navigation className={`w-5 h-5 ${showMap ? 'text-amber-500' : 'text-zinc-500'}`} />
-                  </div>
-                  <span className={`absolute ${showMap ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 font-heading text-xs uppercase ${showMap ? 'text-white' : 'text-zinc-400'}`}>
-                    {showMap ? 'ON' : 'OFF'}
-                  </span>
-                </button>
-              </div>
+              {/* GPS/Editar - Em baixo */}
+              <button
+                onClick={() => {
+                  setLocationForm({
+                    address: user?.address || '',
+                    latitude: user?.latitude || '',
+                    longitude: user?.longitude || ''
+                  });
+                  setEditingLocation(true);
+                }}
+                className="relative w-20 h-16 rounded-sm transition-all duration-300 bg-amber-500 hover:bg-amber-400 flex flex-col items-center justify-center"
+                data-testid="btn-edit-location"
+              >
+                <Edit2 className="w-6 h-6 text-black" />
+                <span className="font-heading text-xs uppercase mt-1 text-black">
+                  GPS
+                </span>
+              </button>
             </div>
           </div>
 
