@@ -11,6 +11,7 @@ import SubscriptionPage from './pages/SubscriptionPage';
 import ClientHistoryPage from './pages/ClientHistoryPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import Footer from './components/Footer';
+import InstallPWA from './components/InstallPWA';
 import './App.css';
 
 // Protected Route Component
