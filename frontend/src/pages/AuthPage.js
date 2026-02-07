@@ -748,7 +748,7 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090B] flex" data-testid="auth-page">
+    <div className="min-h-screen bg-[#09090B] flex overflow-y-auto" data-testid="auth-page">
       {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-zinc-900 to-zinc-950 flex-col justify-center items-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
