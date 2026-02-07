@@ -442,20 +442,28 @@ async def forgot_password(input: ForgotPassword):
     # Try to send email via Resend
     if RESEND_API_KEY:
         try:
+            logo_url = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/7tsbrqqb_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg"
             html_content = f"""
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h1 style="color: white; margin: 0; font-size: 28px;">ClickBarber</h1>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 0;">
+                <!-- Header with Logo -->
+                <div style="background: #09090B; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                    <img src="{logo_url}" alt="ClickBarber" style="height: 80px; margin-bottom: 10px;" />
                 </div>
+                <!-- Content -->
                 <div style="background: #18181B; padding: 30px; border-radius: 0 0 10px 10px;">
-                    <h2 style="color: #F59E0B; margin-top: 0;">Password Reset</h2>
-                    <p style="color: #A1A1AA; font-size: 16px;">Hello {user['name']},</p>
-                    <p style="color: #A1A1AA; font-size: 16px;">Your password reset code is:</p>
-                    <div style="background: #27272A; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
-                        <span style="color: #F59E0B; font-size: 36px; font-weight: bold; letter-spacing: 8px;">{reset_code}</span>
+                    <h2 style="color: #F59E0B; margin-top: 0; font-size: 24px;">Recuperação de Senha</h2>
+                    <p style="color: #E4E4E7; font-size: 16px;">Olá {user['name']},</p>
+                    <p style="color: #A1A1AA; font-size: 16px;">Seu código de recuperação é:</p>
+                    <div style="background: #27272A; padding: 25px; text-align: center; border-radius: 8px; margin: 20px 0; border: 1px solid #3F3F46;">
+                        <span style="color: #F59E0B; font-size: 40px; font-weight: bold; letter-spacing: 10px;">{reset_code}</span>
                     </div>
-                    <p style="color: #71717A; font-size: 14px;">This code expires in 15 minutes.</p>
-                    <p style="color: #71717A; font-size: 14px;">If you didn't request this, please ignore this email.</p>
+                    <p style="color: #71717A; font-size: 14px;">⏱️ Este código expira em 15 minutos.</p>
+                    <p style="color: #71717A; font-size: 14px;">Se você não solicitou esta recuperação, ignore este email.</p>
+                    <hr style="border: none; border-top: 1px solid #3F3F46; margin: 25px 0;" />
+                    <p style="color: #52525B; font-size: 12px; text-align: center;">
+                        ClickBarber - Dublin, Ireland 🇮🇪<br/>
+                        Seu marketplace de barbeiros
+                    </p>
                 </div>
             </div>
             """
@@ -463,7 +471,7 @@ async def forgot_password(input: ForgotPassword):
             params = {
                 "from": SENDER_EMAIL,
                 "to": [input.email],
-                "subject": "ClickBarber - Password Reset Code",
+                "subject": "ClickBarber - Código de Recuperação de Senha",
                 "html": html_content
             }
             
