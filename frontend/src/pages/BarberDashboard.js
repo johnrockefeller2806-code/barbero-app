@@ -79,6 +79,18 @@ const useNotificationSound = () => {
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const LOGO_URL = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/7tsbrqqb_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg";
 
+// Dublin Metropolitan Region Configuration
+const DUBLIN_METRO = {
+  center: { lat: 53.3244, lng: -6.2514 }, // Centro da região metropolitana
+  zoom: 11, // Zoom para mostrar toda a região metropolitana
+  bounds: {
+    north: 53.52,  // Swords e norte
+    south: 53.10,  // Bray, Greystones
+    east: -5.95,   // Costa leste
+    west: -6.55    // Lucan, Rathcoole
+  }
+};
+
 // Fix Leaflet marker icon
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
