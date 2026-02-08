@@ -227,6 +227,16 @@ const BarberDashboard = () => {
   const previousInterestsRef = useRef([]);
   const { playNotificationSound } = useNotificationSound();
   
+  // Stripe Connect state
+  const [stripeConnectStatus, setStripeConnectStatus] = useState({
+    connected: false,
+    onboarding_complete: false,
+    charges_enabled: false,
+    payouts_enabled: false,
+    loading: true
+  });
+  const [connectingStripe, setConnectingStripe] = useState(false);
+  
   // Save sound preference
   useEffect(() => {
     localStorage.setItem('barberSoundEnabled', JSON.stringify(soundEnabled));
