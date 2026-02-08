@@ -1,15 +1,28 @@
 # ClickBarber - Marketplace de Barbeiros (Dublin, Ireland)
 
-## Última Atualização: 04/02/2026
+## Última Atualização: 08/02/2026
 
 ## Arquitetura
 - **Frontend**: React.js + Tailwind CSS + Leaflet (mapas)
 - **Backend**: FastAPI (Python) com JWT auth
 - **Banco de Dados**: MongoDB
-- **Pagamentos**: Stripe
+- **Pagamentos**: Stripe + Stripe Connect (Marketplace)
 - **Email**: Resend
 
 ## Features Implementadas ✅
+
+### Stripe Connect - Marketplace (08/02/2026) 🆕
+- [x] Seção "Receber Pagamentos" no dashboard do barbeiro
+- [x] Botão "Conectar Stripe" para onboarding
+- [x] Botão "Completar Cadastro" para barbeiros que iniciaram mas não finalizaram
+- [x] Status visual: Conectado/Não conectado/Pendente
+- [x] Info box explicando benefícios (10% comissão)
+- [x] Backend: POST /api/connect/onboard - Cria conta Stripe Express
+- [x] Backend: GET /api/connect/status - Verifica status da conta
+- [x] Backend: POST /api/connect/payment - Cria checkout com split automático
+- [x] Frontend cliente: Pagamento com cartão redireciona para Stripe Checkout
+- [x] Callback de sucesso/cancelamento após pagamento
+- [x] Comissão: 10% para ClickBarber, 90% para barbeiro
 
 ### Mapa Região Metropolitana de Dublin (04/02/2026)
 - [x] Mapa centralizado na região metropolitana de Dublin
@@ -61,21 +74,38 @@
 
 ### Features Base
 - Landing Page
-- Autenticação JWT
+- Autenticação JWT + Google OAuth
 - Dashboard Cliente/Barbeiro
 - Mapa em tempo real
 - Rastreamento GPS
 - Agendamento
 - Gorjetas
 - Home Service
-- Stripe
+- Stripe Subscriptions + Stripe Connect
 - Referral
 
-## Banco de Dados
-- Limpo para cadastro de profissionais reais
-- Sem barbeiros de teste
+## API Endpoints - Stripe Connect
+
+| Endpoint | Método | Descrição |
+|----------|--------|-----------|
+| /api/connect/onboard | POST | Cria conta Stripe Express para barbeiro |
+| /api/connect/status | GET | Verifica status da conta conectada |
+| /api/connect/payment | POST | Cria checkout com split 90%/10% |
 
 ## Próximas Features (Backlog)
+
+### P1 - Alta Prioridade
+- [ ] Pagamento de gorjetas via Stripe Connect
+- [ ] Verificar domínio www.clickbarber.ie (aguardando propagação DNS)
+
+### P2 - Média Prioridade
 - [ ] Notificações push nativas (PWA)
 - [ ] WhatsApp direto no perfil
-- [ ] App mobile nativo
+- [ ] Atualizar email oficial (aguardando usuário)
+
+### P3 - Backlog
+- [ ] App mobile nativo (React Native)
+- [ ] Perfis públicos de barbeiros
+- [ ] Sistema de avaliações
+- [ ] Portfolios de fotos
+- [ ] Favoritar barbeiros
