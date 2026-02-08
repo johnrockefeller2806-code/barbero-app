@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Heart, Banknote, CreditCard, X, DollarSign, Sparkles } from 'lucide-react';
+import { Heart, Banknote, CreditCard, X, DollarSign, Sparkles, AlertCircle } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -23,6 +23,23 @@ const TipModal = ({ entry, onClose, onTipGiven }) => {
 
     setLoading(true);
     try {
+      // If paying with card, use Stripe checkout
+      if (paymentMethod === 'card') {
+        const response = await axios.post(`${API}/tips/checkout`, null, {
+          params: {
+            queue_entry_id: entry.id,
+            amount: amount
+          }
+        });
+        
+        if (response.data.checkout_url) {
+          // Redirect to Stripe Checkout
+          window.location.href = response.data.checkout_url;
+          return;
+        }
+      }
+      
+      // For cash tips, just record it
       await axios.post(`${API}/tips?queue_entry_id=${entry.id}&amount=${amount}&payment_method=${paymentMethod}`);
       setSuccess(true);
       setTimeout(() => {
@@ -30,7 +47,13 @@ const TipModal = ({ entry, onClose, onTipGiven }) => {
         onClose();
       }, 2000);
     } catch (e) {
-      alert(e.response?.data?.detail || 'Erro ao enviar gorjeta');
+      // Check if barber doesn't have Stripe
+      if (e.response?.data?.detail?.includes('Stripe')) {
+        alert('⚠️ Este barbeiro ainda não configurou recebimento via cartão. Por favor, dê a gorjeta em dinheiro.');
+        setPaymentMethod('cash');
+      } else {
+        alert(e.response?.data?.detail || 'Erro ao enviar gorjeta');
+      }
     }
     setLoading(false);
   };
