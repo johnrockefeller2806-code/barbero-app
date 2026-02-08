@@ -218,6 +218,24 @@ const ClientDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Check for Stripe payment callback
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const sessionId = urlParams.get('session_id');
+    
+    if (paymentStatus === 'success' && sessionId) {
+      alert('✅ Pagamento realizado com sucesso! O barbeiro foi notificado.');
+      // Clean URL
+      window.history.replaceState({}, '', '/client');
+      // Refresh queue
+      fetchMyQueue();
+    } else if (paymentStatus === 'cancelled') {
+      alert('❌ Pagamento cancelado. Você pode tentar novamente.');
+      window.history.replaceState({}, '', '/client');
+    }
+  }, []);
+
   // Live location tracking for queue
   useEffect(() => {
     let watchId = null;
