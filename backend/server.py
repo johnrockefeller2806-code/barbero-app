@@ -1858,6 +1858,251 @@ async def verify_service_payment(session_id: str):
     
     return {"status": status.status, "paid": status.status == "complete"}
 
+# ==================== STRIPE CONNECT (MARKETPLACE) ====================
+
+@api_router.post("/connect/onboard")
+async def create_connect_account(user: dict = Depends(get_current_user)):
+    """Create Stripe Connect account for barber and return onboarding link"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can connect Stripe")
+    
+    # Check if barber already has a connected account
+    existing = await db.users.find_one({"id": user["id"]}, {"stripe_account_id": 1, "_id": 0})
+    
+    if existing and existing.get("stripe_account_id"):
+        # Already has account, create new onboarding link
+        account_id = existing["stripe_account_id"]
+    else:
+        # Create new Connect account
+        account = stripe.Account.create(
+            type="express",
+            country="IE",  # Ireland
+            email=user["email"],
+            capabilities={
+                "card_payments": {"requested": True},
+                "transfers": {"requested": True},
+            },
+            business_type="individual",
+            metadata={
+                "user_id": user["id"],
+                "platform": "clickbarber"
+            }
+        )
+        account_id = account.id
+        
+        # Save account ID to user
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": {"stripe_account_id": account_id, "stripe_onboarding_complete": False}}
+        )
+    
+    # Create onboarding link
+    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+    account_link = stripe.AccountLink.create(
+        account=account_id,
+        refresh_url=f"{frontend_url}/barber?stripe=refresh",
+        return_url=f"{frontend_url}/barber?stripe=success",
+        type="account_onboarding",
+    )
+    
+    return {"onboarding_url": account_link.url, "account_id": account_id}
+
+@api_router.get("/connect/status")
+async def get_connect_status(user: dict = Depends(get_current_user)):
+    """Check if barber's Stripe Connect account is active"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can check Stripe status")
+    
+    barber = await db.users.find_one({"id": user["id"]}, {"_id": 0, "stripe_account_id": 1, "stripe_onboarding_complete": 1})
+    
+    if not barber or not barber.get("stripe_account_id"):
+        return {"connected": False, "onboarding_complete": False, "charges_enabled": False}
+    
+    # Check account status with Stripe
+    try:
+        account = stripe.Account.retrieve(barber["stripe_account_id"])
+        
+        # Update onboarding status if complete
+        if account.charges_enabled and not barber.get("stripe_onboarding_complete"):
+            await db.users.update_one(
+                {"id": user["id"]},
+                {"$set": {"stripe_onboarding_complete": True}}
+            )
+        
+        return {
+            "connected": True,
+            "onboarding_complete": account.details_submitted,
+            "charges_enabled": account.charges_enabled,
+            "payouts_enabled": account.payouts_enabled,
+            "account_id": barber["stripe_account_id"]
+        }
+    except Exception as e:
+        logging.error(f"Error checking Stripe account: {str(e)}")
+        return {"connected": False, "onboarding_complete": False, "charges_enabled": False, "error": str(e)}
+
+@api_router.post("/connect/payment")
+async def create_connect_payment(
+    barber_id: str,
+    service_name: str,
+    service_price: float,
+    is_home_service: bool = False,
+    travel_fee: float = 0,
+    user: dict = Depends(get_current_user),
+    request: Request = None
+):
+    """Create payment that splits between barber and platform"""
+    
+    # Get barber's Stripe account
+    barber = await db.users.find_one({"id": barber_id}, {"_id": 0, "stripe_account_id": 1, "name": 1, "stripe_onboarding_complete": 1})
+    
+    if not barber or not barber.get("stripe_account_id"):
+        raise HTTPException(status_code=400, detail="Barbeiro não configurou recebimento via Stripe")
+    
+    if not barber.get("stripe_onboarding_complete"):
+        raise HTTPException(status_code=400, detail="Barbeiro ainda não completou cadastro no Stripe")
+    
+    # Calculate amounts
+    total_amount = service_price + travel_fee
+    platform_fee = round(total_amount * (PLATFORM_FEE_PERCENT / 100), 2)
+    barber_amount = total_amount - platform_fee
+    
+    # Get frontend URL
+    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+    if request:
+        origin = request.headers.get('origin', frontend_url)
+    else:
+        origin = frontend_url
+    
+    # Create Stripe Checkout Session with Connect
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'eur',
+                    'unit_amount': int(total_amount * 100),  # Stripe uses cents
+                    'product_data': {
+                        'name': service_name,
+                        'description': f"Serviço com {barber['name']} - ClickBarber",
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=f"{origin}/client?payment=success&session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{origin}/client?payment=cancelled",
+            payment_intent_data={
+                'application_fee_amount': int(platform_fee * 100),  # Platform fee in cents
+                'transfer_data': {
+                    'destination': barber['stripe_account_id'],
+                },
+                'metadata': {
+                    'user_id': user['id'],
+                    'barber_id': barber_id,
+                    'service_name': service_name,
+                    'platform': 'clickbarber'
+                }
+            },
+            metadata={
+                'user_id': user['id'],
+                'barber_id': barber_id,
+                'service_name': service_name,
+                'is_home_service': str(is_home_service),
+                'travel_fee': str(travel_fee),
+                'platform_fee': str(platform_fee),
+                'barber_amount': str(barber_amount)
+            }
+        )
+        
+        # Save payment transaction
+        payment_doc = {
+            "id": str(uuid.uuid4()),
+            "session_id": session.id,
+            "user_id": user["id"],
+            "user_email": user["email"],
+            "barber_id": barber_id,
+            "barber_name": barber["name"],
+            "service_name": service_name,
+            "amount": total_amount,
+            "platform_fee": platform_fee,
+            "barber_amount": barber_amount,
+            "travel_fee": travel_fee,
+            "is_home_service": is_home_service,
+            "currency": "eur",
+            "payment_type": "service_connect",
+            "payment_status": "pending",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.payments.insert_one(payment_doc)
+        
+        return {
+            "checkout_url": session.url,
+            "session_id": session.id,
+            "total": total_amount,
+            "platform_fee": platform_fee,
+            "barber_receives": barber_amount
+        }
+        
+    except stripe.error.StripeError as e:
+        logging.error(f"Stripe error: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Erro no Stripe: {str(e)}")
+
+@api_router.get("/connect/payment/status/{session_id}")
+async def check_connect_payment_status(session_id: str):
+    """Check payment status and update database"""
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        
+        payment_status = "pending"
+        if session.payment_status == "paid":
+            payment_status = "paid"
+        elif session.status == "expired":
+            payment_status = "expired"
+        
+        # Update payment in database
+        await db.payments.update_one(
+            {"session_id": session_id},
+            {"$set": {"payment_status": payment_status}}
+        )
+        
+        return {
+            "status": session.status,
+            "payment_status": payment_status,
+            "paid": payment_status == "paid"
+        }
+        
+    except stripe.error.StripeError as e:
+        logging.error(f"Error checking payment: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+@api_router.get("/connect/earnings")
+async def get_barber_earnings(user: dict = Depends(get_current_user)):
+    """Get barber's earnings summary"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can view earnings")
+    
+    # Get all paid payments for this barber
+    payments = await db.payments.find(
+        {"barber_id": user["id"], "payment_status": "paid"},
+        {"_id": 0}
+    ).to_list(1000)
+    
+    total_earnings = sum(p.get("barber_amount", 0) for p in payments)
+    total_services = len(payments)
+    
+    # Get recent payments
+    recent = await db.payments.find(
+        {"barber_id": user["id"], "payment_status": "paid"},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(10).to_list(10)
+    
+    return {
+        "total_earnings": round(total_earnings, 2),
+        "total_services": total_services,
+        "currency": "eur",
+        "recent_payments": recent
+    }
+
 # ==================== CLIENT HISTORY FOR BARBERS ====================
 
 @api_router.get("/barber/clients")
