@@ -1089,6 +1089,124 @@ async def give_tip(
     
     return {"success": True, "message": f"Tip of €{amount} given successfully"}
 
+@api_router.post("/tips/checkout")
+async def create_tip_checkout(
+    queue_entry_id: str,
+    amount: float,
+    user: dict = Depends(get_current_user),
+    request: Request = None
+):
+    """Create Stripe checkout for tip payment via Stripe Connect"""
+    if user["user_type"] != "client":
+        raise HTTPException(status_code=403, detail="Only clients can give tips")
+    
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="Tip amount must be positive")
+    
+    # Find the queue entry
+    entry = await db.queue.find_one({"id": queue_entry_id, "client_id": user["id"]})
+    if not entry:
+        raise HTTPException(status_code=404, detail="Queue entry not found")
+    
+    if entry.get("tip_given"):
+        raise HTTPException(status_code=400, detail="Tip already given for this service")
+    
+    # Get barber's Stripe account
+    barber = await db.users.find_one(
+        {"id": entry["barber_id"]}, 
+        {"_id": 0, "stripe_account_id": 1, "name": 1, "stripe_onboarding_complete": 1}
+    )
+    
+    if not barber or not barber.get("stripe_account_id"):
+        raise HTTPException(status_code=400, detail="Barbeiro não configurou recebimento via Stripe. Dê a gorjeta em dinheiro.")
+    
+    # For tips, barber receives 100% (no platform fee)
+    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+    if request:
+        origin = request.headers.get('origin', frontend_url)
+    else:
+        origin = frontend_url
+    
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'eur',
+                    'unit_amount': int(amount * 100),  # Stripe uses cents
+                    'product_data': {
+                        'name': f'Gorjeta para {barber["name"]}',
+                        'description': f'Obrigado pelo excelente serviço!',
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=f"{origin}/client?tip=success&entry_id={queue_entry_id}&amount={amount}",
+            cancel_url=f"{origin}/client?tip=cancelled",
+            payment_intent_data={
+                'application_fee_amount': 0,  # No platform fee for tips - barber gets 100%
+                'transfer_data': {
+                    'destination': barber['stripe_account_id'],
+                },
+                'metadata': {
+                    'type': 'tip',
+                    'user_id': user['id'],
+                    'barber_id': entry['barber_id'],
+                    'queue_entry_id': queue_entry_id,
+                    'platform': 'clickbarber'
+                }
+            },
+            metadata={
+                'type': 'tip',
+                'user_id': user['id'],
+                'barber_id': entry['barber_id'],
+                'queue_entry_id': queue_entry_id,
+                'amount': str(amount)
+            }
+        )
+        
+        return {
+            "checkout_url": session.url,
+            "session_id": session.id,
+            "amount": amount,
+            "barber_receives": amount  # 100% for tips
+        }
+        
+    except stripe.error.StripeError as e:
+        logging.error(f"Stripe error for tip: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Erro no Stripe: {str(e)}")
+
+@api_router.post("/tips/confirm")
+async def confirm_tip_payment(
+    queue_entry_id: str,
+    amount: float,
+    user: dict = Depends(get_current_user)
+):
+    """Confirm tip was paid via Stripe (called after successful checkout)"""
+    if user["user_type"] != "client":
+        raise HTTPException(status_code=403, detail="Only clients can confirm tips")
+    
+    # Find the queue entry
+    entry = await db.queue.find_one({"id": queue_entry_id, "client_id": user["id"]})
+    if not entry:
+        raise HTTPException(status_code=404, detail="Queue entry not found")
+    
+    # Update the queue entry with tip info
+    await db.queue.update_one(
+        {"id": queue_entry_id},
+        {
+            "$set": {
+                "tip_amount": amount,
+                "tip_payment_method": "card",
+                "tip_given": True,
+                "tip_paid_via_stripe": True
+            }
+        }
+    )
+    
+    return {"success": True, "message": f"Tip of €{amount} confirmed"}
+
 @api_router.get("/tips/barber")
 async def get_barber_tips(user: dict = Depends(get_current_user)):
     """Get all tips received by barber"""
