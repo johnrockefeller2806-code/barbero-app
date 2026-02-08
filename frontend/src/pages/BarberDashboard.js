@@ -5,7 +5,7 @@ import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Power, Users, Clock, Star, DollarSign, LogOut, Scissors, CheckCircle, XCircle, User, Home, MapPin, Car, Banknote, CreditCard, Crown, History, Gift, Instagram, Edit2, Save, Navigation, Map, MapPinOff, CalendarClock, Heart, Camera, Upload, Image, Bell, Phone, X, Volume2, VolumeX, Share2 } from 'lucide-react';
+import { Power, Users, Clock, Star, DollarSign, LogOut, Scissors, CheckCircle, XCircle, User, Home, MapPin, Car, Banknote, CreditCard, Crown, History, Gift, Instagram, Edit2, Save, Navigation, Map, MapPinOff, CalendarClock, Heart, Camera, Upload, Image, Bell, Phone, X, Volume2, VolumeX, Share2, Wallet, ExternalLink, RefreshCw, AlertCircle } from 'lucide-react';
 import ReferralSection from '../components/ReferralSection';
 import Footer from '../components/Footer';
 
