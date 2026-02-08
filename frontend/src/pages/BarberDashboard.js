@@ -315,6 +315,49 @@ const BarberDashboard = () => {
     }
   };
 
+  // Stripe Connect functions
+  const fetchStripeConnectStatus = async () => {
+    try {
+      const res = await axios.get(`${API}/connect/status`);
+      setStripeConnectStatus({ ...res.data, loading: false });
+    } catch (e) {
+      console.error('Error fetching Stripe status:', e);
+      setStripeConnectStatus(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const handleStripeConnect = async () => {
+    setConnectingStripe(true);
+    try {
+      const res = await axios.post(`${API}/connect/onboard`);
+      if (res.data.onboarding_url) {
+        window.location.href = res.data.onboarding_url;
+      }
+    } catch (e) {
+      console.error('Error connecting Stripe:', e);
+      alert(e.response?.data?.detail || 'Erro ao conectar Stripe. Tente novamente.');
+      setConnectingStripe(false);
+    }
+  };
+
+  // Check for Stripe callback
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const stripeStatus = urlParams.get('stripe');
+    
+    if (stripeStatus === 'success') {
+      // Refresh status after successful onboarding
+      fetchStripeConnectStatus();
+      alert('✅ Conta Stripe conectada com sucesso! Agora você pode receber pagamentos.');
+      // Clean URL
+      window.history.replaceState({}, '', '/barber');
+    } else if (stripeStatus === 'refresh') {
+      // User needs to complete onboarding
+      alert('⚠️ Por favor, complete o cadastro no Stripe para receber pagamentos.');
+      window.history.replaceState({}, '', '/barber');
+    }
+  }, []);
+
   const handleRespondToInterest = async (interestId, action) => {
     try {
       await axios.put(`${API}/home-service-interest/${interestId}/respond?action=${action}`);
