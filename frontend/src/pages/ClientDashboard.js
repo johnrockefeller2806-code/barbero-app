@@ -403,6 +403,27 @@ const ClientDashboard = () => {
     }
     
     try {
+      // If paying with card, use Stripe Connect payment
+      if (paymentMethod === 'card') {
+        const travelFee = isHomeService ? calculatedFee : 0;
+        const response = await axios.post(`${API}/connect/payment`, null, {
+          params: {
+            barber_id: selectedBarber.id,
+            service_name: selectedService.name,
+            service_price: selectedService.price,
+            is_home_service: isHomeService,
+            travel_fee: travelFee
+          }
+        });
+        
+        if (response.data.checkout_url) {
+          // Redirect to Stripe Checkout
+          window.location.href = response.data.checkout_url;
+          return;
+        }
+      }
+      
+      // For cash payments, join queue directly
       const params = new URLSearchParams({
         barber_id: selectedBarber.id,
         is_home_service: isHomeService,
@@ -432,7 +453,13 @@ const ClientDashboard = () => {
         alert(isHomeService ? 'Home service booked!' : 'You joined the queue!');
       }
     } catch (e) {
-      alert(e.response?.data?.detail || 'Error joining queue');
+      // Check if the error is about barber not having Stripe
+      if (e.response?.data?.detail?.includes('Stripe')) {
+        alert('⚠️ Este barbeiro ainda não configurou recebimento via cartão. Por favor, escolha pagar em dinheiro ou selecione outro barbeiro.');
+        setPaymentMethod('cash');
+      } else {
+        alert(e.response?.data?.detail || 'Error joining queue');
+      }
     }
   };
 
