@@ -18,6 +18,7 @@ import random
 import string
 import base64
 import resend
+import stripe
 
 # Stripe integration
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
@@ -35,6 +36,10 @@ security = HTTPBearer(auto_error=False)
 
 JWT_SECRET = os.environ.get('JWT_SECRET', 'barberx-secret-key-2024')
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+PLATFORM_FEE_PERCENT = 10  # 10% commission for ClickBarber
+
+# Initialize Stripe
+stripe.api_key = STRIPE_API_KEY
 
 # Resend configuration
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
