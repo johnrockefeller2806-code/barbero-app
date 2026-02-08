@@ -247,6 +247,7 @@ const BarberDashboard = () => {
     fetchSchedules();
     fetchTips();
     fetchHomeServiceInterests();
+    fetchStripeConnectStatus();
     // Faster refresh when map is open to track live location (every 3s)
     const interval = setInterval(() => {
       fetchQueue();
