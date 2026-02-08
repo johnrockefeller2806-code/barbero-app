@@ -929,6 +929,147 @@ const BarberDashboard = () => {
           </div>
         )}
 
+        {/* Stripe Connect Section - Recebimento de Pagamentos */}
+        <div className="bg-zinc-900 border border-zinc-800 p-6 mb-6" data-testid="stripe-connect-section">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                stripeConnectStatus.charges_enabled 
+                  ? 'bg-green-500/20' 
+                  : stripeConnectStatus.connected 
+                    ? 'bg-amber-500/20' 
+                    : 'bg-zinc-700'
+              }`}>
+                <CreditCard className={`w-6 h-6 ${
+                  stripeConnectStatus.charges_enabled 
+                    ? 'text-green-400' 
+                    : stripeConnectStatus.connected 
+                      ? 'text-amber-400' 
+                      : 'text-zinc-400'
+                }`} />
+              </div>
+              <div>
+                <h2 className="font-heading text-lg text-white uppercase flex items-center gap-2">
+                  Receber Pagamentos
+                  {stripeConnectStatus.charges_enabled && (
+                    <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded normal-case">
+                      ✓ Ativo
+                    </span>
+                  )}
+                </h2>
+                <p className="text-zinc-500 text-sm">
+                  {stripeConnectStatus.loading 
+                    ? 'Verificando...'
+                    : stripeConnectStatus.charges_enabled 
+                      ? 'Receba pagamentos dos clientes diretamente no seu banco'
+                      : stripeConnectStatus.connected 
+                        ? 'Complete o cadastro para receber pagamentos'
+                        : 'Conecte sua conta Stripe para receber pagamentos'}
+                </p>
+              </div>
+            </div>
+            
+            <div>
+              {stripeConnectStatus.loading ? (
+                <div className="w-10 h-10 flex items-center justify-center">
+                  <RefreshCw className="w-5 h-5 text-zinc-500 animate-spin" />
+                </div>
+              ) : stripeConnectStatus.charges_enabled ? (
+                <div className="flex items-center gap-2">
+                  <div className="text-right">
+                    <p className="text-green-400 text-sm font-medium">Conectado</p>
+                    <p className="text-zinc-500 text-xs">10% comissão ClickBarber</p>
+                  </div>
+                  <button
+                    onClick={fetchStripeConnectStatus}
+                    className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded transition-colors"
+                    title="Atualizar status"
+                  >
+                    <RefreshCw className="w-4 h-4 text-zinc-400" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={handleStripeConnect}
+                  disabled={connectingStripe}
+                  className={`flex items-center gap-2 px-4 py-3 rounded font-medium transition-colors ${
+                    stripeConnectStatus.connected 
+                      ? 'bg-amber-500 hover:bg-amber-400 text-black' 
+                      : 'bg-purple-600 hover:bg-purple-500 text-white'
+                  }`}
+                  data-testid="btn-stripe-connect"
+                >
+                  {connectingStripe ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      Conectando...
+                    </>
+                  ) : stripeConnectStatus.connected ? (
+                    <>
+                      <ExternalLink className="w-4 h-4" />
+                      Completar Cadastro
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4" />
+                      Conectar Stripe
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+          
+          {/* Info box when not connected */}
+          {!stripeConnectStatus.charges_enabled && !stripeConnectStatus.loading && (
+            <div className="mt-4 bg-purple-500/10 border border-purple-500/30 p-4 rounded">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-purple-300 text-sm font-medium">
+                    Por que conectar o Stripe?
+                  </p>
+                  <ul className="text-zinc-400 text-sm mt-2 space-y-1">
+                    <li>• Receba pagamentos dos clientes diretamente na sua conta</li>
+                    <li>• Clientes pagam pelo app com cartão de crédito/débito</li>
+                    <li>• Transferência automática para sua conta bancária</li>
+                    <li>• Taxa da plataforma: apenas 10% por serviço</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Success status details */}
+          {stripeConnectStatus.charges_enabled && (
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="bg-zinc-800/50 p-3 rounded">
+                <p className="text-zinc-400 text-xs uppercase">Pagamentos</p>
+                <p className="text-green-400 font-medium flex items-center gap-1">
+                  <CheckCircle className="w-4 h-4" />
+                  Habilitado
+                </p>
+              </div>
+              <div className="bg-zinc-800/50 p-3 rounded">
+                <p className="text-zinc-400 text-xs uppercase">Transferências</p>
+                <p className={`font-medium flex items-center gap-1 ${stripeConnectStatus.payouts_enabled ? 'text-green-400' : 'text-amber-400'}`}>
+                  {stripeConnectStatus.payouts_enabled ? (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      Habilitado
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="w-4 h-4" />
+                      Pendente
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Online Toggle */}
         <div className="bg-zinc-900 border border-zinc-800 p-6 mb-6" data-testid="online-toggle-section">
           <div className="flex items-center justify-between">
