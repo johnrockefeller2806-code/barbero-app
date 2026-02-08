@@ -1714,14 +1714,18 @@ async def create_subscription_checkout(plan_id: str, user: dict = Depends(get_cu
     request = CheckoutSessionRequest(
         customer_email=user["email"],
         line_items=[{
-            "name": f"ClickBarber - {plan['name']}",
-            "description": ", ".join(plan["features"]),
-            "amount": int(plan["price"] * 100),  # Convert to cents
-            "currency": plan["currency"],
+            "price_data": {
+                "currency": plan["currency"],
+                "product_data": {
+                    "name": f"ClickBarber - {plan['name']}",
+                    "description": ", ".join(plan["features"]),
+                },
+                "unit_amount": int(plan["price"] * 100),  # Convert to cents
+            },
             "quantity": 1
         }],
-        success_url=f"{os.environ.get('FRONTEND_URL', 'http://localhost:3000')}/dashboard?subscription=success",
-        cancel_url=f"{os.environ.get('FRONTEND_URL', 'http://localhost:3000')}/dashboard?subscription=cancelled",
+        success_url=f"{os.environ.get('FRONTEND_URL', 'http://localhost:3000')}/barber?subscription=success",
+        cancel_url=f"{os.environ.get('FRONTEND_URL', 'http://localhost:3000')}/barber?subscription=cancelled",
         metadata={
             "user_id": user["id"],
             "plan_id": plan_id,
