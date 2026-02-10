@@ -223,6 +223,9 @@ const ClientDashboard = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const sessionId = urlParams.get('session_id');
+    const tipStatus = urlParams.get('tip');
+    const tipEntryId = urlParams.get('entry_id');
+    const tipAmount = urlParams.get('amount');
     
     if (paymentStatus === 'success' && sessionId) {
       alert('✅ Pagamento realizado com sucesso! O barbeiro foi notificado.');
@@ -232,6 +235,26 @@ const ClientDashboard = () => {
       fetchMyQueue();
     } else if (paymentStatus === 'cancelled') {
       alert('❌ Pagamento cancelado. Você pode tentar novamente.');
+      window.history.replaceState({}, '', '/client');
+    }
+    
+    // Handle tip payment callback
+    if (tipStatus === 'success' && tipEntryId && tipAmount) {
+      // Confirm tip payment in backend
+      axios.post(`${API}/tips/confirm`, null, {
+        params: {
+          queue_entry_id: tipEntryId,
+          amount: parseFloat(tipAmount)
+        }
+      }).then(() => {
+        alert(`✅ Gorjeta de €${tipAmount} enviada com sucesso! O barbeiro agradece! 💚`);
+        fetchCompletedServices();
+      }).catch((e) => {
+        console.error('Error confirming tip:', e);
+      });
+      window.history.replaceState({}, '', '/client');
+    } else if (tipStatus === 'cancelled') {
+      alert('❌ Pagamento da gorjeta cancelado.');
       window.history.replaceState({}, '', '/client');
     }
   }, []);
