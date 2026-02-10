@@ -98,12 +98,13 @@
 | /api/connect/onboard | POST | Cria conta Stripe Express para barbeiro |
 | /api/connect/status | GET | Verifica status da conta conectada |
 | /api/connect/payment | POST | Cria checkout com split 90%/10% |
+| /api/tips/checkout | POST | Cria checkout para gorjeta (100% barbeiro) |
+| /api/tips/confirm | POST | Confirma pagamento da gorjeta |
 
 ## Próximas Features (Backlog)
 
 ### P1 - Alta Prioridade
-- [ ] Pagamento de gorjetas via Stripe Connect
-- [ ] Verificar domínio www.clickbarber.ie (aguardando propagação DNS)
+- [ ] Verificar domínio www.clickbarber.ie (aguardando propagação SSL)
 
 ### P2 - Média Prioridade
 - [ ] Notificações push nativas (PWA)
