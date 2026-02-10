@@ -24,6 +24,13 @@
 - [x] Callback de sucesso/cancelamento após pagamento
 - [x] Comissão: 10% para ClickBarber, 90% para barbeiro
 
+### Gorjetas via Stripe Connect (10/02/2026) 🆕
+- [x] Backend: POST /api/tips/checkout - Cria checkout para gorjeta
+- [x] Backend: POST /api/tips/confirm - Confirma pagamento da gorjeta
+- [x] Frontend: TipModal redireciona para Stripe quando paga com cartão
+- [x] Callback de sucesso após pagamento da gorjeta
+- [x] Gorjetas: 100% vai para o barbeiro (sem comissão da plataforma)
+
 ### Mapa Região Metropolitana de Dublin (04/02/2026)
 - [x] Mapa centralizado na região metropolitana de Dublin
 - [x] Zoom configurado para mostrar toda a área (nível 11)
