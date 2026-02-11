@@ -110,7 +110,7 @@ function App() {
       <LanguageProvider>
         <AuthProvider>
           <AppRoutes />
-          <InstallPWA />
+          {/* InstallPWA removed */}
         </AuthProvider>
       </LanguageProvider>
     </BrowserRouter>
