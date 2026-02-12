@@ -1092,36 +1092,6 @@ const BarberDashboard = () => {
           )}
         </div>
 
-        {/* Online Toggle */}
-        <div className="bg-zinc-900 border border-zinc-800 p-6 mb-6" data-testid="online-toggle-section">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="font-heading text-2xl text-white uppercase">Status</h2>
-              <p className="text-zinc-500">
-                {isOnline ? 'You are receiving clients' : 'You are invisible to clients'}
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-zinc-500 text-xs mb-2 uppercase">Status</p>
-              <button
-                onClick={toggleOnline}
-                disabled={loading}
-                className={`relative w-24 h-12 rounded-sm transition-all duration-300 ${
-                  isOnline ? 'bg-green-500' : 'bg-zinc-700'
-                }`}
-                data-testid="btn-toggle-online"
-              >
-                <div className={`absolute top-1.5 ${isOnline ? 'right-1.5' : 'left-1.5'} w-9 h-9 bg-white rounded-sm transition-all duration-300 flex items-center justify-center`}>
-                  <Power className={`w-5 h-5 ${isOnline ? 'text-green-500' : 'text-zinc-500'}`} />
-                </div>
-                <span className={`absolute ${isOnline ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 font-heading text-xs uppercase ${isOnline ? 'text-white' : 'text-zinc-400'}`}>
-                  {isOnline ? 'ON' : 'OFF'}
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* Map Section - Location & Home Service Tracking */}
         <div className="bg-zinc-900 border border-zinc-800 p-6 mb-6" data-testid="map-section">
           <div className="flex items-center justify-between">
