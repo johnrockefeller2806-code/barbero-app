@@ -791,43 +791,65 @@ const BarberDashboard = () => {
           </div>
         </div>
 
-        {/* Home Service Section */}
-        <div className="bg-zinc-900 border border-zinc-800 p-6 mb-6" data-testid="home-service-section">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="font-heading text-2xl text-white uppercase flex items-center gap-2">
-                <Home className="w-6 h-6 text-blue-500" />
-                Home Service
-              </h2>
-              <p className="text-zinc-500">
-                {isHomeServiceOnline 
-                  ? 'Você está recebendo pedidos de atendimento em casa' 
-                  : 'Ative para receber pedidos de atendimento em casa'}
-              </p>
-              {user?.home_service_fee_per_km > 0 && (
-                <p className="text-blue-400 text-sm mt-1">
-                  Taxa de deslocamento: €{user?.home_service_fee_per_km}/km
-                </p>
-              )}
-            </div>
+        {/* Status & Home Service Section - Combined */}
+        <div className="bg-zinc-900 border border-zinc-800 p-6 mb-6" data-testid="status-section">
+          <div className="grid grid-cols-2 gap-6">
+            {/* Status Online */}
             <div className="text-center">
-              <p className="text-zinc-500 text-xs mb-2 uppercase">Home Service</p>
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Power className="w-5 h-5 text-green-500" />
+                <h3 className="font-heading text-lg text-white uppercase">Status</h3>
+              </div>
+              <button
+                onClick={toggleOnline}
+                disabled={loading}
+                className={`relative w-full h-14 rounded-lg transition-all duration-300 ${
+                  isOnline ? 'bg-green-500' : 'bg-zinc-700'
+                }`}
+                data-testid="btn-toggle-online"
+              >
+                <div className={`absolute top-2 ${isOnline ? 'right-2' : 'left-2'} w-10 h-10 bg-white rounded-lg transition-all duration-300 flex items-center justify-center`}>
+                  <Power className={`w-5 h-5 ${isOnline ? 'text-green-500' : 'text-zinc-500'}`} />
+                </div>
+                <span className={`absolute ${isOnline ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 font-heading text-sm uppercase font-bold ${isOnline ? 'text-white' : 'text-zinc-400'}`}>
+                  {isOnline ? 'ON' : 'OFF'}
+                </span>
+              </button>
+              <p className="text-zinc-500 text-xs mt-2">
+                {isOnline ? 'Recebendo clientes' : 'Invisível'}
+              </p>
+            </div>
+
+            {/* Home Service */}
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Home className="w-5 h-5 text-blue-500" />
+                <h3 className="font-heading text-lg text-white uppercase">Home</h3>
+              </div>
               <button
                 onClick={toggleHomeServiceOnline}
-                className={`relative w-24 h-12 rounded-sm transition-all duration-300 ${
+                className={`relative w-full h-14 rounded-lg transition-all duration-300 ${
                   isHomeServiceOnline ? 'bg-blue-500' : 'bg-zinc-700'
                 }`}
                 data-testid="btn-toggle-home-service-main"
               >
-                <div className={`absolute top-1.5 ${isHomeServiceOnline ? 'right-1.5' : 'left-1.5'} w-9 h-9 bg-white rounded-sm transition-all duration-300 flex items-center justify-center`}>
+                <div className={`absolute top-2 ${isHomeServiceOnline ? 'right-2' : 'left-2'} w-10 h-10 bg-white rounded-lg transition-all duration-300 flex items-center justify-center`}>
                   <Home className={`w-5 h-5 ${isHomeServiceOnline ? 'text-blue-500' : 'text-zinc-500'}`} />
                 </div>
-                <span className={`absolute ${isHomeServiceOnline ? 'left-2' : 'right-2'} top-1/2 -translate-y-1/2 font-heading text-xs uppercase ${isHomeServiceOnline ? 'text-white' : 'text-zinc-400'}`}>
+                <span className={`absolute ${isHomeServiceOnline ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 font-heading text-sm uppercase font-bold ${isHomeServiceOnline ? 'text-white' : 'text-zinc-400'}`}>
                   {isHomeServiceOnline ? 'ON' : 'OFF'}
                 </span>
               </button>
+              <p className="text-zinc-500 text-xs mt-2">
+                {isHomeServiceOnline ? 'Atendendo em casa' : 'Desativado'}
+              </p>
             </div>
           </div>
+          {user?.home_service_fee_per_km > 0 && (
+            <p className="text-blue-400 text-sm mt-4 text-center">
+              Taxa de deslocamento: €{user?.home_service_fee_per_km}/km
+            </p>
+          )}
         </div>
 
         {/* Home Service Interests Section - Only show when online for home service */}
