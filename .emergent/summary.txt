@@ -1,183 +1,204 @@
-<analysis>Here is the handover summary:
+<analysis>Analyse and provide a useful summary for the next agent to work with.
 
 **original_problem_statement:**
-The user provided a GitHub repository for an existing application, ClickBarber, and requested to continue its development. The series of requests evolved the application significantly:
-1.  **Map Enhancement:** Update the map to focus on the Dublin metropolitan area, add an administrative boundary line, and ensure touch controls (drag/zoom) are functional.
-2.  **Barber Features:** Allow barbers to edit their location and add a toggle to enable/disable their availability for Home Service.
-3.  **Authentication & Security:** Implement password recovery via email (using Resend) and add a Login with Google option.
-4.  **UI/UX Improvements:** Customize the password recovery email template with the brand logo and colors. Redesign the client dashboard header for a cleaner look with standardized icon colors. Adjust UI elements to prevent overlap with the Made with Emergent badge. Standardize the layout of toggles on the barber dashboard.
-5.  **Deployment & SEO:** Guide the user through verifying their domain () with Google Search Console and configuring DNS (CNAME record) to point the  subdomain to the deployed application.
-6.  **Mobile App:** Configure the web app as a Progressive Web App (PWA) to allow users to install it on their mobile devices.
-7.  **Payment System:**
-    *   Initially, set up Stripe for barbers to pay a subscription fee to use the platform.
-    *   The latest and most critical request is to transform the payment model into a marketplace system using **Stripe Connect**, where clients pay for services through the app, and the platform automatically takes a **10% commission** before paying out the rest to the barber.
+The user provided a GitHub repository for an existing application, ClickBarber, a marketplace for barbers. The initial request was to pull the latest updates and continue development.
 
-**User's preferred language**: Portuguese
+Subsequent user requests included:
+- Add a sound notification for barbers when a new client arrives.
+- Implement a password recovery system and a 6-digit PIN for quick login.
+- Clear all test data from the database.
+- Fix an issue where the app was not opening on mobile phones.
+- Update the default prices for services and the travel fee per kilometer.
+- Fix the synchronization of barber online/offline status on the client's map (green for online, red for offline).
+- Add the ClickBarber name next to the logo in the header.
+- Adjust the layout to prevent the Made with Emergent badge from overlapping content.
+- Improve the Home Service request flow by allowing clients to select services from a modal instead of typing.
+- Allow clients to upload a profile photo for identification by the barber.
+- Add a manual refresh button to the dashboards.
+- Add a Share button to share the app with friends.
+- Create a Privacy Policy page.
+- Prepare all necessary materials and provide guidance to publish the application on the Google Play Store.
+- Fix an issue with disproportional buttons on the barber's dashboard.
+- Debug an issue where a barber's IBAN was not being accepted by Stripe and subsequent payment failures.
+
+**User's preferred language**: Portuguese (Portugal/Brazil). The next agent MUST respond in Portuguese.
 
 **what currently exists?**
-The project is a full-stack ClickBarber marketplace application built with a React frontend, Python/FastAPI backend, and MongoDB database.
-
-Key existing features:
--   **Authentication:** JWT (email/password), PIN, and Google Social Login.
--   **Dashboards:** Separate dashboards for clients and barbers.
--   **Core Functionality:** Real-time map of Dublin with barber locations, scheduling, a home service system, and a basic tipping feature.
--   **Integrations:**
-    -   **Resend:** For sending password recovery emails from .
-    -   **Stripe Subscriptions:** For barbers to subscribe to platform plans.
-    -   **Stripe Connect:** Backend endpoints have been created to support a marketplace payment model.
--   **PWA:** The application is configured to be installable on mobile devices.
+A full-stack application called ClickBarber, a real-time marketplace for barbers in Dublin.
+-   **Frontend:** React, using TailwindCSS, Leaflet for maps.
+-   **Backend:** FastAPI (Python).
+-   **Database:** MongoDB.
+-   **Key Features:**
+    -   Real-time map showing online/offline barbers.
+    -   Client and Barber dashboards.
+    -   Scheduling system.
+    -   Home Service requests with a service selection modal.
+    -   Profile photo uploads for both barbers and clients.
+    -   Stripe Connect integration for barbers to onboard and receive payments.
+    -   JWT-based authentication with a 6-digit PIN for quick login.
+    -   Password recovery via email (using Resend).
+    -   Sound notifications for new client alerts.
+    -   Referral and Share functionality.
+    -   A dedicated Privacy Policy page.
+    -   The project is PWA-enabled.
 
 **Last working item**:
-    - Last item agent was working: Implementing the **Stripe Connect** marketplace payment model. The agent created the backend endpoints to handle barber onboarding () and to process client payments with an automatic 10% commission split ().
-    - Status: IN PROGRESS
-    - Agent Testing Done: N
-    - Which testing method agent to use? both
-    - User Testing Done: N
+-   **Last item agent was working:** Debugging Stripe Connect payment issues. The user reported that a payment made to a barber (Cecilia) did not appear in her Stripe account, and they were receiving errors when trying to connect with a real IBAN. The agent diagnosed the problem: the application is configured with Stripe's **test** API key (), which only works with test data and test IBANs, not real ones. The agent is trying to guide the user to find and provide their **live** API key () to enable production payments.
+-   **Status:** BLOCKED
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Manual testing by the user. After the agent updates the backend with the correct  key, the user must perform a real payment transaction and verify its arrival in their Stripe dashboard.
+-   **User Testing Done:** N (User's last test failed because of the incorrect API key).
 
 **All Pending/In progress Issue list**:
-  - Issue 1: Finalize Stripe Connect Implementation (Priority: P0)
-  - Issue 2: Verify DNS Propagation for  (Priority: P1)
-  
-  **Issues Detail:**
-  - **Issue 1: Finalize Stripe Connect Implementation**
-     - **Attempted fixes:** The backend API endpoints for Stripe Connect onboarding and payment processing have been created in . However, the work is incomplete.
-     - **Next debug checklist:**
-        1.  **Frontend - Barber Onboarding:** In , add a new section (e.g., Pagamentos or Connect Stripe). This section must contain a button that, when clicked, calls the  endpoint. The user should be redirected to the URL returned by the API to complete the Stripe onboarding process.
-        2.  **Frontend - Client Payment:** Modify the client's booking/payment flow. When a client pays for a service with a card, the frontend should now call the  endpoint (the one designed for Stripe Connect with an application fee).
-        3.  **Testing:** After implementation, perform an end-to-end test: onboard a test barber, have a test client book and pay for a service, and verify in the Stripe dashboard that the payment was split correctly.
-     - **Why fix this issue and what will be achieved with the fix?** This is a critical feature that enables the app's core business model: taking a commission on transactions. Completing it will make the application a true marketplace.
-     - **Status:**  IN PROGRESS
-     - **Is recurring issue?** N
-     - **Should Test frontend/backend/both after fix?** both
-     - **Blocked on other issue:** None
+-   **Issue 1:** Stripe payments are not working in production mode. (P0 - HIGHEST PRIORITY)
 
-  - **Issue 2: Verify DNS Propagation for **
-     - **Attempted fixes:** The agent guided the user to add a CNAME record in their Register365 DNS settings to point  to the application's preview URL.
-     - **Next debug checklist:** This is an external process. The next agent should simply ask the user to test the URL  again. If it's still not working after 24 hours, advise the user to double-check the CNAME record in Register365 or contact their support.
-     - **Why fix this issue and what will be achieved with the fix?** This will make the application accessible via the user's custom domain, which is essential for branding and marketing.
-     - **Status:**  USER VERIFICATION PENDING
-     - **Is recurring issue?** N
-     - **Should Test frontend/backend/both after fix?** frontend (by visiting the URL)
-     - **Blocked on other issue:** None
+**Issues Detail:**
+-   **Issue 1:**
+    -   **Description:** Barbers cannot receive real payments because the application is using Stripe's test API key. This also caused errors when the user tried to onboard a barber with a real IBAN.
+    -   **Attempted fixes:** The agent correctly identified the root cause is the use of a  key instead of a  key. The agent has repeatedly asked the user for the live key and explained how to find it in the Stripe dashboard, but the user continues to provide screenshots of the Stripe sandbox/test environment.
+    -   **Next debug checklist:**
+        1.  Clearly re-iterate to the user, in Portuguese, how to switch from Test mode to Live mode in their Stripe dashboard to find the  secret key.
+        2.  Once the user provides the correct  key, edit the  file and update the  variable.
+        3.  Restart the backend service using backend: stopped
+backend: started.
+        4.  Guide the user to test the entire flow again: have a barber connect their Stripe account (with a real IBAN), and then have a client make a real payment to that barber.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a critical, core functionality. Fixing it will allow the marketplace to process real financial transactions, enabling the app's business model.
+    -   **Status:** BLOCKED (waiting for user to provide the correct API key).
+    -   **Is recurring issue?** Y (The user has struggled with the test vs. live concept multiple times).
+    -   **Should Test frontend/backend/both after fix?** Both. The backend needs to handle the webhook and payment intent correctly, but the ultimate verification is the user confirming the money arrived in their live Stripe account.
 
 **In progress Task List**:
-  There are no other in-progress tasks besides the Stripe Connect implementation detailed above.
+-   **Task 1:** Publish the app on the Google Play Store. (P1)
+
+**Task Detail:**
+-   **Task 1:**
+    -   **Where to resume:** The agent has already created the necessary text content (, ) and configured the  to make the app a PWA. The next step is to configure the user's custom domain,  (bought on Register365), to point to the deployed application URL (). The task was paused by the user.
+    -   **What will be achieved with this?** The app will be accessible via the custom domain, which is a prerequisite for generating the Android App Bundle (AAB) using a tool like PWABuilder and publishing it on the Google Play Store.
+    -   **Status:** BLOCKED (waiting for the user to resume the task and provide access/guidance for DNS configuration on Register365).
+    -   **Should Test frontend/backend/both after fix?** N/A
+    -   **Blocked on something:** User action to configure DNS.
 
 **Upcoming and Future Tasks**
-**Upcoming Tasks:**
--   **Task 1: Implement Stripe Payments for Tips (P1):** The current system only marks tips as 'Card' but doesn't process the payment. The checkout flow needs to be updated to process tip payments via Stripe, likely using Stripe Connect so the funds go to the barber. This can be done in  and the corresponding backend endpoint.
--   **Task 2: Update Official Email Address (P2, User-Blocked):** The user mentioned creating an official email. Once they provide it, update the  variable in .
-
-**Future Tasks:**
--   **Publish to App Stores (P2):** The user expressed a desire to publish on the Google Play Store and Apple App Store. This would require migrating the application from a PWA to a native framework like React Native.
--   **Implement Features from PRD (P2):**
-    -   Public profile pages for barbers.
-    -   Customer reviews and rating system.
-    -   Photo portfolios for barbers.
-    -   Ability for clients to favorite barbers.
+-   **Upcoming Tasks:**
+    -   **P1:** Generate app icons (512x512 px) and a feature graphic (1024x500 px) for the Play Store listing, as these were identified as necessary but not yet created.
 
 **Completed work in this session**
--   **Map Overhaul:** The map was updated to center on Dublin, and a visual boundary for the county was added to both client and barber dashboards (, ).
--   **Barber Location Editing:** Implemented the UI and backend logic for barbers to edit their service location (, ).
--   **Google Login:** Integrated Google OAuth for user authentication (, , ).
--   **Password Recovery:** Set up a complete password recovery flow using Resend, including domain verification, DNS configuration, and custom email templates (, ).
--   **UI Standardization:** Redesigned the barber dashboard with consistent toggle switches for Status, Home Service, and Map View ().
--   **PWA Configuration:** Enabled Progressive Web App features, making the app installable on mobile devices (, , ).
--   **Stripe Subscription:** Fully implemented and tested the Stripe checkout flow for barber subscription plans (, subscription-related pages).
--   **Domain & SEO Setup:** Guided the user through verifying their domain with Google Search Console and setting the CNAME record to point  to the app.
+-   **Sound Notifications:** Implemented audio alerts for barbers upon receiving a new client.
+-   **Security & Auth:** Deployed a password recovery system via email (Resend) and a 6-digit PIN for quick login.
+-   **Data Management:** Cleaned all test data (barbers, clients, queues) from the database.
+-   **Bug Fixes:**
+    -   Resolved a mobile crash on iOS/Safari by adding a check for the  API.
+    -   Corrected the online/offline status indicators (map markers and list dots) to show green for online and red for offline.
+    -   Fixed button alignment/proportionality on the Barber Dashboard by reverting to a previous version of the code.
+-   **UI/UX Enhancements:**
+    -   Updated default service prices and travel fees in the backend and frontend.
+    -   Added ClickBarber text logo to the header of both client and barber dashboards.
+    -   Added padding to pages to prevent the Made with Emergent badge from overlapping content.
+    -   Replaced the text-prompt-based Home Service request with a user-friendly modal for service selection.
+    -   Enabled clients to upload a profile photo.
+    -   Added a manual refresh button and a Share button to the dashboards.
+-   **Play Store Preparation:**
+    -   Created a comprehensive Privacy Policy page and linked it in the app.
+    -   Generated all required text descriptions and metadata for the Play Store listing ().
+    -   Created a step-by-step guide for the user to publish the app ().
+    -   Configured the  to make the application a Progressive Web App (PWA).
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Stripe Payment for Tips**
-   -   **Debug checklist:** The  component needs to be modified. When the user selects Card, it should trigger a Stripe checkout session instead of just setting local state. A new backend endpoint might be needed to handle this specific transaction type via Stripe Connect.
-   -   **Why to solve this issue and what will be achieved with this?** It provides a seamless way for clients to tip barbers, potentially increasing barber earnings and satisfaction with the platform.
-   -   **Should Test frontend/backend/both after fix:** both
-   -   **Is recurring issue?** N
+None.
 
 **Known issue recurrence from previous fork**
--   None.
+None.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Frontend:** React, TailwindCSS, Leaflet.js
--   **Backend:** Python (FastAPI)
--   **Database:** MongoDB
--   **Authentication:** JWT, PIN, Google OAuth
--   **Payments:** Stripe (Subscriptions and Connect)
--   **Email:** Resend
--   **Deployment:** Emergent Platform (PWA enabled)
+-   **Frontend:** React, React Hooks, React Router, Axios, TailwindCSS, Leaflet.js (for maps), Web Audio API.
+-   **Backend:** FastAPI, Pydantic, JWT for authentication.
+-   **Database:** MongoDB.
+-   **Integrations:** Stripe Connect (for marketplace payments), Resend (for transactional emails).
+-   **Architecture:** Full-stack monolith-style repository with separate  and  directories. Real-time updates are handled by periodic polling.
+-   **Deployment:** PWA (Progressive Web App) approach for mobile deployment.
 
 **key DB schema**
--   **users:** Stores common user data (, , ). Contains barber-specific fields like , , , ,  (for Stripe Connect payouts).
--   **bookings:** Stores appointment information between clients and barbers.
--   **payments:** Logs Stripe checkout sessions and payment statuses.
+-   **users:** 
+-   **queue:** 
+-   **reviews:** 
+-   **home_service_interests:** 
 
 **changes in tech stack**
-- No changes to the core stack. Added integrations with Resend, Google OAuth, and Stripe Connect.
+-   **Resend** was added for handling password recovery emails.
 
 **All files of reference**
--   : The main FastAPI application file, containing all API logic, including the new Stripe Connect endpoints.
--   : The main workspace for barber-facing features. It needs to be modified to add the Stripe Connect onboarding button.
--   : The main workspace for client-facing features. The payment flow here will need to be updated for Stripe Connect.
--   : Contains all secrets, including , , and .
--   : Handles all login and registration UI, including the Google Login button.
+-   : The main backend file. Updated extensively to add PIN login, password reset, client photo logic, updated prices, and Stripe Connect endpoints.
+-   : Major frontend file. Updated to add photo upload, service selection modal, status indicators, refresh/share buttons, and layout adjustments. It's very large.
+-   : Major frontend file. Updated for sound notifications, status toggles, displaying client photos, and adding header buttons. It's also very large.
+-   : Rewritten to support PIN login and password recovery flows.
+-   : Updated to support .
+-   : Created/overwritten to configure the PWA.
+-   : New file created for the privacy policy.
+-   , , : New markdown files with instructions and content for Play Store publication.
 
-**Areas that need refactoring**:
--    and  are monolithic and contain over 1000 lines of code each. They should be broken down into smaller, reusable components (e.g., , , ) to improve maintainability.
+**Areas that need refactoring**
+-   The two main page components,  and , are extremely large (over 1000 lines each). They contain business logic, state management, and multiple sub-components/modals all in one file. They should be broken down into smaller, reusable components to improve maintainability.
+-   The agent created a  component, added it, then removed it, then created it again. The final decision was to rely on the platform's default badge, but the file might still exist. This shows some indecisiveness and could be cleaned up.
 
 **key api endpoints**
--   , 
--   , 
 -   
--   : **(New)** Generates a link for a barber to onboard to Stripe Connect.
--   : **(New/Modified)** Creates a payment session for a service, applying a 10% application fee for the platform.
--   : Creates a payment session for a barber's monthly subscription.
+-   
+-   
+-   
+-   
+-    (To start Stripe onboarding for a barber)
+-    (To check the status of Stripe onboarding)
+-    (To get list of barbers)
+-    (To manage the client queue)
+-    (To manage home service requests)
 
 **Critical Info for New Agent**
--   **Primary Goal:** Complete the Stripe Connect integration. The backend is partially done; the frontend is the next step.
--   **Commission:** The platform's commission is fixed at **10%** for all services paid through the app.
--   **Language:** You MUST communicate with the user in **Portuguese**.
--   **Stripe Mode:** All Stripe operations are currently in **Test Mode**. Remind the user they will need to switch to Live keys before accepting real payments.
--   **Custom Domain:** The user has configured DNS for . This is pending propagation and user verification. Do not be alarmed if the custom domain does not work immediately. The app is accessible via its direct preview URL.
+-   **The user is blocked on Stripe Production configuration.** They need very clear, simple, step-by-step instructions (in Portuguese) on how to find their  key. They seem to respond well to visual cues, so referencing the Test mode toggle in the Stripe dashboard is crucial. Do not proceed with other tasks until this is resolved.
+-   **The Play Store publication task is paused and also blocked on the user.** The next step is DNS configuration for  on . Be ready to provide specific DNS records ( or  records) once the user is ready to continue.
+-   The user is non-technical and requires guidance on concepts like API keys (test vs. live) and DNS. Be patient and break down instructions into small, manageable steps.
+-   The files  and  are very complex. Be cautious when editing them.
 
 **documents and test reports created in this job**
 -   
 -   
+-   
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Asks how barbers get paid.
-2.  **Agent:** Explains the current subscription model vs. a marketplace model (Stripe Connect).
-3.  **User:** Chooses the marketplace model (Cliente paga pelo app...).
-4.  **Agent:** Asks for details (commission %) and guides the user to enable Stripe Connect in their dashboard.
-5.  **User:** Shares a screenshot of the Stripe Connect setup page.
-6.  **Agent:** Instructs the user to select the Marketplace option.
-7.  **User:** Confirms it's done (pronto).
-8.  **Agent:** Asks for the desired commission percentage with examples.
-9.  **User:** Specifies €3.00, implying 10%.
-10. **Agent:** Confirms 10% and begins backend implementation, which is followed by a good morning message from the user and the agent's response to continue the work.
+1.  **User:** Shared a screenshot of their Stripe account after the agent asked for the live key.
+2.  **Agent:** Explained that the screenshot shows the SANDBOX (test) environment and instructed the user on how to disable Test mode to find the  key. Offered to configure the provided test key for now.
+3.  **User:** Shared another screenshot, still from the test environment.
+4.  **Agent:** Re-confirmed that it's still Test mode but agreed to configure the provided test key for testing purposes.
+5.  **User:** Shared another screenshot, this time of a Connected status in the Stripe dashboard.
+6.  **Agent:** Confirmed the functionality seems to be active based on the screenshot and recommended the user do a full payment test.
+7.  **User:** I will log in as a client and make the payment to Cecilia to see if everything is in order.
+8.  **Agent:** Confirmed the test plan and provided Stripe's test card number.
+9.  **User:** ok
+10. **Agent:** Encouraged the user to perform the test and report back.
 
 **Project Health Check:**
 -   **Broken:**
-    -   The end-to-end marketplace payment flow is broken as the frontend part of the Stripe Connect integration is missing.
--   **Mocked:** None.
+    -   Stripe production payments. The entire payment flow only works in test mode.
+-   **Mocked:**
+    -   The password recovery email system does not send real emails because the Resend domain is not verified. It prints the recovery code to the backend logs for testing purposes.
 
 **3rd Party Integrations**
--   **Google Auth:** Emergent-managed Google Auth.
--   **Resend (Email):** Requires User API Key.
--   **Stripe (Payments):**
-    -   Handles barber subscriptions and marketplace payments (via Stripe Connect).
-    -   Requires User API Key ().
+-   **Stripe Connect:** Used for marketplace payments, allowing barbers to receive funds from clients. Requires user's own API keys. Currently configured with a **test** key.
+-   **Resend:** Used for sending password recovery emails. Requires user's own API key. The key has been provided, but the domain is likely unverified.
 
 **Testing status**
--   Testing agent used after significant changes: NO
+-   Testing agent used after significant changes: YES (once, for the PIN/Password Reset feature).
 -   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: []
--   Known regressions: []
+-   Test files created: None.
+-   Known regressions: None.
 
 **Credentials to test flow:**
-The agent must create test users (both 'client' and 'barber') on the fly for testing purposes. The Stripe and Resend API keys are configured in .
+-   **Barber:**  / 
+-   **Client:**  / 
 
 **What agent forgot to execute**
-- The implementation of the frontend for Stripe Connect is the logical next step, not a forgotten task.
-- The implementation of Stripe payments for **tips** was discussed but deferred when the user's focus shifted. This remains an un-actioned but requested feature.</analysis>
+-   The agent identified that graphics for the Play Store were needed (app icon 512x512, feature graphic 1024x500) but tasked the user with providing them instead of offering to generate placeholder or final versions. This could be a future step to help the user move forward with publication.</analysis>
