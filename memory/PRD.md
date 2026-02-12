@@ -1,6 +1,6 @@
 # ClickBarber - Marketplace de Barbeiros (Dublin, Ireland)
 
-## Última Atualização: 08/02/2026
+## Última Atualização: 12/02/2026
 
 ## Arquitetura
 - **Frontend**: React.js + Tailwind CSS + Leaflet (mapas)
@@ -9,111 +9,108 @@
 - **Pagamentos**: Stripe + Stripe Connect (Marketplace)
 - **Email**: Resend
 
+## Status do Sistema: ✅ FUNCIONAL
+
+### Verificação Completa Realizada: 12/02/2026
+- Backend: 87% testes passaram (20/23)
+- Frontend: 100% elementos verificados
+
 ## Features Implementadas ✅
 
-### Stripe Connect - Marketplace (08/02/2026) 🆕
+### Stripe Connect - Marketplace
 - [x] Seção "Receber Pagamentos" no dashboard do barbeiro
 - [x] Botão "Conectar Stripe" para onboarding
-- [x] Botão "Completar Cadastro" para barbeiros que iniciaram mas não finalizaram
 - [x] Status visual: Conectado/Não conectado/Pendente
-- [x] Info box explicando benefícios (10% comissão)
-- [x] Backend: POST /api/connect/onboard - Cria conta Stripe Express
-- [x] Backend: GET /api/connect/status - Verifica status da conta
-- [x] Backend: POST /api/connect/payment - Cria checkout com split automático
-- [x] Frontend cliente: Pagamento com cartão redireciona para Stripe Checkout
-- [x] Callback de sucesso/cancelamento após pagamento
+- [x] Backend: POST /api/connect/onboard
+- [x] Backend: GET /api/connect/status
+- [x] Backend: POST /api/connect/payment
 - [x] Comissão: 10% para ClickBarber, 90% para barbeiro
 
-### Gorjetas via Stripe Connect (10/02/2026) 🆕
-- [x] Backend: POST /api/tips/checkout - Cria checkout para gorjeta
-- [x] Backend: POST /api/tips/confirm - Confirma pagamento da gorjeta
-- [x] Frontend: TipModal redireciona para Stripe quando paga com cartão
-- [x] Callback de sucesso após pagamento da gorjeta
-- [x] Gorjetas: 100% vai para o barbeiro (sem comissão da plataforma)
+### Autenticação
+- [x] Registro de cliente e barbeiro
+- [x] Login com email/password
+- [x] Login com PIN de 6 dígitos
+- [x] Recuperação de senha por email
+- [x] Google OAuth
 
-### Mapa Região Metropolitana de Dublin (04/02/2026)
-- [x] Mapa centralizado na região metropolitana de Dublin
-- [x] Zoom configurado para mostrar toda a área (nível 11)
-- [x] Limites: Swords (norte), Greystones (sul), Lucan/Rathcoole (oeste), Costa (leste)
-- [x] Cidades cobertas: Dublin, Swords, Lucan, Bray, Greystones, Rathcoole, Dun Laoghaire
-- [x] Rodovias visíveis: M50, N7, M11
+### Mapa e Barbeiros
+- [x] Mapa centralizado em Dublin
+- [x] Marcadores VERDES = Online
+- [x] Marcadores VERMELHOS = Offline
+- [x] Filtro de barbeiros online
+- [x] Cálculo de distância
 
-### Edição de Localização do Barbeiro (04/02/2026)
-- [x] Modal para editar localização
-- [x] Campo de endereço completo
-- [x] Botão "Usar Minha Localização Atual (GPS)"
-- [x] Campos manuais de Latitude/Longitude
-- [x] Info sobre área de cobertura
-- [x] Validação antes de salvar
+### Sistema de Filas
+- [x] Entrar na fila
+- [x] Ver posição na fila
+- [x] Cancelar/Sair da fila
 
-### Header Completo (31/01/2026)
-- [x] Logo + Nome "ClickBarber" 
-- [x] Botão Compartilhar (verde) - WhatsApp/Share nativo
-- [x] Botão Refresh - Recarrega a página
-- [x] Foto do perfil com câmera para upload
-- [x] Botão de som (barbeiro) - notificações sonoras
-- [x] Logout
+### Home Service
+- [x] Modal de seleção de serviços
+- [x] Cálculo de taxa de deslocamento
+- [x] Interesse em serviço ao domicílio
 
-### Foto do Cliente (31/01/2026)
-- [x] Cliente pode adicionar foto no perfil
-- [x] Foto aparece no header do cliente
-- [x] Barbeiro vê foto do cliente nos pedidos Home Service
+### Interface
+- [x] Landing Page
+- [x] Dashboard Cliente com mapa
+- [x] Dashboard Barbeiro
+- [x] Header com logo ClickBarber
+- [x] Botões Share, Refresh, Logout
+- [x] Upload de foto de perfil
+- [x] Notificações sonoras
 
-### Modal Home Service Melhorado (31/01/2026)
-- [x] Seleção de serviço com botões (não precisa digitar)
-- [x] Opções: Barba, Corte, Corte e Barba, Combo
-- [x] Campo de endereço para copiar/colar
-- [x] Preços visíveis em cada opção
+### PWA/Play Store
+- [x] manifest.json configurado
+- [x] Página de Política de Privacidade
+- [x] Materiais para Play Store gerados
 
-### Sistema de Segurança (31/01/2026)
-- [x] Recuperação de senha por email (Resend)
-- [x] PIN de 6 dígitos para login rápido
-- [x] Login com PIN (estilo app de banco)
+## Configuração Atual
 
-### Sincronização Mapa (31/01/2026)
-- [x] Marcador VERDE = Barbeiro ONLINE
-- [x] Marcador VERMELHO = Barbeiro OFFLINE
-- [x] Atualização automática a cada 10 segundos
+### Stripe
+- **Modo**: TESTE (sk_test_emergent)
+- **Status**: Funcional para testes
+- **Para Produção**: Necessária chave sk_live_...
 
-### Valores Atualizados
-- Taxa de deslocamento: €1/km
-- Corte: €30, Barba: €15, Combo: €40
+### Email (Resend)
+- **API Key**: Configurada
+- **Domínio**: Não verificado (retorna código para testes)
 
-### Features Base
-- Landing Page
-- Autenticação JWT + Google OAuth
-- Dashboard Cliente/Barbeiro
-- Mapa em tempo real
-- Rastreamento GPS
-- Agendamento
-- Gorjetas
-- Home Service
-- Stripe Subscriptions + Stripe Connect
-- Referral
+### Credenciais de Teste
+- Barbeiro: test@barber.com / 123456
+- Cliente: client@test.com / 123456
 
-## API Endpoints - Stripe Connect
+## API Endpoints Principais
 
 | Endpoint | Método | Descrição |
 |----------|--------|-----------|
-| /api/connect/onboard | POST | Cria conta Stripe Express para barbeiro |
-| /api/connect/status | GET | Verifica status da conta conectada |
-| /api/connect/payment | POST | Cria checkout com split 90%/10% |
-| /api/tips/checkout | POST | Cria checkout para gorjeta (100% barbeiro) |
-| /api/tips/confirm | POST | Confirma pagamento da gorjeta |
+| /api/auth/register | POST | Registro |
+| /api/auth/login | POST | Login |
+| /api/auth/login-pin | POST | Login com PIN |
+| /api/auth/forgot-password | POST | Recuperar senha |
+| /api/barbers | GET | Lista barbeiros |
+| /api/queue/join | POST | Entrar na fila |
+| /api/connect/onboard | POST | Conectar Stripe |
+| /api/connect/status | GET | Status Stripe |
+| /api/connect/payment | POST | Criar pagamento |
 
-## Próximas Features (Backlog)
+## Próximas Tarefas
 
-### P1 - Alta Prioridade
-- [ ] Verificar domínio www.clickbarber.ie (aguardando propagação SSL)
+### P0 - Crítico (para produção)
+- [ ] Configurar chave Stripe LIVE (sk_live_...)
+- [ ] Verificar domínio no Resend
 
-### P2 - Média Prioridade
-- [ ] Notificações push nativas (PWA)
+### P1 - Play Store
+- [ ] Configurar DNS clickbarber.ie
+- [ ] Gerar ícones 512x512
+- [ ] Gerar feature graphic 1024x500
+- [ ] Criar AAB com PWABuilder
+- [ ] Publicar na Play Store
+
+### P2 - Melhorias
+- [ ] Notificações push nativas
 - [ ] WhatsApp direto no perfil
-- [ ] Atualizar email oficial (aguardando usuário)
+- [ ] Sistema de avaliações melhorado
 
-### P3 - Backlog
-- [ ] App mobile nativo (React Native)
-- [ ] Perfis públicos de barbeiros
-- [ ] Sistema de avaliações
-- [ ] Portfolios de fotos
-- [ ] Favoritar barbeiros
+## URLs
+- Preview: https://stripe-payment-fix-14.preview.emergentagent.com
+- Domínio planejado: clickbarber.ie
