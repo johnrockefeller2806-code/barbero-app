@@ -24,7 +24,7 @@ import stripe
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 
 ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+load_dotenv(ROOT_DIR / '.env', override=True)
 
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
@@ -40,6 +40,7 @@ PLATFORM_FEE_PERCENT = 10  # 10% commission for ClickBarber
 
 # Initialize Stripe
 stripe.api_key = STRIPE_API_KEY
+logging.info(f"Stripe initialized with key: {STRIPE_API_KEY[:15]}...")
 
 # Resend configuration
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
