@@ -1062,6 +1062,24 @@ const BarberDashboard = () => {
             </div>
           )}
           
+          {/* Important notice about Stripe verification */}
+          {!stripeConnectStatus.charges_enabled && !stripeConnectStatus.loading && (
+            <div className="mt-3 bg-amber-500/10 border border-amber-500/30 p-4 rounded">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-amber-300 text-sm font-medium">
+                    ⚠️ Aviso Importante
+                  </p>
+                  <p className="text-zinc-400 text-sm mt-1">
+                    Para conectar sua conta Stripe, é necessário que você já tenha uma conta Stripe ativa com a verificação de documentos concluída. 
+                    Se ainda não tem conta, crie uma em <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" className="text-amber-400 underline">stripe.com</a> e complete a verificação antes de conectar.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Success status details */}
           {stripeConnectStatus.charges_enabled && (
             <div className="mt-4 grid grid-cols-2 gap-3">
