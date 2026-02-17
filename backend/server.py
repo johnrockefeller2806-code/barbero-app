@@ -842,10 +842,10 @@ async def create_school_course(data: CourseCreate, user: dict = Depends(get_scho
     """Create a new course for the school"""
     school_id = user.get("school_id")
     
-    # Check if school is approved
+    # Check if school exists (no status check - auto-approved)
     school = await db.schools.find_one({"id": school_id}, {"_id": 0})
-    if not school or school.get("status") != "approved":
-        raise HTTPException(status_code=403, detail="School must be approved to create courses")
+    if not school:
+        raise HTTPException(status_code=404, detail="School not found")
     
     course = Course(
         school_id=school_id,
