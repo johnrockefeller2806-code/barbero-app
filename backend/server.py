@@ -744,6 +744,45 @@ async def upload_barber_photo(
     
     return {"success": True, "photo_url": photo_url}
 
+# ==================== USER PHOTO UPLOAD ====================
+
+class PhotoUploadRequest(BaseModel):
+    photo_base64: str
+
+@api_router.post("/users/photo")
+async def upload_user_photo(
+    data: PhotoUploadRequest,
+    user: dict = Depends(get_current_user)
+):
+    """Upload profile photo for any user (client or barber)"""
+    try:
+        # Validate base64 data
+        if not data.photo_base64:
+            raise HTTPException(status_code=400, detail="No photo provided")
+        
+        # Check if it's a valid data URL
+        if not data.photo_base64.startswith('data:image/'):
+            raise HTTPException(status_code=400, detail="Invalid image format")
+        
+        # Check size (base64 is ~33% larger than original)
+        # Max 5MB original = ~6.67MB in base64
+        if len(data.photo_base64) > 7 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Image too large. Max 5MB")
+        
+        # Update user photo
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": {"photo_url": data.photo_base64}}
+        )
+        
+        return {"success": True, "photo_url": data.photo_base64}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error uploading photo: {str(e)}")
+
+
+
 # ==================== QUEUE ROUTES ====================
 
 @api_router.post("/queue/join")
