@@ -137,25 +137,13 @@ class School(BaseModel):
     subscription_status: str = "inactive"  # inactive, active, cancelled
     subscription_id: Optional[str] = None
 
-# Subscription Plans Configuration
+# Subscription Plans Configuration - SIMPLIFIED to 15% fixed commission
 SUBSCRIPTION_PLANS = {
-    "starter": {
-        "name": "Starter",
-        "price": 49.00,
-        "commission_rate": 0.08,  # 8%
-        "description": "Ideal para escolas pequenas"
-    },
-    "professional": {
-        "name": "Professional", 
-        "price": 99.00,
-        "commission_rate": 0.05,  # 5%
-        "description": "Para escolas em crescimento"
-    },
-    "premium": {
-        "name": "Premium",
-        "price": 199.00,
-        "commission_rate": 0.03,  # 3%
-        "description": "Para grandes instituições"
+    "free": {
+        "name": "Gratuito",
+        "price": 0,
+        "commission_rate": 0.15,  # 15% for all
+        "description": "Comece a receber alunos"
     }
 }
 
