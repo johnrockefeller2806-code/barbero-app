@@ -52,9 +52,16 @@ export const Navbar = () => {
     return '/dashboard';
   };
 
+  // Helper function for multi-language labels
+  const getLabel = (pt, en, es) => {
+    if (language === 'pt') return pt;
+    if (language === 'es') return es;
+    return en;
+  };
+
   const getDashboardLabel = () => {
-    if (isAdmin) return language === 'pt' ? 'Admin' : 'Admin';
-    if (isSchool) return language === 'pt' ? 'Minha Escola' : 'My School';
+    if (isAdmin) return 'Admin';
+    if (isSchool) return getLabel('Minha Escola', 'My School', 'Mi Escuela');
     return t('nav_dashboard');
   };
 
@@ -66,49 +73,49 @@ export const Navbar = () => {
   const mainNavLinks = [
     { 
       href: '/schools', 
-      label: language === 'pt' ? 'Escolas' : 'Schools', 
+      label: getLabel('Escolas', 'Schools', 'Escuelas'), 
       icon: GraduationCap,
       color: 'orange'
     },
     { 
       href: '/transport', 
-      label: language === 'pt' ? 'Transporte' : 'Transport', 
+      label: getLabel('Transporte', 'Transport', 'Transporte'), 
       icon: Bus,
       color: 'orange'
     },
     { 
       href: '/tourism', 
-      label: language === 'pt' ? 'Turismo' : 'Tourism', 
+      label: getLabel('Turismo', 'Tourism', 'Turismo'), 
       icon: Camera,
       color: 'orange'
     },
     { 
       href: '/emergency', 
-      label: language === 'pt' ? 'Emergência' : 'Emergency', 
+      label: getLabel('Emergência', 'Emergency', 'Emergencia'), 
       icon: Shield,
       color: 'orange'
     },
     { 
       href: '/services', 
-      label: language === 'pt' ? 'Serviços' : 'Services', 
+      label: getLabel('Serviços', 'Services', 'Servicios'), 
       icon: FileText,
       color: 'orange'
     },
     { 
       href: '/guia-estudante', 
-      label: language === 'pt' ? 'Guia' : 'Guide', 
+      label: getLabel('Guia', 'Guide', 'Guía'), 
       icon: BookOpen,
       color: 'orange'
     },
     { 
       href: '/passagens', 
-      label: language === 'pt' ? 'Passagens' : 'Flights', 
+      label: getLabel('Passagens', 'Flights', 'Vuelos'), 
       icon: Plane,
       color: 'orange'
     },
     { 
       href: '/seguro', 
-      label: language === 'pt' ? 'Seguro' : 'Insurance', 
+      label: getLabel('Seguro', 'Insurance', 'Seguro'), 
       icon: Shield,
       color: 'orange'
     },
@@ -117,7 +124,7 @@ export const Navbar = () => {
   const stuffNavLinks = [
     { 
       href: '/duvidas', 
-      label: 'Dúvidas', 
+      label: getLabel('Dúvidas', 'FAQ', 'Dudas'), 
       icon: HelpCircle,
       color: 'green'
     },
@@ -129,7 +136,7 @@ export const Navbar = () => {
     },
     { 
       href: '/sobre', 
-      label: language === 'pt' ? 'Sobre' : 'About', 
+      label: getLabel('Sobre', 'About', 'Acerca de'), 
       icon: Heart,
       color: 'green'
     },
