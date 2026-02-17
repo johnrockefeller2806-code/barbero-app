@@ -1277,7 +1277,7 @@ async def create_enrollment(
     if not course:
         raise HTTPException(status_code=404, detail="Curso não encontrado")
     
-    school = await db.schools.find_one({"id": course["school_id"], "status": "approved"}, {"_id": 0})
+    school = await db.schools.find_one({"id": course["school_id"]}, {"_id": 0})
     if not school:
         raise HTTPException(status_code=404, detail="Escola não encontrada")
     
