@@ -307,21 +307,6 @@ export const SchoolDashboard = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-8">
-        {/* Pending Alert */}
-        {isPending && (
-          <Card className="border-amber-200 bg-amber-50 mb-8">
-            <CardContent className="p-6 flex items-center gap-4">
-              <AlertCircle className="h-8 w-8 text-amber-600" />
-              <div>
-                <h3 className="font-semibold text-amber-900">Aguardando Aprovação</h3>
-                <p className="text-sm text-amber-700">
-                  Sua escola está em análise. Você poderá criar cursos após a aprovação.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 -mt-12 mb-8">
           <Card className="border-slate-100 shadow-lg" data-testid="stat-courses">
