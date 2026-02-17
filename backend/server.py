@@ -16,6 +16,7 @@ from emergentintegrations.payments.stripe.checkout import (
     StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 )
 import base64
+import stripe  # Stripe Connect
 
 # Import chat module
 from chat import chat_router, init_chat_module, setup_ttl_index
@@ -35,6 +36,10 @@ JWT_EXPIRATION_HOURS = 24
 
 # Stripe Config
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+stripe.api_key = STRIPE_API_KEY
+
+# Platform Commission Rate (15%)
+PLATFORM_COMMISSION_RATE = 0.15
 
 # Create the main app
 app = FastAPI(title="Dublin Study API")
