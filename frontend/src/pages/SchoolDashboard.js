@@ -47,7 +47,10 @@ import {
   Clock,
   AlertCircle,
   Building2,
-  FileText
+  FileText,
+  CreditCard,
+  ExternalLink,
+  Wallet
 } from 'lucide-react';
 import { toast } from 'sonner';
 
