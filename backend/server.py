@@ -1448,7 +1448,9 @@ async def create_checkout(
         
         return {"url": session.url, "session_id": session.id}
     
-    return {"url": session.url, "session_id": session.session_id}
+    except stripe.error.StripeError as e:
+        logger.error(f"Stripe error creating checkout: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 @api_router.get("/payments/status/{session_id}")
 async def get_payment_status(session_id: str, http_request: Request):
