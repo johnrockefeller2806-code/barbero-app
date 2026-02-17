@@ -209,7 +209,7 @@ export const Navbar = () => {
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem onClick={() => navigate('/profile')} data-testid="nav-profile">
                       <Camera className="h-4 w-4 mr-2" />
-                      {language === 'pt' ? 'Meu Perfil' : 'My Profile'}
+                      {getLabel('Meu Perfil', 'My Profile', 'Mi Perfil')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate(getDashboardLink())} data-testid="nav-dashboard">
                       <LayoutDashboard className="h-4 w-4 mr-2" />
@@ -238,11 +238,11 @@ export const Navbar = () => {
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem onClick={() => navigate('/register')}>
                         <User className="h-4 w-4 mr-2" />
-                        {language === 'pt' ? 'Como Estudante' : 'As Student'}
+                        {getLabel('Como Estudante', 'As Student', 'Como Estudiante')}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => navigate('/register-school')}>
                         <Building2 className="h-4 w-4 mr-2" />
-                        {language === 'pt' ? 'Como Escola' : 'As School'}
+                        {getLabel('Como Escola', 'As School', 'Como Escuela')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
