@@ -1183,16 +1183,15 @@ async def get_school_subscription(user: dict = Depends(get_school_user)):
 
 @api_router.get("/school/earnings")
 async def get_school_earnings(user: dict = Depends(get_school_user)):
-    """Get school earnings breakdown"""
+    """Get school earnings breakdown with 15% platform commission"""
     school_id = user.get("school_id")
     school = await db.schools.find_one({"id": school_id}, {"_id": 0})
     
     if not school:
         raise HTTPException(status_code=404, detail="Escola não encontrada")
     
-    # Get commission rate based on plan
-    plan_id = school.get("subscription_plan", "starter")
-    commission_rate = SUBSCRIPTION_PLANS.get(plan_id, SUBSCRIPTION_PLANS["starter"])["commission_rate"]
+    # Fixed commission rate of 15%
+    commission_rate = PLATFORM_COMMISSION_RATE
     
     # Get all paid enrollments
     enrollments = await db.enrollments.find(
@@ -1211,23 +1210,21 @@ async def get_school_earnings(user: dict = Depends(get_school_user)):
         if paid_at:
             month_key = paid_at[:7]  # YYYY-MM
             if month_key not in monthly_earnings:
-                monthly_earnings[month_key] = {"gross": 0, "commission": 0, "net": 0}
+                monthly_earnings[month_key] = {"gross": 0, "commission": 0, "net": 0, "count": 0}
             monthly_earnings[month_key]["gross"] += enrollment.get("price", 0)
             monthly_earnings[month_key]["commission"] += enrollment.get("price", 0) * commission_rate
             monthly_earnings[month_key]["net"] += enrollment.get("price", 0) * (1 - commission_rate)
+            monthly_earnings[month_key]["count"] += 1
     
     return {
         "summary": {
             "total_gross": round(total_gross, 2),
             "total_commission": round(total_commission, 2),
-            "commission_rate": commission_rate * 100,
+            "commission_rate": commission_rate * 100,  # 15%
             "total_net": round(total_net, 2),
             "total_enrollments": len(enrollments)
         },
-        "plan": {
-            "name": SUBSCRIPTION_PLANS.get(plan_id, {}).get("name", "Starter"),
-            "commission_rate": commission_rate * 100
-        },
+        "stripe_connected": school.get("stripe_onboarding_complete", False),
         "monthly": monthly_earnings
     }
 
