@@ -38,7 +38,7 @@ const LOGO_URL = "https://customer-assets.emergentagent.com/job_dublin-study/art
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, isAuthenticated, isAdmin, isSchool, logout } = useAuth();
-  const { language, toggleLanguage, t } = useLanguage();
+  const { language, setLanguage, t, languageOptions } = useLanguage();
   const navigate = useNavigate();
 
   const handleLogout = () => {
