@@ -386,6 +386,13 @@ export const SchoolDashboard = () => {
                 <Badge className="ml-2 bg-amber-500 text-white">{stats?.pending_letters}</Badge>
               )}
             </TabsTrigger>
+            <TabsTrigger value="payments" data-testid="tab-payments">
+              <CreditCard className="h-4 w-4 mr-1" />
+              Pagamentos
+              {!stripeStatus?.onboarding_complete && (
+                <Badge className="ml-2 bg-red-500 text-white">!</Badge>
+              )}
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
