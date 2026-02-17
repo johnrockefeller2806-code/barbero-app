@@ -53,8 +53,9 @@ export const Schools = () => {
     school.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Check if user needs to see paywall
-  const showPaywall = !isPlusUser;
+  // REMOVED: Paywall disabled - schools are free to view
+  // const showPaywall = !isPlusUser;
+  const showPaywall = false;
 
   if (loading) {
     return (
