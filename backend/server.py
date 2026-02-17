@@ -1232,8 +1232,8 @@ async def get_school_earnings(user: dict = Depends(get_school_user)):
 
 @api_router.get("/schools", response_model=List[School])
 async def get_schools():
-    # Only return approved schools for public listing
-    schools = await db.schools.find({"status": "approved"}, {"_id": 0}).to_list(100)
+    # Only return all schools for public listing (no status filter)
+    schools = await db.schools.find({}, {"_id": 0}).to_list(100)
     return schools
 
 @api_router.get("/schools/{school_id}", response_model=School)
