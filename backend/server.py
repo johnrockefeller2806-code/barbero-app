@@ -1324,6 +1324,7 @@ async def create_checkout(
     http_request: Request,
     user: dict = Depends(get_current_user)
 ):
+    """Create checkout session with Stripe Connect - 15% goes to platform, 85% to school"""
     enrollment = await db.enrollments.find_one(
         {"id": request.enrollment_id, "user_id": user["id"]}, {"_id": 0}
     )
@@ -1333,50 +1334,119 @@ async def create_checkout(
     if enrollment.get("status") == "paid":
         raise HTTPException(status_code=400, detail="Esta matrícula já foi paga")
     
-    host_url = str(http_request.base_url).rstrip('/')
-    webhook_url = f"{host_url}/api/webhook/stripe"
+    # Get school's Stripe account
+    school = await db.schools.find_one({"id": enrollment["school_id"]}, {"_id": 0})
+    if not school:
+        raise HTTPException(status_code=404, detail="Escola não encontrada")
     
-    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+    stripe_account_id = school.get("stripe_account_id")
+    
+    # Calculate amounts
+    total_amount = float(enrollment["price"])
+    platform_fee = round(total_amount * PLATFORM_COMMISSION_RATE, 2)  # 15%
+    school_amount = round(total_amount - platform_fee, 2)  # 85%
     
     success_url = f"{request.origin_url}/payment/success?session_id={{CHECKOUT_SESSION_ID}}"
     cancel_url = f"{request.origin_url}/dashboard"
     
-    checkout_request = CheckoutSessionRequest(
-        amount=float(enrollment["price"]),
-        currency="eur",
-        success_url=success_url,
-        cancel_url=cancel_url,
-        metadata={
-            "enrollment_id": enrollment["id"],
-            "user_id": user["id"],
-            "user_email": user["email"],
-            "school_name": enrollment["school_name"],
-            "course_name": enrollment["course_name"]
-        }
-    )
-    
-    session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_request)
-    
-    transaction = PaymentTransaction(
-        session_id=session.session_id,
-        user_id=user["id"],
-        user_email=user["email"],
-        enrollment_id=enrollment["id"],
-        amount=float(enrollment["price"]),
-        currency="eur",
-        status="initiated",
-        payment_status="pending",
-        metadata={
-            "school_name": enrollment["school_name"],
-            "course_name": enrollment["course_name"]
-        }
-    )
-    await db.payment_transactions.insert_one(transaction.model_dump())
-    
-    await db.enrollments.update_one(
-        {"id": enrollment["id"]},
-        {"$set": {"payment_session_id": session.session_id}}
-    )
+    try:
+        # If school has Stripe Connect, use destination charges
+        if stripe_account_id and school.get("stripe_onboarding_complete"):
+            session = stripe.checkout.Session.create(
+                payment_method_types=["card"],
+                line_items=[{
+                    "price_data": {
+                        "currency": "eur",
+                        "product_data": {
+                            "name": f"{enrollment['course_name']} - {enrollment['school_name']}",
+                            "description": f"Curso de inglês em Dublin"
+                        },
+                        "unit_amount": int(total_amount * 100)  # Stripe uses cents
+                    },
+                    "quantity": 1
+                }],
+                mode="payment",
+                success_url=success_url,
+                cancel_url=cancel_url,
+                payment_intent_data={
+                    "application_fee_amount": int(platform_fee * 100),  # 15% platform fee
+                    "transfer_data": {
+                        "destination": stripe_account_id  # 85% goes to school
+                    }
+                },
+                metadata={
+                    "enrollment_id": enrollment["id"],
+                    "user_id": user["id"],
+                    "user_email": user["email"],
+                    "school_id": enrollment["school_id"],
+                    "school_name": enrollment["school_name"],
+                    "course_name": enrollment["course_name"],
+                    "platform_fee": str(platform_fee),
+                    "school_amount": str(school_amount)
+                }
+            )
+            
+            payment_type = "stripe_connect"
+        else:
+            # Fallback: regular checkout (no split) - school not connected yet
+            host_url = str(http_request.base_url).rstrip('/')
+            webhook_url = f"{host_url}/api/webhook/stripe"
+            
+            stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+            
+            checkout_request = CheckoutSessionRequest(
+                amount=total_amount,
+                currency="eur",
+                success_url=success_url,
+                cancel_url=cancel_url,
+                metadata={
+                    "enrollment_id": enrollment["id"],
+                    "user_id": user["id"],
+                    "user_email": user["email"],
+                    "school_name": enrollment["school_name"],
+                    "course_name": enrollment["course_name"]
+                }
+            )
+            
+            checkout_response = await stripe_checkout.create_checkout_session(checkout_request)
+            session = type('Session', (), {
+                'id': checkout_response.session_id,
+                'url': checkout_response.url
+            })()
+            
+            payment_type = "regular"
+        
+        # Create transaction record
+        transaction = PaymentTransaction(
+            session_id=session.id,
+            user_id=user["id"],
+            user_email=user["email"],
+            enrollment_id=enrollment["id"],
+            amount=total_amount,
+            currency="eur",
+            status="initiated",
+            payment_status="pending",
+            metadata={
+                "school_id": enrollment["school_id"],
+                "school_name": enrollment["school_name"],
+                "course_name": enrollment["course_name"],
+                "payment_type": payment_type,
+                "platform_fee": str(platform_fee),
+                "school_amount": str(school_amount),
+                "stripe_account_id": stripe_account_id or ""
+            }
+        )
+        await db.payment_transactions.insert_one(transaction.model_dump())
+        
+        await db.enrollments.update_one(
+            {"id": enrollment["id"]},
+            {"$set": {"payment_session_id": session.id}}
+        )
+        
+        logger.info(f"Created {payment_type} checkout for enrollment {enrollment['id']}")
+        logger.info(f"   Total: €{total_amount}, Platform Fee: €{platform_fee}, School: €{school_amount}")
+        
+        return {"url": session.url, "session_id": session.id}
     
     return {"url": session.url, "session_id": session.session_id}
 
