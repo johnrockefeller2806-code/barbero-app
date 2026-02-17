@@ -241,6 +241,33 @@ export const SchoolDashboard = () => {
     return labels[level] || level;
   };
 
+  // Stripe Connect functions
+  const handleConnectStripe = async () => {
+    setStripeLoading(true);
+    try {
+      const response = await axios.post(`${API}/school/stripe/onboard`, {
+        origin_url: window.location.origin
+      });
+      // Redirect to Stripe onboarding
+      window.location.href = response.data.url;
+    } catch (error) {
+      console.error('Error connecting Stripe:', error);
+      toast.error('Erro ao conectar Stripe');
+    } finally {
+      setStripeLoading(false);
+    }
+  };
+
+  const handleOpenStripeDashboard = async () => {
+    try {
+      const response = await axios.get(`${API}/school/stripe/dashboard`);
+      window.open(response.data.url, '_blank');
+    } catch (error) {
+      console.error('Error opening Stripe dashboard:', error);
+      toast.error('Erro ao abrir dashboard do Stripe');
+    }
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-slate-50 py-12" data-testid="school-loading">
