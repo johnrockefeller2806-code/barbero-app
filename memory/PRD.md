@@ -4,10 +4,10 @@
 Criação de um aplicativo completo de intercâmbio educacional com foco em Dublin, Irlanda, desenvolvido para conectar estudantes diretamente às escolas credenciadas, sem intermediários.
 
 ## Arquitetura
-- **Backend**: FastAPI + MongoDB + Stripe (emergentintegrations)
+- **Backend**: FastAPI + MongoDB + Stripe Connect
 - **Frontend**: React + Tailwind CSS + Shadcn UI
 - **Auth**: JWT (email/senha) com 3 roles: student, school, admin
-- **Payments**: Stripe (test mode)
+- **Payments**: Stripe Connect (marketplace com 15% comissão)
 - **Emails**: MOCKED (logged to console)
 
 ## User Personas
@@ -18,16 +18,17 @@ Criação de um aplicativo completo de intercâmbio educacional com foco em Dubl
 ## Core Requirements (Static)
 - Catálogo de escolas com preços transparentes
 - Cursos com duração, carga horária e requisitos
-- Pagamento online integrado (Stripe)
+- Pagamento online integrado (Stripe Connect)
+- **Marketplace com 15% comissão para STUFF, 85% para escola**
 - Notificação automática por e-mail após pagamento
 - Guias de transporte público de Dublin
 - Lista de órgãos governamentais
 - Guia PPS Number, GNIB/IRP, Passaporte
-- Interface multilíngue (PT/EN)
+- Interface multilíngue (PT/EN/ES)
 - Painel Admin para gerenciamento
 - Área da Escola para gestão de cursos
 
-## Implementado - Janeiro 2025
+## Implementado - Janeiro/Fevereiro 2025
 
 ### Fase 1 - MVP Estudante ✅
 - Catálogo de escolas e cursos
@@ -48,6 +49,33 @@ Criação de um aplicativo completo de intercâmbio educacional com foco em Dubl
 - **Área da Escola** (/school)
   - Dashboard com estatísticas
   - CRUD de cursos
+
+### Fase 3 - Stripe Connect Marketplace ✅ (Fevereiro 2025)
+- **Stripe Connect** para escolas
+  - Endpoint `/api/school/stripe/onboard` - Cria conta Connect Express
+  - Endpoint `/api/school/stripe/status` - Verifica status do onboarding
+  - Endpoint `/api/school/stripe/dashboard` - Link para dashboard Stripe
+- **Pagamento com Split Automático**
+  - 15% vai para a plataforma STUFF (application_fee)
+  - 85% vai direto para a escola (destination charges)
+- **Dashboard de Ganhos**
+  - Total Bruto, Taxa STUFF, Total Líquido
+  - Breakdown mensal de vendas
+- **Interface Trilíngue** (PT/EN/ES)
+
+## Pendente - Backlog
+
+### P0 - Crítico
+- [ ] Testar fluxo completo de pagamento com escola real
+
+### P1 - Importante
+- [ ] Integração real de e-mail (substituir mock)
+- [ ] Upload de carta PDF
+
+### P2 - Desejável
+- [ ] Sistema de reviews/avaliações
+- [ ] PWA para mobile
+- [ ] Notificações push
   - Ver matrículas recebidas
   - Enviar carta de aceitação
   - Perfil da escola
