@@ -405,7 +405,7 @@ async def register_school(data: SchoolRegister):
         address=data.address,
         phone=data.phone,
         email=data.email,
-        status="pending",
+        status="approved",  # Auto-approved - no admin review needed
         owner_id=user_id
     )
     await db.schools.insert_one(school.model_dump())
