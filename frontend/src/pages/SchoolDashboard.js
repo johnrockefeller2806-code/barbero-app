@@ -107,14 +107,18 @@ export const SchoolDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [dashboardRes, coursesRes, enrollmentsRes] = await Promise.all([
+      const [dashboardRes, coursesRes, enrollmentsRes, stripeRes, earningsRes] = await Promise.all([
         axios.get(`${API}/school/dashboard`),
         axios.get(`${API}/school/courses`),
-        axios.get(`${API}/school/enrollments`)
+        axios.get(`${API}/school/enrollments`),
+        axios.get(`${API}/school/stripe/status`).catch(() => ({ data: null })),
+        axios.get(`${API}/school/earnings`).catch(() => ({ data: null }))
       ]);
       setDashboard(dashboardRes.data);
       setCourses(coursesRes.data);
       setEnrollments(enrollmentsRes.data);
+      setStripeStatus(stripeRes.data);
+      setEarnings(earningsRes.data);
     } catch (error) {
       console.error('Error fetching school data:', error);
       toast.error('Erro ao carregar dados');
