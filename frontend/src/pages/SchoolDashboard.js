@@ -616,6 +616,152 @@ export const SchoolDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Payments Tab */}
+          <TabsContent value="payments">
+            <div className="space-y-6">
+              {/* Stripe Connect Status */}
+              <Card className="border-slate-100">
+                <CardHeader>
+                  <CardTitle className="font-serif flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    Stripe Connect
+                  </CardTitle>
+                  <CardDescription>
+                    Conecte sua conta Stripe para receber pagamentos diretamente
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {stripeStatus?.onboarding_complete ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+                        <CheckCircle className="h-6 w-6 text-emerald-600" />
+                        <div>
+                          <p className="font-medium text-emerald-900">Stripe Conectado</p>
+                          <p className="text-sm text-emerald-700">Sua conta está ativa e pronta para receber pagamentos</p>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-slate-50 rounded-lg">
+                          <p className="text-sm text-slate-500">Taxa da Plataforma</p>
+                          <p className="text-2xl font-bold text-slate-900">{stripeStatus?.commission_rate || 15}%</p>
+                        </div>
+                        <div className="p-4 bg-slate-50 rounded-lg">
+                          <p className="text-sm text-slate-500">Você Recebe</p>
+                          <p className="text-2xl font-bold text-emerald-600">{100 - (stripeStatus?.commission_rate || 15)}%</p>
+                        </div>
+                      </div>
+
+                      <Button onClick={handleOpenStripeDashboard} className="w-full" variant="outline">
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Abrir Dashboard do Stripe
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                        <AlertCircle className="h-6 w-6 text-amber-600" />
+                        <div>
+                          <p className="font-medium text-amber-900">Stripe não conectado</p>
+                          <p className="text-sm text-amber-700">
+                            Conecte sua conta para receber pagamentos dos alunos automaticamente
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h4 className="font-medium text-blue-900 mb-2">Como funciona:</h4>
+                        <ul className="text-sm text-blue-700 space-y-1">
+                          <li>• Aluno paga pelo app usando cartão</li>
+                          <li>• 15% fica com a plataforma STUFF</li>
+                          <li>• 85% vai direto para sua conta Stripe</li>
+                          <li>• Transferência automática para seu banco</li>
+                        </ul>
+                      </div>
+
+                      <Button 
+                        onClick={handleConnectStripe} 
+                        className="w-full bg-[#635BFF] hover:bg-[#524DDB]"
+                        disabled={stripeLoading}
+                      >
+                        {stripeLoading ? (
+                          <>Conectando...</>
+                        ) : (
+                          <>
+                            <Wallet className="h-4 w-4 mr-2" />
+                            Conectar Stripe
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Earnings Summary */}
+              {earnings && (
+                <Card className="border-slate-100">
+                  <CardHeader>
+                    <CardTitle className="font-serif flex items-center gap-2">
+                      <Euro className="h-5 w-5" />
+                      Resumo de Ganhos
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                      <div className="p-4 bg-slate-50 rounded-lg">
+                        <p className="text-sm text-slate-500">Total Bruto</p>
+                        <p className="text-xl font-bold text-slate-900">€{earnings.summary?.total_gross?.toFixed(2) || '0.00'}</p>
+                      </div>
+                      <div className="p-4 bg-red-50 rounded-lg">
+                        <p className="text-sm text-red-600">Taxa STUFF (15%)</p>
+                        <p className="text-xl font-bold text-red-700">-€{earnings.summary?.total_commission?.toFixed(2) || '0.00'}</p>
+                      </div>
+                      <div className="p-4 bg-emerald-50 rounded-lg">
+                        <p className="text-sm text-emerald-600">Seu Total Líquido</p>
+                        <p className="text-xl font-bold text-emerald-700">€{earnings.summary?.total_net?.toFixed(2) || '0.00'}</p>
+                      </div>
+                      <div className="p-4 bg-blue-50 rounded-lg">
+                        <p className="text-sm text-blue-600">Total de Matrículas</p>
+                        <p className="text-xl font-bold text-blue-700">{earnings.summary?.total_enrollments || 0}</p>
+                      </div>
+                    </div>
+
+                    {earnings.monthly && Object.keys(earnings.monthly).length > 0 && (
+                      <div>
+                        <h4 className="font-medium text-slate-900 mb-3">Ganhos por Mês</h4>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Mês</TableHead>
+                              <TableHead>Matrículas</TableHead>
+                              <TableHead>Bruto</TableHead>
+                              <TableHead>Taxa</TableHead>
+                              <TableHead>Líquido</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {Object.entries(earnings.monthly)
+                              .sort((a, b) => b[0].localeCompare(a[0]))
+                              .map(([month, data]) => (
+                                <TableRow key={month}>
+                                  <TableCell className="font-medium">{month}</TableCell>
+                                  <TableCell>{data.count || 0}</TableCell>
+                                  <TableCell>€{data.gross?.toFixed(2)}</TableCell>
+                                  <TableCell className="text-red-600">-€{data.commission?.toFixed(2)}</TableCell>
+                                  <TableCell className="text-emerald-600 font-medium">€{data.net?.toFixed(2)}</TableCell>
+                                </TableRow>
+                              ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
 
