@@ -155,17 +155,36 @@ export const Navbar = () => {
 
             {/* Right side - Language and Auth */}
             <div className="flex items-center gap-2">
-              {/* Language Toggle */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleLanguage}
-                className="text-white hover:bg-orange-600 gap-1"
-                data-testid="language-toggle"
-              >
-                <Globe className="h-4 w-4" />
-                <span className="text-sm font-medium">{language === 'pt' ? 'PT' : 'EN'}</span>
-              </Button>
+              {/* Language Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:bg-orange-600 gap-1"
+                    data-testid="language-toggle"
+                  >
+                    <Globe className="h-4 w-4" />
+                    <span className="text-sm font-medium">
+                      {languageOptions?.find(l => l.code === language)?.flag || '🌐'} {language?.toUpperCase()}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40">
+                  {languageOptions?.map((lang) => (
+                    <DropdownMenuItem
+                      key={lang.code}
+                      onClick={() => setLanguage(lang.code)}
+                      className={`cursor-pointer ${language === lang.code ? 'bg-orange-100 text-orange-700' : ''}`}
+                      data-testid={`lang-${lang.code}`}
+                    >
+                      <span className="mr-2">{lang.flag}</span>
+                      {lang.label}
+                      {language === lang.code && <span className="ml-auto">✓</span>}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {isAuthenticated ? (
                 <DropdownMenu>
