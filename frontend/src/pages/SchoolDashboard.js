@@ -89,6 +89,11 @@ export const SchoolDashboard = () => {
   const [letterDialogOpen, setLetterDialogOpen] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [letterUrl, setLetterUrl] = useState('');
+  
+  // Stripe Connect state
+  const [stripeStatus, setStripeStatus] = useState(null);
+  const [stripeLoading, setStripeLoading] = useState(false);
+  const [earnings, setEarnings] = useState(null);
 
   useEffect(() => {
     if (!authLoading && !isSchool) {
