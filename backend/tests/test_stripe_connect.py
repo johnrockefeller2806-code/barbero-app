@@ -12,7 +12,7 @@ import os
 import json
 
 # Use the public URL for testing
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://clickbarber-payments.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://payment-flow-test-9.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_BARBER_EMAIL = "teste.barber@test.com"
