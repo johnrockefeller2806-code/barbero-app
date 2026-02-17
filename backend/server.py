@@ -922,6 +922,128 @@ async def send_enrollment_letter(enrollment_id: str, letter_url: str, user: dict
 
 # ============== STRIPE CONNECT FOR SCHOOLS ==============
 
+@api_router.post("/school/stripe/onboard")
+async def create_stripe_onboarding(data: StripeOnboardingRequest, user: dict = Depends(get_school_user)):
+    """Create Stripe Connect onboarding link for school"""
+    school_id = user.get("school_id")
+    school = await db.schools.find_one({"id": school_id}, {"_id": 0})
+    
+    if not school:
+        raise HTTPException(status_code=404, detail="Escola não encontrada")
+    
+    try:
+        # Check if school already has a Stripe account
+        if school.get("stripe_account_id"):
+            # Create new account link for existing account
+            account_link = stripe.AccountLink.create(
+                account=school["stripe_account_id"],
+                refresh_url=f"{data.origin_url}/school/stripe/refresh",
+                return_url=f"{data.origin_url}/school/stripe/complete",
+                type="account_onboarding"
+            )
+            return {"url": account_link.url, "account_id": school["stripe_account_id"]}
+        
+        # Create new Stripe Connect Express account
+        account = stripe.Account.create(
+            type="express",
+            country="IE",  # Ireland
+            email=user.get("email"),
+            capabilities={
+                "card_payments": {"requested": True},
+                "transfers": {"requested": True}
+            },
+            business_type="company",
+            metadata={
+                "school_id": school_id,
+                "school_name": school.get("name")
+            }
+        )
+        
+        # Save account ID to school record
+        await db.schools.update_one(
+            {"id": school_id},
+            {"$set": {"stripe_account_id": account.id}}
+        )
+        
+        # Create account onboarding link
+        account_link = stripe.AccountLink.create(
+            account=account.id,
+            refresh_url=f"{data.origin_url}/school/stripe/refresh",
+            return_url=f"{data.origin_url}/school/stripe/complete",
+            type="account_onboarding"
+        )
+        
+        logger.info(f"Created Stripe Connect account {account.id} for school {school_id}")
+        
+        return {"url": account_link.url, "account_id": account.id}
+    
+    except stripe.error.StripeError as e:
+        logger.error(f"Stripe error creating account: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+@api_router.get("/school/stripe/status")
+async def get_stripe_connect_status(user: dict = Depends(get_school_user)):
+    """Check if school's Stripe Connect account is fully set up"""
+    school_id = user.get("school_id")
+    school = await db.schools.find_one({"id": school_id}, {"_id": 0})
+    
+    if not school:
+        raise HTTPException(status_code=404, detail="Escola não encontrada")
+    
+    stripe_account_id = school.get("stripe_account_id")
+    
+    if not stripe_account_id:
+        return {
+            "connected": False,
+            "charges_enabled": False,
+            "payouts_enabled": False,
+            "details_submitted": False,
+            "commission_rate": PLATFORM_COMMISSION_RATE * 100
+        }
+    
+    try:
+        account = stripe.Account.retrieve(stripe_account_id)
+        
+        # Update school record with latest status
+        is_complete = account.charges_enabled and account.payouts_enabled
+        await db.schools.update_one(
+            {"id": school_id},
+            {"$set": {"stripe_onboarding_complete": is_complete}}
+        )
+        
+        return {
+            "connected": True,
+            "account_id": stripe_account_id,
+            "charges_enabled": account.charges_enabled,
+            "payouts_enabled": account.payouts_enabled,
+            "details_submitted": account.details_submitted,
+            "onboarding_complete": is_complete,
+            "commission_rate": PLATFORM_COMMISSION_RATE * 100
+        }
+    
+    except stripe.error.StripeError as e:
+        logger.error(f"Stripe error checking account status: {e}")
+        return {
+            "connected": False,
+            "error": str(e),
+            "commission_rate": PLATFORM_COMMISSION_RATE * 100
+        }
+
+@api_router.get("/school/stripe/dashboard")
+async def get_stripe_dashboard_link(user: dict = Depends(get_school_user)):
+    """Get Stripe Express dashboard link for school"""
+    school_id = user.get("school_id")
+    school = await db.schools.find_one({"id": school_id}, {"_id": 0})
+    
+    if not school or not school.get("stripe_account_id"):
+        raise HTTPException(status_code=400, detail="Stripe não conectado")
+    
+    try:
+        login_link = stripe.Account.create_login_link(school["stripe_account_id"])
+        return {"url": login_link.url}
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @api_router.get("/school/subscription/plans")
 async def get_subscription_plans():
     """Get available subscription plans"""
