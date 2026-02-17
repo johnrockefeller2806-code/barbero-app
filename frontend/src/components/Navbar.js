@@ -312,7 +312,7 @@ export const Navbar = () => {
             {/* Main Navigation Section */}
             <div>
               <p className="text-xs font-bold text-orange-500 uppercase tracking-wider mb-2 px-2">
-                {language === 'pt' ? 'Navegação' : 'Navigation'}
+                {getLabel('Navegação', 'Navigation', 'Navegación')}
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {mainNavLinks.map((link) => (
