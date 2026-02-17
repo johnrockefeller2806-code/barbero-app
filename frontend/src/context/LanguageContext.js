@@ -232,8 +232,130 @@ const translations = {
     next: 'Next',
     see_more: 'See more',
     learn_more: 'Learn more',
+  },
+  es: {
+    // Navigation
+    nav_home: 'Inicio',
+    nav_schools: 'Escuelas',
+    nav_transport: 'Transporte',
+    nav_services: 'Servicios',
+    nav_login: 'Entrar',
+    nav_register: 'Registrarse',
+    nav_dashboard: 'Mi Área',
+    nav_logout: 'Salir',
+    
+    // Hero
+    hero_title: 'Tu viaje a Dublín comienza aquí',
+    hero_subtitle: 'Te conectamos directamente con las mejores escuelas de inglés de Irlanda. Sin intermediarios, con precios transparentes.',
+    hero_cta: 'Encontrar Escuelas',
+    hero_secondary: 'Cómo funciona',
+    
+    // Features
+    features_title: 'Todo lo que necesitas para tu intercambio',
+    feature_schools: 'Escuelas Acreditadas',
+    feature_schools_desc: 'Acceso directo a las mejores escuelas de Dublín, con precios transparentes.',
+    feature_payment: 'Pago Seguro',
+    feature_payment_desc: 'Paga en línea con seguridad y recibe tu carta de matrícula.',
+    feature_guides: 'Guías Completas',
+    feature_guides_desc: 'PPS, GNIB, transporte y todo lo demás para tu adaptación.',
+    feature_support: 'Soporte Bilingüe',
+    feature_support_desc: 'Atención en portugués e inglés para todas tus dudas.',
+    
+    // Schools
+    schools_title: 'Escuelas en Dublín',
+    schools_subtitle: 'Encuentra la escuela perfecta para tu intercambio',
+    schools_filter_all: 'Todas',
+    schools_view_details: 'Ver Detalles',
+    schools_from: 'Desde',
+    schools_week: 'semana',
+    
+    // Course
+    course_duration: 'Duración',
+    course_weeks: 'semanas',
+    course_hours: 'horas/semana',
+    course_level: 'Nivel',
+    course_price: 'Precio',
+    course_enroll: 'Matricularse',
+    course_requirements: 'Requisitos',
+    course_includes: 'Incluido',
+    course_start_dates: 'Fechas de inicio',
+    course_spots: 'plazas disponibles',
+    
+    // Dashboard
+    dashboard_title: 'Mi Área',
+    dashboard_enrollments: 'Mis Matrículas',
+    dashboard_no_enrollments: 'Aún no tienes matrículas',
+    dashboard_status_pending: 'Pendiente',
+    dashboard_status_paid: 'Pagado',
+    dashboard_status_confirmed: 'Confirmado',
+    dashboard_pay_now: 'Pagar Ahora',
+    
+    // Transport
+    transport_title: 'Transporte en Dublín',
+    transport_subtitle: 'Guía completa de transporte público',
+    transport_route: 'Ruta',
+    transport_frequency: 'Frecuencia',
+    transport_fare: 'Tarifa',
+    transport_first: 'Primero',
+    transport_last: 'Último',
+    
+    // Services
+    services_title: 'Servicios y Documentos',
+    services_subtitle: 'Guías para tu vida en Irlanda',
+    services_pps: 'Número PPS',
+    services_pps_desc: 'Número esencial para trabajar en Irlanda',
+    services_gnib: 'GNIB/IRP',
+    services_gnib_desc: 'Registro de inmigración obligatorio',
+    services_passport: 'Pasaporte',
+    services_passport_desc: 'Cómo obtener o renovar tu pasaporte',
+    services_agencies: 'Organismos Públicos',
+    services_agencies_desc: 'Lista de agencias y servicios',
+    
+    // Auth
+    auth_login_title: 'Bienvenido de nuevo',
+    auth_login_subtitle: 'Inicia sesión en tu cuenta',
+    auth_register_title: 'Crear cuenta',
+    auth_register_subtitle: 'Comienza tu viaje a Dublín',
+    auth_email: 'Correo electrónico',
+    auth_password: 'Contraseña',
+    auth_name: 'Nombre completo',
+    auth_login_btn: 'Entrar',
+    auth_register_btn: 'Crear cuenta',
+    auth_no_account: '¿No tienes cuenta?',
+    auth_has_account: '¿Ya tienes cuenta?',
+    
+    // Payment
+    payment_success: '¡Pago Confirmado!',
+    payment_success_msg: 'Tu matrícula ha sido confirmada. Recibirás la carta de la escuela en hasta 5 días hábiles.',
+    payment_processing: 'Procesando pago...',
+    payment_return: 'Volver al Dashboard',
+    
+    // Footer
+    footer_about: 'Sobre nosotros',
+    footer_contact: 'Contacto',
+    footer_terms: 'Términos de uso',
+    footer_privacy: 'Privacidad',
+    footer_rights: 'Todos los derechos reservados',
+    
+    // Common
+    loading: 'Cargando...',
+    error: 'Error',
+    success: 'Éxito',
+    cancel: 'Cancelar',
+    confirm: 'Confirmar',
+    back: 'Volver',
+    next: 'Siguiente',
+    see_more: 'Ver más',
+    learn_more: 'Saber más',
   }
 };
+
+// Language labels and flags
+export const languageOptions = [
+  { code: 'pt', label: 'Português', flag: '🇧🇷' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'es', label: 'Español', flag: '🇪🇸' },
+];
 
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
@@ -249,11 +371,16 @@ export const LanguageProvider = ({ children }) => {
   };
 
   const toggleLanguage = () => {
-    setLanguage(prev => prev === 'pt' ? 'en' : 'pt');
+    // Cycle through: pt -> en -> es -> pt
+    setLanguage(prev => {
+      if (prev === 'pt') return 'en';
+      if (prev === 'en') return 'es';
+      return 'pt';
+    });
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage, t, languageOptions }}>
       {children}
     </LanguageContext.Provider>
   );
