@@ -258,7 +258,7 @@ async def forgot_password(request: ForgotPasswordRequest):
         </div>
         """
         
-        sender_email = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
+        sender_email = "onboarding@resend.dev"
         resend.Emails.send({
             "from": f"ClickBarber <{sender_email}>",
             "to": [request.email],
