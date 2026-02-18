@@ -96,18 +96,29 @@
 - [x] Verification system (contract + documents)
 - [x] Subscription plans
 - [x] Frontend pages for all features
-- [x] **Password Recovery** - forgot-password and reset-password routes added
-- [x] **Database Cleanup** - Removed all test barbers, only Cecilia Rivero remains
+- [x] **Password Recovery** - forgot-password and reset-password routes
+- [x] **Database Cleanup** - Removed test barbers, only Cecilia Rivero remains
+- [x] **Client Payment System** - `/api/connect/payment` for clients to pay with card
+
+### API Endpoints Added
+- `POST /api/auth/forgot-password` - Send reset code
+- `POST /api/auth/reset-password` - Reset password with code
+- `POST /api/connect/payment` - Create Stripe checkout for client payment
+- `POST /api/connect/payment/confirm` - Confirm payment was successful
 
 ### Known Issues
-- Some frontend routes call APIs that expect different parameter formats
+- Email for password recovery is only logged (not sent) - needs email integration
 - Stripe Connect requires barbers to have verified Stripe accounts
 
 ## Configuration
 - MongoDB: Uses `MONGO_URL` from `.env`
 - Stripe: Uses `STRIPE_API_KEY` from `.env`
 - Frontend URL: `FRONTEND_URL` for Stripe callbacks
+- Platform Fee: 10% on all card payments
 
-## Test Credentials (Seed Data)
-Barbers:
-- `zezitha19@gmail.com` / `teste123` (Cecilia Rivero)
+## Test Credentials
+**Barber:**
+- `zezitha19@gmail.com` / `teste123` (Cecilia Rivero - Stripe Connected ✅)
+
+**Client:**
+- `cliente@teste.com` / `teste123`
