@@ -62,21 +62,15 @@ export const Dashboard = () => {
   };
 
   const handlePayment = async (enrollment) => {
-    setProcessingPayment(enrollment.id);
-    try {
-      const response = await axios.post(`${API}/payments/checkout`, {
-        enrollment_id: enrollment.id,
-        origin_url: window.location.origin
-      });
-      
-      if (response.data.url) {
-        window.location.href = response.data.url;
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.detail || 'Error creating payment');
-    } finally {
-      setProcessingPayment(null);
-    }
+    setSelectedEnrollment(enrollment);
+    setPaymentDialogOpen(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    setPaymentDialogOpen(false);
+    setSelectedEnrollment(null);
+    toast.success(language === 'pt' ? 'Pagamento realizado com sucesso!' : 'Payment successful!');
+    fetchEnrollments();
   };
 
   const getStatusBadge = (status) => {
