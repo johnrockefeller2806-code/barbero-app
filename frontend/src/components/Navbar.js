@@ -151,14 +151,38 @@ export const Navbar = () => {
           <div className="flex justify-between items-center h-14">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3" data-testid="nav-logo">
-              <img 
-                src={LOGO_URL} 
-                alt="STUFF Intercâmbio" 
-                className="h-10 w-auto object-contain bg-white rounded-lg p-1"
-              />
-              <span className="text-white font-bold text-lg hidden sm:block">
+              <motion.div
+                whileHover={{ 
+                  scale: 1.1,
+                  rotate: [0, -5, 5, 0],
+                }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.img 
+                  src={LOGO_URL} 
+                  alt="STUFF Intercâmbio" 
+                  className="h-10 w-auto object-contain bg-white rounded-lg p-1"
+                  initial={{ rotate: 0 }}
+                  animate={{ 
+                    rotate: [0, 0, 0, 0, 0],
+                  }}
+                  transition={{ 
+                    duration: 5,
+                    repeat: Infinity,
+                    repeatDelay: 3
+                  }}
+                />
+              </motion.div>
+              <motion.span 
+                className="text-white font-bold text-lg hidden sm:block"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                whileHover={{ scale: 1.05 }}
+              >
                 STUFF Intercâmbio
-              </span>
+              </motion.span>
             </Link>
 
             {/* Right side - Language and Auth */}
