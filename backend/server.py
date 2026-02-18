@@ -598,6 +598,7 @@ async def seed_data():
 
 # ==================== STRIPE CONNECT ROUTES ====================
 
+@api_router.post("/connect/onboard")
 @api_router.post("/stripe/connect/onboard")
 async def create_stripe_connect_account(user: dict = Depends(get_current_user)):
     """Create Stripe Connect account for barber and return onboarding link"""
