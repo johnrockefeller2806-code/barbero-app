@@ -1,11 +1,23 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { StuffLanguageProvider } from './contexts/StuffLanguageContext';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
+import AuthCallback from './pages/AuthCallback';
 import ClientDashboard from './pages/ClientDashboard';
 import BarberDashboard from './pages/BarberDashboard';
+import SubscriptionPage from './pages/SubscriptionPage';
+import ClientHistoryPage from './pages/ClientHistoryPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import BarberVerificationPage from './pages/BarberVerificationPage';
+import AdminVerificationPage from './pages/AdminVerificationPage';
+import WalletPage from './pages/WalletPage';
+import StuffVerification from './pages/StuffVerification';
+import { StuffDuvidas } from './pages/StuffDuvidas';
+import Footer from './components/Footer';
+import InstallPWA from './components/InstallPWA';
 import './App.css';
 
 // Protected Route Component
@@ -51,6 +63,14 @@ const PublicRoute = ({ children }) => {
 };
 
 function AppRoutes() {
+  const location = useLocation();
+  
+  // Check URL fragment for session_id (Google OAuth callback)
+  // REMINDER: This must be checked synchronously during render to prevent race conditions
+  if (location.hash?.includes('session_id=')) {
+    return <AuthCallback />;
+  }
+
   return (
     <Routes>
       <Route path="/" element={
@@ -63,6 +83,7 @@ function AppRoutes() {
           <AuthPage />
         </PublicRoute>
       } />
+      <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/client" element={
         <ProtectedRoute allowedType="client">
           <ClientDashboard />
@@ -73,6 +94,35 @@ function AppRoutes() {
           <BarberDashboard />
         </ProtectedRoute>
       } />
+      <Route path="/subscription" element={
+        <ProtectedRoute allowedType="barber">
+          <SubscriptionPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/barber/clients" element={
+        <ProtectedRoute allowedType="barber">
+          <ClientHistoryPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/barber/verification" element={
+        <ProtectedRoute allowedType="barber">
+          <BarberVerificationPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/verifications" element={
+        <ProtectedRoute allowedType="barber">
+          <AdminVerificationPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/barber/wallet" element={
+        <ProtectedRoute allowedType="barber">
+          <WalletPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/stuff/verification" element={<StuffVerification />} />
+      <Route path="/stuff/faq" element={<StuffDuvidas />} />
+      <Route path="/stuff/duvidas" element={<StuffDuvidas />} />
+      <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
@@ -82,9 +132,12 @@ function App() {
   return (
     <BrowserRouter>
       <LanguageProvider>
-        <AuthProvider>
-          <AppRoutes />
-        </AuthProvider>
+        <StuffLanguageProvider>
+          <AuthProvider>
+            <AppRoutes />
+            {/* InstallPWA removed */}
+          </AuthProvider>
+        </StuffLanguageProvider>
       </LanguageProvider>
     </BrowserRouter>
   );
