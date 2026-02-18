@@ -28,6 +28,10 @@ security = HTTPBearer(auto_error=False)
 
 JWT_SECRET = os.environ.get('JWT_SECRET', 'barberx-secret-key-2024')
 
+# Stripe configuration
+stripe.api_key = os.environ.get('STRIPE_API_KEY', '')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+
 # ==================== MODELS ====================
 
 class UserRegister(BaseModel):
