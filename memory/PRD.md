@@ -1,202 +1,125 @@
-# Dublin Study - Plataforma de Intercâmbio Educacional
+# STUFF Intercâmbio - PRD (Product Requirements Document)
 
-## Problema Original
-Criação de um aplicativo completo de intercâmbio educacional com foco em Dublin, Irlanda, desenvolvido para conectar estudantes diretamente às escolas credenciadas, sem intermediários.
+## Resumo do Projeto
+Plataforma marketplace para intercâmbio na Irlanda, conectando estudantes diretamente com escolas de inglês, sem intermediários.
 
-## Arquitetura
-- **Backend**: FastAPI + MongoDB + Stripe Connect
-- **Frontend**: React + Tailwind CSS + Shadcn UI
-- **Auth**: JWT (email/senha) com 3 roles: student, school, admin
-- **Payments**: Stripe Connect (marketplace com 15% comissão)
-- **Emails**: MOCKED (logged to console)
+## Status Atual: EM DESENVOLVIMENTO
 
-## User Personas
-1. **Estudante Brasileiro** - Quer estudar inglês em Dublin
-2. **Escola de Inglês** - Quer cadastrar cursos e receber matrículas
-3. **Administrador** - Gerencia a plataforma, aprova escolas
+---
 
-## Core Requirements (Static)
-- Catálogo de escolas com preços transparentes
-- Cursos com duração, carga horária e requisitos
-- Pagamento online integrado (Stripe Connect)
-- **Marketplace com 15% comissão para STUFF, 85% para escola**
-- Notificação automática por e-mail após pagamento
-- Guias de transporte público de Dublin
-- Lista de órgãos governamentais
-- Guia PPS Number, GNIB/IRP, Passaporte
-- Interface multilíngue (PT/EN/ES)
-- Painel Admin para gerenciamento
-- Área da Escola para gestão de cursos
+## Funcionalidades Implementadas ✅
 
-## Implementado - Janeiro/Fevereiro 2025
+### Core Features
+1. **Multi-idiomas (PT, EN, ES)** - Seletor de idioma no navbar
+2. **Stripe Connect Marketplace** - Comissão de 15% para a plataforma
+3. **Apple Pay / Google Pay** - Pagamentos móveis integrados
+4. **Sistema de Emails (Resend)** - Notificações automáticas
+5. **Acesso aberto** - Sem paywall, todas escolas visíveis
+6. **Aprovação automática** - Escolas aprovadas automaticamente
 
-### Fase 1 - MVP Estudante ✅
-- Catálogo de escolas e cursos
-- Fluxo de matrícula + pagamento Stripe
-- Dashboard do estudante
-- Guias (PPS, GNIB, Passaporte)
-- Transporte público Dublin
-- Interface bilíngue PT/EN
+### UI/UX
+7. **Framer Motion** ✅ (Implementado 18/02/2026)
+   - Animações de entrada (fade-in, slide)
+   - Efeitos de hover em cards
+   - Animações stagger em listas
+   - Elementos flutuantes decorativos
+   - Transições suaves entre páginas
 
-### Fase 2 - Admin + Escola ✅
-- **Painel Admin** (/admin)
-  - Dashboard com estatísticas
-  - Aprovar/rejeitar escolas
-  - Ver todos usuários
-  - Ver todas matrículas
-  - Ver todos pagamentos
-  
-- **Área da Escola** (/school)
-  - Dashboard com estatísticas
-  - CRUD de cursos
+### Conteúdo Informativo
+8. **Seção Leap Card** - Na página de transporte
+9. **Regras da Irlanda** - Guia completo na homepage
+   - Requisitos do visto (Stamp 2)
+   - Direitos de trabalho
+   - Custos estimados
+   - Passo a passo do processo
 
-### Fase 3 - Stripe Connect Marketplace ✅ (Fevereiro 2025)
-- **Stripe Connect** para escolas
-  - Endpoint `/api/school/stripe/onboard` - Cria conta Connect Express
-  - Endpoint `/api/school/stripe/status` - Verifica status do onboarding
-  - Endpoint `/api/school/stripe/dashboard` - Link para dashboard Stripe
-- **Pagamento com Split Automático**
-  - 15% vai para a plataforma STUFF (application_fee)
-  - 85% vai direto para a escola (destination charges)
-- **Dashboard de Ganhos**
-  - Total Bruto, Taxa STUFF, Total Líquido
-  - Breakdown mensal de vendas
-- **Interface Trilíngue** (PT/EN/ES)
+---
 
-## Pendente - Backlog
+## Stack Tecnológica
 
-### P0 - Crítico
-- [ ] Testar fluxo completo de pagamento com escola real
-
-### P1 - Importante
-- [ ] Integração real de e-mail (substituir mock)
-- [ ] Upload de carta PDF
-
-### P2 - Desejável
-- [ ] Sistema de reviews/avaliações
-- [ ] PWA para mobile
-- [ ] Notificações push
-  - Ver matrículas recebidas
-  - Enviar carta de aceitação
-  - Perfil da escola
-
-- **Registro de Escola** (/register-school)
-  - Cadastro de nova escola
-  - Status pendente até aprovação admin
-
-### Fase 3 - Branding & Suporte ✅ (Janeiro 2026)
-- **Logo STUFF Intercâmbio** aplicada em todo o app
-  - Navbar (todas as páginas)
-  - Hero section (Landing page)
-  - Páginas de Login e Register
-  - Página STUFF Dúvidas
-  
-- **Página STUFF Dúvidas** (/duvidas)
-  - FAQ organizado por categorias (5 categorias, 15+ perguntas)
-  - Formulário de contato funcional
-  - Endpoint POST /api/contact
-  - Mensagens armazenadas no MongoDB
-  
-- **Guia Carteira de Motorista Irlandesa**
-  - Processo completo de obtenção
-  - Link para NDLS (https://www.ndls.ie)
-
-### Fase 4 - Chat Comunidade ✅ (Janeiro 2026)
-- **Chat em Tempo Real** (/chat) - Comunidade STUFF
-  - WebSocket para mensagens em tempo real
-  - Grupo geral para todos os usuários logados
-  - Suporte a texto + emojis (emoji-picker-react)
-  - Histórico de mensagens com auto-delete após 2 dias (MongoDB TTL)
-  - Indicador de usuários online
-  - Status de conexão (Conectado/Desconectado)
-  - Notificações do navegador para novas mensagens
-  
-- **Moderação (Admin)**
-  - Deletar mensagens
-  - Banir usuários temporariamente (24h padrão)
-  - Ver lista de usuários banidos
-  - Desbanir usuários
-
-- **Endpoints Chat (8 novos)**
-  - WebSocket: /api/chat/ws
-  - GET /api/chat/messages
-  - GET /api/chat/online
-  - GET /api/chat/ban-status
-  - DELETE /api/chat/messages/{id}
-  - POST /api/chat/ban
-  - DELETE /api/chat/ban/{user_id}
-  - GET /api/chat/bans
-
-### Fase 5 - Stripe Connect para Escolas ✅ (Janeiro 2026)
-- **Planos de Assinatura** (/school/subscription)
-  - Starter: €49/mês + 8% comissão
-  - Professional: €99/mês + 5% comissão (POPULAR)
-  - Premium: €199/mês + 3% comissão
-  
-- **Funcionalidades**
-  - Página de planos com comparação visual
-  - Checkout via Stripe (modo teste)
-  - Dashboard de ganhos com breakdown mensal
-  - Status de assinatura no painel da escola
-  
-- **Endpoints Stripe Connect (6 novos)**
-  - GET /api/school/subscription/plans (público)
-  - POST /api/school/subscription/subscribe
-  - GET /api/school/subscription/status/{session_id}
-  - GET /api/school/subscription
-  - GET /api/school/earnings
-
-### Credenciais de Teste
-- **Admin**: admin@dublinstudy.com / admin123
-
-### Backend Endpoints (49 total)
-- Auth: register, register-school, login, me
-- Schools: list, detail, courses (public)
-- Courses: list, detail
-- Enrollments: create, list, detail
-- Payments: checkout, status, webhook
-- Transport: routes
-- Services: agencies
-- Guides: pps, gnib, passport, driving-license
-- Admin: stats, schools, users, enrollments, payments, approve/reject
-- School: dashboard, profile, courses CRUD, enrollments, send-letter
-- Contact: form submission
-- Chat: ws, messages, online, ban-status, delete, ban, unban, bans
-- **Stripe Connect: plans, subscribe, status, subscription, earnings** (NEW)
-- Seed
-
-## Prioritized Backlog
-
-### P0 - Próximos Passos
-- [ ] Integração real de e-mail (SendGrid/Resend) - substituir mock
-- [x] ~~Stripe Connect (pagamento direto para escola + comissão)~~ → Implementado
-
-### P1 - Importante
-- [ ] Upload de carta PDF (não apenas URL)
-- [ ] Edição de perfil da escola (imagem, facilities)
-- [ ] Sistema de reviews/avaliações
-- [ ] Notificações push
-- [x] ~~Chat de suporte integrado~~ → Implementado como Comunidade STUFF
-
-### P2 - Nice to Have
-- [ ] Tela de splash com logo STUFF
-- [ ] Página "Sobre" institucional
-- [ ] Calculadora de custos de vida
-- [ ] Novos guias (Revenue, aluguel de imóveis)
-- [ ] Seção de depoimentos de estudantes
-- [ ] PWA mobile
-- [ ] Blog/artigos
-- [ ] Mensagens privadas no chat (DM)
-- [ ] Grupos de chat por escola/curso
-- [ ] Login com SMS/OTP (como WhatsApp)
-
-## Tecnologias
-- FastAPI 0.110.1
+### Frontend
 - React 19
-- MongoDB (motor)
-- Stripe (emergentintegrations)
-- Tailwind CSS 3.4
-- Shadcn UI
-- lucide-react icons
-- **WebSockets (FastAPI native)** - para chat em tempo real
-- **emoji-picker-react** - seletor de emojis
+- TailwindCSS
+- Shadcn/UI Components
+- **Framer Motion** (animações)
+- Stripe React SDK
+
+### Backend
+- FastAPI (Python)
+- MongoDB
+- Stripe Connect
+- Resend (emails)
+
+---
+
+## Próximas Tarefas (Backlog)
+
+### P0 - Alta Prioridade
+- [ ] Teste E2E completo do fluxo de pagamento
+- [ ] Verificar notificações de email
+
+### P1 - Média Prioridade  
+- [ ] Dashboard administrativo STUFF
+- [ ] Animações nas demais páginas (SchoolDetail, Transport, etc.)
+- [ ] Limpeza do diretório `/app/John-aplicativo-/`
+
+### P2 - Baixa Prioridade
+- [ ] Páginas de perfil público para escolas
+- [ ] Sistema de avaliações de estudantes
+- [ ] Página de sucesso de pagamento aprimorada
+
+---
+
+## Credenciais Necessárias
+- **Stripe API Keys** - Configurar em `backend/.env`
+- **Resend API Key** - Configurar em `backend/.env`  
+- **ADMIN_EMAIL** - Email para notificações admin
+
+---
+
+## Arquitetura de Arquivos
+
+```
+/app/
+├── backend/
+│   ├── server.py              # API principal
+│   ├── services/
+│   │   └── email_service.py   # Serviço de emails
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── motion/
+│   │   │   │   └── AnimatedComponents.js  # 🆕 Componentes animados
+│   │   │   ├── ui/            # Shadcn components
+│   │   │   └── CheckoutForm.js
+│   │   ├── pages/
+│   │   │   ├── Landing.js     # ✅ Com Framer Motion
+│   │   │   ├── Schools.js     # ✅ Com Framer Motion
+│   │   │   └── ...
+│   │   └── context/
+│   └── package.json
+└── memory/
+    └── PRD.md
+```
+
+---
+
+## Changelog
+
+### 18/02/2026
+- ✅ Implementado Framer Motion na Landing page
+- ✅ Implementado Framer Motion na Schools page
+- ✅ Criado arquivo de componentes animados reutilizáveis
+
+### 17/02/2026
+- ✅ Seção de regras da Irlanda na homepage
+- ✅ Sistema de emails via Resend
+- ✅ Apple Pay / Google Pay integrados
+
+---
+
+## Notas para Investidores
+- Modelo de negócio: Comissão de 15% sobre cada matrícula
+- Diferencial: Contato direto escola-estudante, sem intermediários
+- Mercado: Brasileiros que querem estudar na Irlanda
