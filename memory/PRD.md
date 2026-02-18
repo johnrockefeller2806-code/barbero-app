@@ -117,8 +117,8 @@
 - Platform Fee: 10% on all card payments
 
 ## Test Credentials
-**Barber:**
+**Barbeira:**
 - `zezitha19@gmail.com` / `teste123` (Cecilia Rivero - Stripe Connected ✅)
 
-**Client:**
-- `cliente@teste.com` / `teste123`
+**Cliente Principal:**
+- `jw3428812@gmail.com` / `teste123`
