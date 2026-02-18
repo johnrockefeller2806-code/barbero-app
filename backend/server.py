@@ -375,6 +375,8 @@ async def update_barber_profile(
     longitude: Optional[float] = None,
     address: Optional[str] = None,
     photo_url: Optional[str] = None,
+    instagram: Optional[str] = None,
+    phone: Optional[str] = None,
     user: dict = Depends(get_current_user)
 ):
     if user["user_type"] != "barber":
@@ -387,6 +389,8 @@ async def update_barber_profile(
     if longitude: update["longitude"] = longitude
     if address: update["address"] = address
     if photo_url: update["photo_url"] = photo_url
+    if instagram is not None: update["instagram"] = instagram
+    if phone: update["phone"] = phone
     
     if update:
         await db.users.update_one({"id": user["id"]}, {"$set": update})
