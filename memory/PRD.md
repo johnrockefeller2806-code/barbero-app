@@ -12,9 +12,12 @@
 - **Real-time Queue**: Join barber queues and track position
 - **Home Service**: Request barbers to come to your location
 - **Reviews**: Rate and review barbers after service
+- **Referral System**: Get €5 for referring friends
 
 ### Barber Features
 - **Dashboard**: Manage online status, view queue, track earnings
+- **Instagram Link**: Add Instagram profile link to share with clients
+- **Referral System**: €5 for each friend referred (code sharing)
 - **Stripe Connect**: Receive payments directly (10% platform fee)
 - **Wallet & Payouts**: View balance, request withdrawals (instant or standard)
 - **Verification System**: 
@@ -22,9 +25,10 @@
   - Passport photo upload
   - Selfie with passport verification
   - Daily selfie validation
-- **Home Service**: Accept/decline home service requests
-- **Location Tracking**: Share live location with clients
+- **Home Service**: Accept/decline home service requests with travel fee (€1/km)
+- **Location Tracking**: Share live location with clients (GPS + Map)
 - **Subscription Plans**: Basic (€9.99/mo) and Premium (€19.99/mo)
+- **Sound Notifications**: Audio alerts for new clients
 
 ## Technical Stack
 - **Frontend**: React, TailwindCSS, React-Leaflet for maps
@@ -32,6 +36,7 @@
 - **Payments**: Stripe Connect for barber payouts
 - **Maps**: Leaflet with CartoDB dark theme
 - **Auth**: JWT + Google OAuth
+- **Email**: Resend for password recovery
 
 ## Database Collections
 - `users`: Clients and barbers
@@ -42,83 +47,68 @@
 - `payouts`: Payout requests history
 - `verifications`: Barber verification documents
 - `subscriptions`: Barber subscription status
+- `referrals`: Referral codes and stats
+- `referral_uses`: Track who used which code
+- `password_resets`: Password recovery codes
 
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/auth/me`
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login
+- `GET /api/auth/me` - Get current user
+- `POST /api/auth/forgot-password` - Send reset code
+- `POST /api/auth/reset-password` - Reset password
 
 ### Barbers
-- `GET /api/barbers`
-- `GET /api/barbers/{barber_id}`
-- `PUT /api/barbers/status`
-- `PUT /api/barbers/profile`
+- `GET /api/barbers` - List all barbers
+- `GET /api/barbers/{barber_id}` - Get barber details
+- `PUT /api/barbers/status` - Update online status
+- `PUT /api/barbers/profile` - Update profile (instagram, phone, etc)
 
-### Queue
-- `POST /api/queue/join`
-- `GET /api/queue/my-position`
-- `GET /api/queue/barber`
-- `PUT /api/queue/{entry_id}/status`
+### Referral System
+- `GET /api/referral/info` - Get referral code and stats
+- `POST /api/referral/apply` - Apply a referral code
 
 ### Stripe Connect
-- `POST /api/connect/onboard`
-- `GET /api/connect/status`
-- `GET /api/connect/dashboard`
+- `POST /api/connect/onboard` - Start Stripe onboarding
+- `GET /api/connect/status` - Check Stripe status
+- `GET /api/connect/dashboard` - Get Stripe dashboard link
+- `POST /api/connect/payment` - Create payment checkout
 
 ### Wallet
-- `GET /api/wallet/balance`
-- `GET /api/wallet/transactions`
-- `GET /api/wallet/payouts`
-- `POST /api/wallet/payout`
-- `POST /api/wallet/auto-payout`
+- `GET /api/wallet/balance` - Get wallet balance
+- `GET /api/wallet/transactions` - Get transactions
+- `POST /api/wallet/payout` - Request payout
+- `POST /api/wallet/auto-payout` - Configure auto-payout
 
 ### Verification
-- `GET /api/verification/status`
-- `GET /api/verification/contract`
-- `POST /api/verification/accept-contract`
-- `POST /api/verification/submit-documents`
+- `GET /api/verification/status` - Get verification status
+- `GET /api/verification/contract` - Get contract text
+- `POST /api/verification/accept-contract` - Sign contract
+- `POST /api/verification/submit-documents` - Submit documents
 
-### Subscription
-- `GET /api/subscription/plans`
-- `GET /api/subscription/status`
-- `POST /api/subscription/checkout`
+## Implementation Status (2025-02-18)
 
-## Implementation Status
-
-### Completed (2025-02-18)
-- [x] Core backend API routes (auth, barbers, queue, reviews)
-- [x] Stripe Connect integration for barber payouts
-- [x] Wallet system with balance tracking
-- [x] Payout requests (instant and standard)
-- [x] Auto-payout configuration
+### Completed
+- [x] Core backend API (auth, barbers, queue, reviews)
+- [x] Frontend pages restored from original project
+- [x] Stripe Connect integration
+- [x] Wallet system with payouts
 - [x] Verification system (contract + documents)
 - [x] Subscription plans
-- [x] Frontend pages for all features
-- [x] **Password Recovery** - forgot-password and reset-password routes
-- [x] **Database Cleanup** - Removed test barbers, only Cecilia Rivero remains
-- [x] **Client Payment System** - `/api/connect/payment` for clients to pay with card
-
-### API Endpoints Added
-- `POST /api/auth/forgot-password` - Send reset code
-- `POST /api/auth/reset-password` - Reset password with code
-- `POST /api/connect/payment` - Create Stripe checkout for client payment
-- `POST /api/connect/payment/confirm` - Confirm payment was successful
-
-### Known Issues
-- Email for password recovery is only logged (not sent) - needs email integration
-- Stripe Connect requires barbers to have verified Stripe accounts
-
-## Configuration
-- MongoDB: Uses `MONGO_URL` from `.env`
-- Stripe: Uses `STRIPE_API_KEY` from `.env`
-- Frontend URL: `FRONTEND_URL` for Stripe callbacks
-- Platform Fee: 10% on all card payments
+- [x] Password recovery with email (Resend)
+- [x] **Instagram link** for barber profiles
+- [x] **Referral system** (€5 per referral)
+- [x] ReferralSection component
+- [x] DailySelfieModal component
+- [x] Sound notifications for barbers
 
 ## Test Credentials
 **Barbeira:**
-- `zezitha19@gmail.com` / `teste123` (Cecilia Rivero - Stripe Connected ✅)
+- `zezitha19@gmail.com` / `teste123` (Cecilia Rivero)
+- Stripe: Connected ✅
+- Referral Code: `Q2BTG3XY`
 
-**Cliente Principal:**
+**Cliente:**
 - `jw3428812@gmail.com` / `teste123`
