@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 
 class BarberXAPITester:
-    def __init__(self, base_url="https://stuff-exchange.preview.emergentagent.com"):
+    def __init__(self, base_url="https://barber-isolated.preview.emergentagent.com"):
         self.base_url = base_url
         self.barber_token = None
         self.tests_run = 0
