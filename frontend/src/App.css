@@ -1,10 +1,12 @@
-// Imports
-import ___CSS_LOADER_API_SOURCEMAP_IMPORT___ from "../node_modules/css-loader/dist/runtime/sourceMaps.js";
-import ___CSS_LOADER_API_IMPORT___ from "../node_modules/css-loader/dist/runtime/api.js";
-var ___CSS_LOADER_EXPORT___ = ___CSS_LOADER_API_IMPORT___(___CSS_LOADER_API_SOURCEMAP_IMPORT___);
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `/* Minimal App.css - Using Tailwind for most styles */
-`, "",{"version":3,"sources":["webpack://./src/App.css"],"names":[],"mappings":"AAAA,qDAAqD","sourcesContent":["/* Minimal App.css - Using Tailwind for most styles */\n"],"sourceRoot":""}]);
-// Exports
-___CSS_LOADER_EXPORT___.locals = {};
-export default ___CSS_LOADER_EXPORT___;
+/* App specific styles */
+.hero-gradient {
+  background: linear-gradient(135deg, #09090B 0%, #18181b 100%);
+}
+
+.glow-amber {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+.glow-green {
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
