@@ -55,13 +55,8 @@ export const SchoolDetail = () => {
   const [enrolling, setEnrolling] = useState(false);
 
   useEffect(() => {
-    // Redirect to schools if user doesn't have PLUS
-    if (!isPlusUser) {
-      navigate('/schools');
-      return;
-    }
     fetchSchoolData();
-  }, [id, isPlusUser]);
+  }, [id]);
 
   const fetchSchoolData = async () => {
     try {
