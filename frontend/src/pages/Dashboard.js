@@ -258,6 +258,30 @@ export const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Payment Dialog */}
+      <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-serif flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-emerald-600" />
+              {language === 'pt' ? 'Finalizar Pagamento' : 'Complete Payment'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedEnrollment && (
+            <PaymentCheckout
+              enrollment={selectedEnrollment}
+              onSuccess={handlePaymentSuccess}
+              onCancel={() => {
+                setPaymentDialogOpen(false);
+                setSelectedEnrollment(null);
+              }}
+              language={language}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
