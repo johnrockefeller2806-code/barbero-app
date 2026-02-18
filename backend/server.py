@@ -875,15 +875,15 @@ async def configure_auto_payout(config: AutoPayoutConfig, user: dict = Depends(g
     if user["user_type"] != "barber":
         raise HTTPException(status_code=403, detail="Only barbers can configure auto-payout")
     
-    if frequency not in ["daily", "weekly", "monthly"]:
+    if config.frequency not in ["daily", "weekly", "monthly"]:
         raise HTTPException(status_code=400, detail="Invalid frequency")
     
-    if minimum_amount < 10:
+    if config.minimum_amount < 10:
         raise HTTPException(status_code=400, detail="Minimum amount must be at least €10")
     
     await db.wallets.update_one(
         {"barber_id": user["id"]},
-        {"$set": {"auto_payout": {"enabled": enabled, "frequency": frequency, "minimum_amount": minimum_amount}}},
+        {"$set": {"auto_payout": {"enabled": config.enabled, "frequency": config.frequency, "minimum_amount": config.minimum_amount}}},
         upsert=True
     )
     
