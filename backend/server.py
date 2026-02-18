@@ -789,11 +789,18 @@ async def get_wallet_payouts(user: dict = Depends(get_current_user)):
     
     return {"payouts": payouts}
 
+class PayoutRequest(BaseModel):
+    amount: float
+    payout_type: str = "standard"
+
 @api_router.post("/wallet/payout")
-async def request_payout(amount: float, payout_type: str = "standard", user: dict = Depends(get_current_user)):
+async def request_payout(request: PayoutRequest, user: dict = Depends(get_current_user)):
     """Request a payout"""
     if user["user_type"] != "barber":
         raise HTTPException(status_code=403, detail="Only barbers can request payouts")
+    
+    amount = request.amount
+    payout_type = request.payout_type
     
     barber = await db.users.find_one({"id": user["id"]})
     if not barber.get("stripe_account_id") or not barber.get("stripe_onboarding_complete"):
@@ -857,8 +864,13 @@ async def request_payout(amount: float, payout_type: str = "standard", user: dic
     except stripe.error.StripeError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+class AutoPayoutConfig(BaseModel):
+    enabled: bool
+    frequency: str = "weekly"
+    minimum_amount: float = 50
+
 @api_router.post("/wallet/auto-payout")
-async def configure_auto_payout(enabled: bool, frequency: str = "weekly", minimum_amount: float = 50, user: dict = Depends(get_current_user)):
+async def configure_auto_payout(config: AutoPayoutConfig, user: dict = Depends(get_current_user)):
     """Configure automatic payouts"""
     if user["user_type"] != "barber":
         raise HTTPException(status_code=403, detail="Only barbers can configure auto-payout")
