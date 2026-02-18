@@ -24,6 +24,11 @@ Plataforma marketplace para intercâmbio na Irlanda, conectando estudantes diret
    - Animações stagger em listas
    - Elementos flutuantes decorativos
    - Transições suaves entre páginas
+   - **Botões animados** com shimmer effect e pulse
+   - **Loading screen animado** com skeleton cards
+   - **Logo animada** com float e hover effects
+   - **Seta animada** nos CTAs
+   - **Sombra dinâmica** nos botões ao hover
 
 ### Conteúdo Informativo
 8. **Seção Leap Card** - Na página de transporte
