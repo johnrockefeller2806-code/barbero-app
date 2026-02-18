@@ -470,7 +470,6 @@ export const SchoolDashboard = () => {
                 <CardTitle className="font-serif">Meus Cursos</CardTitle>
                 <Button 
                   onClick={handleCreateCourse}
-                  disabled={isPending}
                   className="bg-emerald-900 hover:bg-emerald-800"
                   data-testid="create-course-btn"
                 >
@@ -483,15 +482,13 @@ export const SchoolDashboard = () => {
                   <div className="text-center py-12">
                     <BookOpen className="h-12 w-12 text-slate-300 mx-auto mb-4" />
                     <p className="text-slate-500">Nenhum curso cadastrado</p>
-                    {!isPending && (
-                      <Button 
-                        onClick={handleCreateCourse}
-                        className="mt-4 bg-emerald-900 hover:bg-emerald-800"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Criar Primeiro Curso
-                      </Button>
-                    )}
+                    <Button 
+                      onClick={handleCreateCourse}
+                      className="mt-4 bg-emerald-900 hover:bg-emerald-800"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Criar Primeiro Curso
+                    </Button>
                   </div>
                 ) : (
                   <Table>
