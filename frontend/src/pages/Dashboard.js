@@ -232,11 +232,11 @@ export const Dashboard = () => {
                       {enrollment.status === 'pending' && (
                         <Button 
                           onClick={() => handlePayment(enrollment)}
-                          disabled={processingPayment === enrollment.id}
-                          className="bg-amber-600 hover:bg-amber-500"
+                          className="bg-emerald-600 hover:bg-emerald-700"
                           data-testid={`pay-button-${enrollment.id}`}
                         >
-                          {processingPayment === enrollment.id ? t('loading') : t('dashboard_pay_now')}
+                          <Smartphone className="h-4 w-4 mr-2" />
+                          {t('dashboard_pay_now')}
                         </Button>
                       )}
                       
