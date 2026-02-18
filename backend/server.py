@@ -651,6 +651,7 @@ async def create_stripe_connect_account(user: dict = Depends(get_current_user)):
     except stripe.error.StripeError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@api_router.get("/connect/status")
 @api_router.get("/stripe/connect/status")
 async def get_stripe_connect_status(user: dict = Depends(get_current_user)):
     """Get Stripe Connect account status"""
