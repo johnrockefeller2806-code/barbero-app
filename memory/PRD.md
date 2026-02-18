@@ -1,94 +1,114 @@
-# BarberX - Marketplace de Barbeiros em Tempo Real (Dublin, Ireland)
+# ClickBarber - Product Requirements Document
 
-## Problema Original
-Criar um marketplace de barbeiros em tempo real para Dublin, Irlanda. Barbeiros podem ficar Online/Offline. Clientes visualizam no mapa quem está disponível. **Nova feature**: Atendimento em domicílio com taxa de deslocamento paga pelo cliente.
+## Project Overview
+**ClickBarber** is a mobile-first web application connecting barbers with clients in the Dublin metropolitan area. It allows clients to find nearby barbers, join queues in real-time, and request home services.
 
-## Arquitetura
-- **Frontend**: React.js + Tailwind CSS + Leaflet (mapas)
-- **Backend**: FastAPI (Python) com JWT auth
-- **Banco de Dados**: MongoDB
-- **Localização**: Dublin, Ireland
-- **Moeda**: Euro (€)
+## Core Features
 
-## User Personas
-1. **Cliente**: Pessoa buscando barbeiro disponível por perto ou em domicílio
-2. **Barbeiro**: Profissional gerenciando agenda e oferecendo atendimento presencial ou em domicílio
+### Client Features
+- **Landing Page**: Hero section with "FIND YOUR BARBER IN REAL TIME"
+- **Authentication**: Email/password and Google OAuth login
+- **Barber Discovery**: View available barbers with ratings, specialties, and queue status
+- **Real-time Queue**: Join barber queues and track position
+- **Home Service**: Request barbers to come to your location
+- **Reviews**: Rate and review barbers after service
 
-## Core Requirements
-- ✅ Cadastro/Login para clientes e barbeiros
-- ✅ Toggle Online/Offline para barbeiros
-- ✅ Mapa em tempo real com barbeiros disponíveis (Dublin)
-- ✅ Sistema de fila digital
-- ✅ **Home Service** - Atendimento em domicílio com taxa de deslocamento
+### Barber Features
+- **Dashboard**: Manage online status, view queue, track earnings
+- **Stripe Connect**: Receive payments directly (10% platform fee)
+- **Wallet & Payouts**: View balance, request withdrawals (instant or standard)
+- **Verification System**: 
+  - Contract signing with electronic signature
+  - Passport photo upload
+  - Selfie with passport verification
+  - Daily selfie validation
+- **Home Service**: Accept/decline home service requests
+- **Location Tracking**: Share live location with clients
+- **Subscription Plans**: Basic (€9.99/mo) and Premium (€19.99/mo)
 
-## Implementado ✅ (29/01/2026)
+## Technical Stack
+- **Frontend**: React, TailwindCSS, React-Leaflet for maps
+- **Backend**: FastAPI (Python), MongoDB
+- **Payments**: Stripe Connect for barber payouts
+- **Maps**: Leaflet with CartoDB dark theme
+- **Auth**: JWT + Google OAuth
 
-### Landing Page
-- [x] Hero section em inglês
-- [x] Features section
-- [x] CTA para cadastro
+## Database Collections
+- `users`: Clients and barbers
+- `queue`: Queue entries for services
+- `reviews`: Client reviews for barbers
+- `wallets`: Barber wallet balances
+- `transactions`: Financial transactions
+- `payouts`: Payout requests history
+- `verifications`: Barber verification documents
+- `subscriptions`: Barber subscription status
 
-### Sistema de Autenticação
-- [x] Cadastro de cliente e barbeiro
-- [x] Login com JWT
-- [x] Proteção de rotas
+## API Endpoints
 
-### Dashboard do Cliente
-- [x] Mapa Leaflet centralizado em Dublin
-- [x] Marcadores verdes/cinza (online/offline)
-- [x] Filtro "Online only"
-- [x] Detalhes do barbeiro
-- [x] **Modal de reserva com opções**:
-  - At the barbershop
-  - Home Service (+taxa de deslocamento)
-- [x] Cálculo automático de distância e taxa
+### Authentication
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
 
-### Dashboard do Barbeiro
-- [x] Toggle ON/OFF
-- [x] Indicador de Home Service ativo
-- [x] Fila com badge "HOME" para atendimentos em domicílio
-- [x] Detalhes do cliente (endereço, distância, taxa)
-- [x] Estatísticas de ganhos
+### Barbers
+- `GET /api/barbers`
+- `GET /api/barbers/{barber_id}`
+- `PUT /api/barbers/status`
+- `PUT /api/barbers/profile`
 
-### Home Service Feature
-- [x] Campo `offers_home_service` no barbeiro
-- [x] Taxa por km configurável (`home_service_fee_per_km`)
-- [x] Cálculo de distância (Haversine formula)
-- [x] Modal com seleção de tipo de atendimento
-- [x] Input de endereço do cliente
-- [x] Total calculado (serviço + deslocamento)
-- [x] Badge "HOME" na fila do barbeiro
+### Queue
+- `POST /api/queue/join`
+- `GET /api/queue/my-position`
+- `GET /api/queue/barber`
+- `PUT /api/queue/{entry_id}/status`
 
-### Barbeiros de Dublin (Seed Data)
-| Nome | Especialidade | Home Service | Taxa/km |
-|------|--------------|--------------|---------|
-| Sean Murphy | Beard & Traditional | ✅ | €2.50 |
-| Liam O'Connor | Fade & Skin Fade | ✅ | €3.00 |
-| Patrick Byrne | Hot Towel & Razor | ✅ | €2.00 |
-| Conor Walsh | Modern Styles | ❌ | - |
+### Stripe Connect
+- `POST /api/connect/onboard`
+- `GET /api/connect/status`
+- `GET /api/connect/dashboard`
 
-## Testes
-- Backend: 100% ✅
-- Frontend: 85% ✅ (core features working)
+### Wallet
+- `GET /api/wallet/balance`
+- `GET /api/wallet/transactions`
+- `GET /api/wallet/payouts`
+- `POST /api/wallet/payout`
+- `POST /api/wallet/auto-payout`
 
-## Backlog / Próximas Features
+### Verification
+- `GET /api/verification/status`
+- `GET /api/verification/contract`
+- `POST /api/verification/accept-contract`
+- `POST /api/verification/submit-documents`
 
-### P0 (Alta prioridade)
-- [ ] Notificações push quando chegar a vez
-- [ ] Navegação GPS para home service
-- [ ] Avaliação após atendimento
+### Subscription
+- `GET /api/subscription/plans`
+- `GET /api/subscription/status`
+- `POST /api/subscription/checkout`
 
-### P1 (Média prioridade)
-- [ ] Histórico de atendimentos
-- [ ] Chat entre cliente e barbeiro
-- [ ] Pagamento online integrado
+## Implementation Status
 
-### P2 (Baixa prioridade)
-- [ ] Integração WhatsApp
-- [ ] Relatórios mensais
-- [ ] App mobile nativo
+### Completed (2025-02-18)
+- [x] Core backend API routes (auth, barbers, queue, reviews)
+- [x] Stripe Connect integration for barber payouts
+- [x] Wallet system with balance tracking
+- [x] Payout requests (instant and standard)
+- [x] Auto-payout configuration
+- [x] Verification system (contract + documents)
+- [x] Subscription plans
+- [x] Frontend pages for all features
 
-## Próximos Passos
-1. Adicionar navegação GPS para barbeiro ir ao cliente
-2. Implementar pagamento online (Stripe)
-3. Sistema de avaliações
+### Known Issues
+- Some frontend routes call APIs that expect different parameter formats
+- Stripe Connect requires barbers to have verified Stripe accounts
+
+## Configuration
+- MongoDB: Uses `MONGO_URL` from `.env`
+- Stripe: Uses `STRIPE_API_KEY` from `.env`
+- Frontend URL: `FRONTEND_URL` for Stripe callbacks
+
+## Test Credentials (Seed Data)
+Barbers:
+- `liam@barberx.com` / `123456`
+- `sean@barberx.com` / `123456`
+- `conor@barberx.com` / `123456`
+- `patrick@barberx.com` / `123456`
