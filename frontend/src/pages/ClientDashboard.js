@@ -228,11 +228,18 @@ const ClientDashboard = () => {
     const tipAmount = urlParams.get('amount');
     
     if (paymentStatus === 'success' && sessionId) {
-      alert('✅ Pagamento realizado com sucesso! O barbeiro foi notificado.');
+      // Confirm payment in backend
+      axios.post(`${API}/connect/payment/confirm`, null, {
+        params: { session_id: sessionId }
+      }).then(() => {
+        alert('✅ Pagamento realizado com sucesso! O barbeiro foi notificado.');
+        fetchMyQueue();
+      }).catch((err) => {
+        console.error('Error confirming payment:', err);
+        alert('✅ Pagamento realizado! Aguarde confirmação.');
+      });
       // Clean URL
       window.history.replaceState({}, '', '/client');
-      // Refresh queue
-      fetchMyQueue();
     } else if (paymentStatus === 'cancelled') {
       alert('❌ Pagamento cancelado. Você pode tentar novamente.');
       window.history.replaceState({}, '', '/client');
