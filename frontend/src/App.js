@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
-import { StuffLanguageProvider } from './contexts/StuffLanguageContext';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import AuthCallback from './pages/AuthCallback';
@@ -14,8 +13,6 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import BarberVerificationPage from './pages/BarberVerificationPage';
 import AdminVerificationPage from './pages/AdminVerificationPage';
 import WalletPage from './pages/WalletPage';
-import StuffVerification from './pages/StuffVerification';
-import { StuffDuvidas } from './pages/StuffDuvidas';
 import Footer from './components/Footer';
 import InstallPWA from './components/InstallPWA';
 import './App.css';
@@ -66,7 +63,6 @@ function AppRoutes() {
   const location = useLocation();
   
   // Check URL fragment for session_id (Google OAuth callback)
-  // REMINDER: This must be checked synchronously during render to prevent race conditions
   if (location.hash?.includes('session_id=')) {
     return <AuthCallback />;
   }
@@ -119,9 +115,6 @@ function AppRoutes() {
           <WalletPage />
         </ProtectedRoute>
       } />
-      <Route path="/stuff/verification" element={<StuffVerification />} />
-      <Route path="/stuff/faq" element={<StuffDuvidas />} />
-      <Route path="/stuff/duvidas" element={<StuffDuvidas />} />
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
@@ -132,12 +125,10 @@ function App() {
   return (
     <BrowserRouter>
       <LanguageProvider>
-        <StuffLanguageProvider>
-          <AuthProvider>
-            <AppRoutes />
-            {/* InstallPWA removed */}
-          </AuthProvider>
-        </StuffLanguageProvider>
+        <AuthProvider>
+          <AppRoutes />
+          <InstallPWA />
+        </AuthProvider>
       </LanguageProvider>
     </BrowserRouter>
   );
