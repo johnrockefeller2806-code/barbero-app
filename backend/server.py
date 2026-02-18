@@ -195,6 +195,77 @@ async def login(input: UserLogin):
 async def get_me(user: dict = Depends(get_current_user)):
     return user
 
+# ==================== PASSWORD RECOVERY ROUTES ====================
+
+import secrets
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(email: str):
+    """Send password reset code to email"""
+    user = await db.users.find_one({"email": email})
+    if not user:
+        # Don't reveal if email exists
+        return {"message": "If email exists, reset code will be sent"}
+    
+    # Generate 6-digit reset code
+    reset_code = ''.join([str(secrets.randbelow(10)) for _ in range(6)])
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
+    
+    # Store reset code
+    await db.password_resets.update_one(
+        {"email": email},
+        {"$set": {
+            "email": email,
+            "code": reset_code,
+            "expires_at": expires_at.isoformat(),
+            "used": False
+        }},
+        upsert=True
+    )
+    
+    # In production, send email here
+    # For now, log the code for testing
+    logging.info(f"Password reset code for {email}: {reset_code}")
+    
+    return {"message": "Reset code sent to your email", "debug_code": reset_code}
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    code: str
+    new_password: str
+
+@api_router.post("/auth/reset-password")
+async def reset_password(request: ResetPasswordRequest):
+    """Reset password using code"""
+    reset_record = await db.password_resets.find_one({
+        "email": request.email,
+        "code": request.code,
+        "used": False
+    })
+    
+    if not reset_record:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset code")
+    
+    # Check expiration
+    expires_at = datetime.fromisoformat(reset_record["expires_at"])
+    if datetime.now(timezone.utc) > expires_at:
+        raise HTTPException(status_code=400, detail="Reset code has expired")
+    
+    # Update password
+    hashed_password = hash_password(request.new_password)
+    await db.users.update_one(
+        {"email": request.email},
+        {"$set": {"password": hashed_password}}
+    )
+    
+    # Mark code as used
+    await db.password_resets.update_one(
+        {"email": request.email, "code": request.code},
+        {"$set": {"used": True}}
+    )
+    
+    return {"message": "Password reset successfully"}
+
 # ==================== BARBER ROUTES ====================
 
 @api_router.get("/barbers")
