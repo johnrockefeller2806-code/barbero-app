@@ -37,6 +37,8 @@ export const Dashboard = () => {
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingPayment, setProcessingPayment] = useState(null);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [selectedEnrollment, setSelectedEnrollment] = useState(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
