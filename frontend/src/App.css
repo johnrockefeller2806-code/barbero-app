@@ -1,10 +1,50 @@
-// Imports
-import ___CSS_LOADER_API_SOURCEMAP_IMPORT___ from "../node_modules/css-loader/dist/runtime/sourceMaps.js";
-import ___CSS_LOADER_API_IMPORT___ from "../node_modules/css-loader/dist/runtime/api.js";
-var ___CSS_LOADER_EXPORT___ = ___CSS_LOADER_API_IMPORT___(___CSS_LOADER_API_SOURCEMAP_IMPORT___);
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `/* Minimal App.css - Using Tailwind for most styles */
-`, "",{"version":3,"sources":["webpack://./src/App.css"],"names":[],"mappings":"AAAA,qDAAqD","sourcesContent":["/* Minimal App.css - Using Tailwind for most styles */\n"],"sourceRoot":""}]);
-// Exports
-___CSS_LOADER_EXPORT___.locals = {};
-export default ___CSS_LOADER_EXPORT___;
+/* App Specific Styles */
+.hero-gradient {
+  background: linear-gradient(135deg, #09090B 0%, #18181b 100%);
+}
+
+/* Hero Section */
+.hero-bg {
+  background-image: url('https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Toast */
+.toast {
+  @apply fixed bottom-4 right-4 bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 shadow-lg z-50;
+}
+
+/* Loading Spinner */
+.spinner {
+  @apply w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin;
+}
+
+/* Map Marker */
+.custom-marker {
+  background: #f59e0b;
+  border-radius: 50%;
+  border: 3px solid #fff;
+}
+
+/* Barber Card */
+.barber-card {
+  @apply bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden transition-all hover:border-amber-500/50;
+}
+
+/* Status Toggle */
+.status-toggle {
+  @apply relative w-14 h-7 bg-zinc-700 rounded-full cursor-pointer transition-colors;
+}
+
+.status-toggle.online {
+  @apply bg-green-500;
+}
+
+.status-toggle-knob {
+  @apply absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform;
+}
+
+.status-toggle.online .status-toggle-knob {
+  @apply translate-x-7;
+}
