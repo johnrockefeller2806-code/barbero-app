@@ -96,6 +96,8 @@
 - [x] Verification system (contract + documents)
 - [x] Subscription plans
 - [x] Frontend pages for all features
+- [x] **Password Recovery** - forgot-password and reset-password routes added
+- [x] **Database Cleanup** - Removed all test barbers, only Cecilia Rivero remains
 
 ### Known Issues
 - Some frontend routes call APIs that expect different parameter formats
@@ -108,7 +110,4 @@
 
 ## Test Credentials (Seed Data)
 Barbers:
-- `liam@barberx.com` / `123456`
-- `sean@barberx.com` / `123456`
-- `conor@barberx.com` / `123456`
-- `patrick@barberx.com` / `123456`
+- `zezitha19@gmail.com` / `teste123` (Cecilia Rivero)
