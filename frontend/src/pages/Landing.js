@@ -196,22 +196,40 @@ export const Landing = () => {
             >
               <Link to="/schools">
                 <motion.div
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ 
+                    scale: 1.05,
+                    boxShadow: "0 20px 40px rgba(217, 119, 6, 0.4)"
+                  }}
                   whileTap={{ scale: 0.95 }}
+                  className="relative overflow-hidden rounded-full"
                 >
+                  {/* Shimmer effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  />
                   <Button 
                     size="lg" 
-                    className="bg-amber-600 hover:bg-amber-500 text-white rounded-full px-8 py-6 text-lg font-medium shadow-lg hover:shadow-xl transition-all"
+                    className="bg-amber-600 hover:bg-amber-500 text-white rounded-full px-8 py-6 text-lg font-medium shadow-lg transition-all relative"
                     data-testid="hero-cta"
                   >
                     {t('hero_cta')}
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <motion.div
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    >
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </motion.div>
                   </Button>
                 </motion.div>
               </Link>
               <a href="#como-funciona">
                 <motion.div
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ 
+                    scale: 1.05,
+                    backgroundColor: "rgba(255,255,255,0.15)"
+                  }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <Button 
