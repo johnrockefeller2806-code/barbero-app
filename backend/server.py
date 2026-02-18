@@ -683,6 +683,7 @@ async def get_stripe_connect_status(user: dict = Depends(get_current_user)):
     except stripe.error.StripeError as e:
         return {"connected": False, "error": str(e)}
 
+@api_router.get("/connect/dashboard")
 @api_router.get("/stripe/connect/dashboard")
 async def get_stripe_dashboard_link(user: dict = Depends(get_current_user)):
     """Get Stripe Express Dashboard login link"""
