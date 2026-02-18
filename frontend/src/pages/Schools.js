@@ -65,13 +65,33 @@ export const Schools = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 py-12" data-testid="schools-loading">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-          <Skeleton className="h-12 w-64 mb-4" />
-          <Skeleton className="h-6 w-96 mb-8" />
+      <div className="min-h-screen bg-slate-50" data-testid="schools-loading">
+        {/* Animated Header */}
+        <motion.div 
+          className="bg-emerald-900 text-white py-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="h-12 w-64 bg-emerald-800 rounded-lg mb-4"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="h-6 w-96 bg-emerald-800 rounded"
+            />
+          </div>
+        </motion.div>
+        
+        {/* Loading Cards */}
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2, 3, 4].map(i => (
-              <Skeleton key={i} className="h-80 rounded-2xl" />
+              <CardSkeleton key={i} />
             ))}
           </div>
         </div>
