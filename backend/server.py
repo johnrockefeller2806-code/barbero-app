@@ -230,11 +230,46 @@ async def forgot_password(request: ForgotPasswordRequest):
         upsert=True
     )
     
-    # In production, send email here
-    # For now, log the code for testing
-    logging.info(f"Password reset code for {request.email}: {reset_code}")
+    # Send email with Resend
+    try:
+        email_html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #F59E0B; margin: 0;">ClickBarber</h1>
+                <p style="color: #666;">Recuperação de Senha</p>
+            </div>
+            
+            <div style="background: #1a1a1a; border-radius: 10px; padding: 30px; text-align: center;">
+                <p style="color: #fff; font-size: 16px; margin-bottom: 20px;">
+                    Seu código de recuperação é:
+                </p>
+                <div style="background: #F59E0B; color: #000; font-size: 32px; font-weight: bold; 
+                            padding: 15px 30px; border-radius: 8px; letter-spacing: 8px; display: inline-block;">
+                    {reset_code}
+                </div>
+                <p style="color: #888; font-size: 14px; margin-top: 20px;">
+                    Este código expira em 15 minutos.
+                </p>
+            </div>
+            
+            <p style="color: #666; font-size: 12px; text-align: center; margin-top: 30px;">
+                Se você não solicitou esta recuperação, ignore este email.
+            </p>
+        </div>
+        """
+        
+        resend.Emails.send({
+            "from": "ClickBarber <onboarding@resend.dev>",
+            "to": [request.email],
+            "subject": "ClickBarber - Código de Recuperação de Senha",
+            "html": email_html
+        })
+        logging.info(f"Password reset email sent to {request.email}")
+    except Exception as e:
+        logging.error(f"Error sending email: {e}")
+        # Still return success to not block the flow
     
-    return {"message": "Reset code sent to your email", "debug_code": reset_code}
+    return {"message": "Reset code sent to your email"}
 
 class ResetPasswordRequest(BaseModel):
     email: str
