@@ -1529,10 +1529,39 @@ async def stripe_webhook(request: Request):
                 
                 enrollment_id = webhook_response.metadata.get("enrollment_id")
                 if enrollment_id:
+                    # Update enrollment status
                     await db.enrollments.update_one(
                         {"id": enrollment_id},
-                        {"$set": {"status": "paid"}}
+                        {"$set": {
+                            "status": "paid",
+                            "paid_at": datetime.now(timezone.utc).isoformat()
+                        }}
                     )
+                    
+                    # Get enrollment details for emails
+                    enrollment = await db.enrollments.find_one({"id": enrollment_id}, {"_id": 0})
+                    if enrollment:
+                        # Get student info
+                        student = await db.users.find_one({"id": enrollment.get("user_id")}, {"_id": 0})
+                        # Get school info
+                        school = await db.schools.find_one({"id": enrollment.get("school_id")}, {"_id": 0})
+                        
+                        if student and school:
+                            # Send confirmation emails to all parties
+                            try:
+                                await send_payment_confirmation_emails(
+                                    student_name=student.get("name", "Estudante"),
+                                    student_email=student.get("email", ""),
+                                    school_name=school.get("name", "Escola"),
+                                    school_email=school.get("email", ""),
+                                    course_name=enrollment.get("course_name", "Curso"),
+                                    amount=float(enrollment.get("price", 0)),
+                                    start_date=enrollment.get("start_date", "A definir"),
+                                    enrollment_id=enrollment_id
+                                )
+                                logger.info(f"Payment confirmation emails sent for enrollment {enrollment_id}")
+                            except Exception as email_error:
+                                logger.error(f"Error sending payment emails: {email_error}")
         
         return {"status": "ok"}
     except Exception as e:
