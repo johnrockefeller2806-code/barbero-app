@@ -80,12 +80,6 @@ export const SchoolDetail = () => {
       navigate('/login');
       return;
     }
-    
-    if (!isPlusUser) {
-      toast.error(language === 'pt' ? 'Você precisa do Plano PLUS para se matricular' : 'You need the PLUS Plan to enroll');
-      navigate('/plus');
-      return;
-    }
     setSelectedCourse(course);
     setSelectedDate(course.start_dates?.[0] || '');
     setEnrollDialogOpen(true);
