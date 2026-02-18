@@ -169,19 +169,163 @@ export const Transport = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-8">
-        {/* Info Card */}
-        <Card className="border-slate-100 bg-emerald-50 mb-8" data-testid="transport-info">
-          <CardContent className="p-6 flex items-start gap-4">
-            <Info className="h-6 w-6 text-emerald-700 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-semibold text-emerald-900 mb-1">
-                {language === 'pt' ? 'Dica: Use o Leap Card!' : 'Tip: Use Leap Card!'}
-              </h3>
-              <p className="text-sm text-emerald-700">
-                {language === 'pt' 
-                  ? 'O Leap Card é um cartão recarregável que oferece tarifas mais baratas em todos os transportes públicos de Dublin. Você pode comprar em estações do Luas, lojas de conveniência e online.'
-                  : 'The Leap Card is a rechargeable card that offers cheaper fares on all Dublin public transport. You can buy it at Luas stations, convenience stores and online.'}
-              </p>
+        {/* Leap Card Section */}
+        <Card className="border-slate-100 bg-gradient-to-br from-emerald-600 to-teal-600 text-white mb-8 overflow-hidden" data-testid="leap-card-section">
+          <CardContent className="p-0">
+            <div className="flex flex-col lg:flex-row">
+              {/* Left - Info */}
+              <div className="flex-1 p-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
+                    <CreditCard className="h-8 w-8 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold">Leap Card</h2>
+                    <p className="text-emerald-100 text-sm">Transport for Ireland</p>
+                  </div>
+                </div>
+                
+                <p className="text-emerald-50 mb-6">
+                  {language === 'pt' 
+                    ? 'O Leap Card é o cartão de transporte obrigatório para Dublin. Oferece até 31% de desconto em todas as viagens de ônibus, Luas e DART.'
+                    : language === 'es'
+                    ? 'La Leap Card es la tarjeta de transporte obligatoria para Dublín. Ofrece hasta un 31% de descuento en todos los viajes en autobús, Luas y DART.'
+                    : 'The Leap Card is Dublin\'s essential transport card. It offers up to 31% discount on all bus, Luas and DART journeys.'}
+                </p>
+
+                {/* Benefits */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-emerald-200" />
+                    <span>{language === 'pt' ? 'Até 31% desconto' : language === 'es' ? 'Hasta 31% descuento' : 'Up to 31% discount'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-emerald-200" />
+                    <span>{language === 'pt' ? 'Recarregável' : language === 'es' ? 'Recargable' : 'Rechargeable'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-emerald-200" />
+                    <span>{language === 'pt' ? 'Todos transportes' : language === 'es' ? 'Todos transportes' : 'All transport'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-emerald-200" />
+                    <span>{language === 'pt' ? 'Tarifa diária máxima' : language === 'es' ? 'Tarifa diaria máxima' : 'Daily fare cap'}</span>
+                  </div>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-wrap gap-3">
+                  <a 
+                    href="https://about.leapcard.ie/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white text-emerald-700 px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-50 transition-colors"
+                    data-testid="leap-card-official-link"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    {language === 'pt' ? 'Site Oficial' : language === 'es' ? 'Sitio Oficial' : 'Official Website'}
+                  </a>
+                  <a 
+                    href="https://about.leapcard.ie/about/where-to-buy" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white/20 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-white/30 transition-colors backdrop-blur-sm"
+                    data-testid="leap-card-buy-link"
+                  >
+                    <MapPinned className="h-4 w-4" />
+                    {language === 'pt' ? 'Onde Comprar' : language === 'es' ? 'Dónde Comprar' : 'Where to Buy'}
+                  </a>
+                </div>
+              </div>
+
+              {/* Right - Where to Get */}
+              <div className="lg:w-96 bg-white/10 backdrop-blur-sm p-6 lg:p-8">
+                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  {language === 'pt' ? 'Onde Conseguir' : language === 'es' ? 'Dónde Conseguir' : 'Where to Get'}
+                </h3>
+                
+                <div className="space-y-4">
+                  {/* Dublin Bus Office */}
+                  <a 
+                    href="https://maps.google.com/?q=Dublin+Bus+O'Connell+Street+Dublin"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-3 bg-white/10 rounded-xl hover:bg-white/20 transition-colors"
+                    data-testid="leap-card-dublin-bus"
+                  >
+                    <div className="flex items-start gap-3">
+                      <Bus className="h-5 w-5 text-emerald-200 mt-0.5" />
+                      <div>
+                        <p className="font-medium">Dublin Bus Office</p>
+                        <p className="text-sm text-emerald-200">59 O'Connell Street Upper, Dublin 1</p>
+                        <p className="text-xs text-emerald-300 mt-1">
+                          {language === 'pt' ? '📍 Clique para ver no mapa' : language === 'es' ? '📍 Clic para ver en mapa' : '📍 Click to view on map'}
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+
+                  {/* Luas Stations */}
+                  <a 
+                    href="https://maps.google.com/?q=Luas+Abbey+Street+Dublin"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-3 bg-white/10 rounded-xl hover:bg-white/20 transition-colors"
+                    data-testid="leap-card-luas"
+                  >
+                    <div className="flex items-start gap-3">
+                      <Train className="h-5 w-5 text-emerald-200 mt-0.5" />
+                      <div>
+                        <p className="font-medium">{language === 'pt' ? 'Estações do Luas' : language === 'es' ? 'Estaciones del Luas' : 'Luas Stations'}</p>
+                        <p className="text-sm text-emerald-200">{language === 'pt' ? 'Todas as estações (máquinas de ticket)' : language === 'es' ? 'Todas las estaciones (máquinas de ticket)' : 'All stations (ticket machines)'}</p>
+                      </div>
+                    </div>
+                  </a>
+
+                  {/* Connolly Station */}
+                  <a 
+                    href="https://maps.google.com/?q=Connolly+Station+Dublin"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-3 bg-white/10 rounded-xl hover:bg-white/20 transition-colors"
+                    data-testid="leap-card-connolly"
+                  >
+                    <div className="flex items-start gap-3">
+                      <Train className="h-5 w-5 text-emerald-200 mt-0.5" />
+                      <div>
+                        <p className="font-medium">Connolly Station</p>
+                        <p className="text-sm text-emerald-200">Newsrail Shop, Connolly Station</p>
+                        <p className="text-xs text-emerald-300 mt-1">
+                          {language === 'pt' ? '📍 Clique para ver no mapa' : language === 'es' ? '📍 Clic para ver en mapa' : '📍 Click to view on map'}
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+
+                  {/* Post Offices */}
+                  <div className="p-3 bg-white/10 rounded-xl">
+                    <div className="flex items-start gap-3">
+                      <MapPinned className="h-5 w-5 text-emerald-200 mt-0.5" />
+                      <div>
+                        <p className="font-medium">{language === 'pt' ? 'Correios (Post Offices)' : language === 'es' ? 'Correos (Post Offices)' : 'Post Offices'}</p>
+                        <p className="text-sm text-emerald-200">{language === 'pt' ? '+2.000 agentes em toda Irlanda' : language === 'es' ? '+2.000 agentes en toda Irlanda' : '+2,000 agents across Ireland'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact */}
+                <div className="mt-4 pt-4 border-t border-white/20">
+                  <p className="text-sm text-emerald-200 mb-2">
+                    <Smartphone className="h-4 w-4 inline mr-1" />
+                    {language === 'pt' ? 'Suporte:' : language === 'es' ? 'Soporte:' : 'Support:'} <strong>0818 824 824</strong>
+                  </p>
+                  <p className="text-xs text-emerald-300">
+                    {language === 'pt' ? 'Seg-Sex 7h-19h, Sáb 9h-15h' : language === 'es' ? 'Lun-Vie 7h-19h, Sáb 9h-15h' : 'Mon-Fri 7am-7pm, Sat 9am-3pm'}
+                  </p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
