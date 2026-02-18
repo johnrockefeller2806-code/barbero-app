@@ -226,7 +226,7 @@ export const Schools = () => {
     );
   }
 
-  // Normal Schools Page for PLUS users
+  // Normal Schools Page - FREE for all users
   return (
     <div className="min-h-screen bg-slate-50" data-testid="schools-page">
       {/* Header */}
@@ -238,10 +238,6 @@ export const Schools = () => {
                 <h1 className="font-serif text-4xl md:text-5xl font-bold" data-testid="schools-title">
                   {t('schools_title')}
                 </h1>
-                <Badge className="bg-amber-500 text-white">
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  PLUS
-                </Badge>
               </div>
               <p className="text-emerald-200 text-lg max-w-2xl">
                 {t('schools_subtitle')}
