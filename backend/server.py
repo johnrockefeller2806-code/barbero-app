@@ -393,6 +393,82 @@ async def update_barber_profile(
     
     return {"success": True}
 
+# ==================== REFERRAL ROUTES ====================
+
+@api_router.get("/referral/info")
+async def get_referral_info(user: dict = Depends(get_current_user)):
+    """Get referral code and stats for user"""
+    # Get or create referral code
+    referral_data = await db.referrals.find_one({"user_id": user["id"]})
+    
+    if not referral_data:
+        # Generate unique referral code
+        import random
+        import string
+        referral_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+        
+        referral_data = {
+            "user_id": user["id"],
+            "referral_code": referral_code,
+            "total_referrals": 0,
+            "referral_balance": 0,
+            "referred_users": [],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.referrals.insert_one(referral_data)
+    
+    return {
+        "referral_code": referral_data["referral_code"],
+        "total_referrals": referral_data.get("total_referrals", 0),
+        "referral_balance": referral_data.get("referral_balance", 0)
+    }
+
+@api_router.post("/referral/apply")
+async def apply_referral_code(referral_code: str, user: dict = Depends(get_current_user)):
+    """Apply a referral code for new user"""
+    # Check if user already used a referral code
+    existing_use = await db.referral_uses.find_one({"user_id": user["id"]})
+    if existing_use:
+        raise HTTPException(status_code=400, detail="You already used a referral code")
+    
+    # Find the referrer
+    referrer = await db.referrals.find_one({"referral_code": referral_code})
+    if not referrer:
+        raise HTTPException(status_code=404, detail="Invalid referral code")
+    
+    if referrer["user_id"] == user["id"]:
+        raise HTTPException(status_code=400, detail="You cannot use your own referral code")
+    
+    # Add €5 to both users
+    REFERRAL_BONUS = 5.0
+    
+    # Credit referrer
+    await db.referrals.update_one(
+        {"user_id": referrer["user_id"]},
+        {
+            "$inc": {"total_referrals": 1, "referral_balance": REFERRAL_BONUS},
+            "$push": {"referred_users": user["id"]}
+        }
+    )
+    
+    # Credit new user (add to their wallet or referral balance)
+    await db.referrals.update_one(
+        {"user_id": user["id"]},
+        {"$inc": {"referral_balance": REFERRAL_BONUS}},
+        upsert=True
+    )
+    
+    # Record the use
+    await db.referral_uses.insert_one({
+        "user_id": user["id"],
+        "referral_code": referral_code,
+        "referrer_id": referrer["user_id"],
+        "bonus": REFERRAL_BONUS,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"success": True, "message": f"€{REFERRAL_BONUS} added to your balance!"}
+
 # ==================== QUEUE ROUTES ====================
 
 @api_router.post("/queue/join")
