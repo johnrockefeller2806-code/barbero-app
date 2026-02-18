@@ -299,7 +299,6 @@ export const SchoolDashboard = () => {
               <h1 className="font-serif text-3xl md:text-4xl font-bold">
                 {school?.name || 'Minha Escola'}
               </h1>
-              {getStatusBadge(school?.status)}
             </div>
           </div>
           <p className="text-emerald-200">Gerencie seus cursos e matrículas</p>
