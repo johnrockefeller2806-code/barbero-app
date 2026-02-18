@@ -21,6 +21,9 @@ import stripe  # Stripe Connect
 # Import chat module
 from chat import chat_router, init_chat_module, setup_ttl_index
 
+# Import email service
+from email_service import send_payment_confirmation_emails
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
