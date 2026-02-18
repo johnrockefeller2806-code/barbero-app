@@ -14,6 +14,7 @@ import hashlib
 import jwt
 import math
 import stripe
+import resend
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -31,6 +32,9 @@ JWT_SECRET = os.environ.get('JWT_SECRET', 'barberx-secret-key-2024')
 # Stripe configuration
 stripe.api_key = os.environ.get('STRIPE_API_KEY', '')
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+
+# Resend configuration for emails
+resend.api_key = os.environ.get('RESEND_API_KEY', '')
 
 # ==================== MODELS ====================
 
