@@ -7,6 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '../components/ui/dialog';
 import { 
   GraduationCap, 
   Calendar, 
@@ -15,9 +21,11 @@ import {
   Clock,
   AlertCircle,
   ArrowRight,
-  BookOpen
+  BookOpen,
+  Smartphone
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { PaymentCheckout } from '../components/PaymentCheckout';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
