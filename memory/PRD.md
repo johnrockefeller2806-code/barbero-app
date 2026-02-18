@@ -1,130 +1,94 @@
-# STUFF Intercâmbio - PRD (Product Requirements Document)
+# BarberX - Marketplace de Barbeiros em Tempo Real (Dublin, Ireland)
 
-## Resumo do Projeto
-Plataforma marketplace para intercâmbio na Irlanda, conectando estudantes diretamente com escolas de inglês, sem intermediários.
+## Problema Original
+Criar um marketplace de barbeiros em tempo real para Dublin, Irlanda. Barbeiros podem ficar Online/Offline. Clientes visualizam no mapa quem está disponível. **Nova feature**: Atendimento em domicílio com taxa de deslocamento paga pelo cliente.
 
-## Status Atual: EM DESENVOLVIMENTO
+## Arquitetura
+- **Frontend**: React.js + Tailwind CSS + Leaflet (mapas)
+- **Backend**: FastAPI (Python) com JWT auth
+- **Banco de Dados**: MongoDB
+- **Localização**: Dublin, Ireland
+- **Moeda**: Euro (€)
 
----
+## User Personas
+1. **Cliente**: Pessoa buscando barbeiro disponível por perto ou em domicílio
+2. **Barbeiro**: Profissional gerenciando agenda e oferecendo atendimento presencial ou em domicílio
 
-## Funcionalidades Implementadas ✅
+## Core Requirements
+- ✅ Cadastro/Login para clientes e barbeiros
+- ✅ Toggle Online/Offline para barbeiros
+- ✅ Mapa em tempo real com barbeiros disponíveis (Dublin)
+- ✅ Sistema de fila digital
+- ✅ **Home Service** - Atendimento em domicílio com taxa de deslocamento
 
-### Core Features
-1. **Multi-idiomas (PT, EN, ES)** - Seletor de idioma no navbar
-2. **Stripe Connect Marketplace** - Comissão de 15% para a plataforma
-3. **Apple Pay / Google Pay** - Pagamentos móveis integrados
-4. **Sistema de Emails (Resend)** - Notificações automáticas
-5. **Acesso aberto** - Sem paywall, todas escolas visíveis
-6. **Aprovação automática** - Escolas aprovadas automaticamente
+## Implementado ✅ (29/01/2026)
 
-### UI/UX
-7. **Framer Motion** ✅ (Implementado 18/02/2026)
-   - Animações de entrada (fade-in, slide)
-   - Efeitos de hover em cards
-   - Animações stagger em listas
-   - Elementos flutuantes decorativos
-   - Transições suaves entre páginas
-   - **Botões animados** com shimmer effect e pulse
-   - **Loading screen animado** com skeleton cards
-   - **Logo animada** com float e hover effects
-   - **Seta animada** nos CTAs
-   - **Sombra dinâmica** nos botões ao hover
+### Landing Page
+- [x] Hero section em inglês
+- [x] Features section
+- [x] CTA para cadastro
 
-### Conteúdo Informativo
-8. **Seção Leap Card** - Na página de transporte
-9. **Regras da Irlanda** - Guia completo na homepage
-   - Requisitos do visto (Stamp 2)
-   - Direitos de trabalho
-   - Custos estimados
-   - Passo a passo do processo
+### Sistema de Autenticação
+- [x] Cadastro de cliente e barbeiro
+- [x] Login com JWT
+- [x] Proteção de rotas
 
----
+### Dashboard do Cliente
+- [x] Mapa Leaflet centralizado em Dublin
+- [x] Marcadores verdes/cinza (online/offline)
+- [x] Filtro "Online only"
+- [x] Detalhes do barbeiro
+- [x] **Modal de reserva com opções**:
+  - At the barbershop
+  - Home Service (+taxa de deslocamento)
+- [x] Cálculo automático de distância e taxa
 
-## Stack Tecnológica
+### Dashboard do Barbeiro
+- [x] Toggle ON/OFF
+- [x] Indicador de Home Service ativo
+- [x] Fila com badge "HOME" para atendimentos em domicílio
+- [x] Detalhes do cliente (endereço, distância, taxa)
+- [x] Estatísticas de ganhos
 
-### Frontend
-- React 19
-- TailwindCSS
-- Shadcn/UI Components
-- **Framer Motion** (animações)
-- Stripe React SDK
+### Home Service Feature
+- [x] Campo `offers_home_service` no barbeiro
+- [x] Taxa por km configurável (`home_service_fee_per_km`)
+- [x] Cálculo de distância (Haversine formula)
+- [x] Modal com seleção de tipo de atendimento
+- [x] Input de endereço do cliente
+- [x] Total calculado (serviço + deslocamento)
+- [x] Badge "HOME" na fila do barbeiro
 
-### Backend
-- FastAPI (Python)
-- MongoDB
-- Stripe Connect
-- Resend (emails)
+### Barbeiros de Dublin (Seed Data)
+| Nome | Especialidade | Home Service | Taxa/km |
+|------|--------------|--------------|---------|
+| Sean Murphy | Beard & Traditional | ✅ | €2.50 |
+| Liam O'Connor | Fade & Skin Fade | ✅ | €3.00 |
+| Patrick Byrne | Hot Towel & Razor | ✅ | €2.00 |
+| Conor Walsh | Modern Styles | ❌ | - |
 
----
+## Testes
+- Backend: 100% ✅
+- Frontend: 85% ✅ (core features working)
 
-## Próximas Tarefas (Backlog)
+## Backlog / Próximas Features
 
-### P0 - Alta Prioridade
-- [ ] Teste E2E completo do fluxo de pagamento
-- [ ] Verificar notificações de email
+### P0 (Alta prioridade)
+- [ ] Notificações push quando chegar a vez
+- [ ] Navegação GPS para home service
+- [ ] Avaliação após atendimento
 
-### P1 - Média Prioridade  
-- [ ] Dashboard administrativo STUFF
-- [ ] Animações nas demais páginas (SchoolDetail, Transport, etc.)
-- [ ] Limpeza do diretório `/app/John-aplicativo-/`
+### P1 (Média prioridade)
+- [ ] Histórico de atendimentos
+- [ ] Chat entre cliente e barbeiro
+- [ ] Pagamento online integrado
 
-### P2 - Baixa Prioridade
-- [ ] Páginas de perfil público para escolas
-- [ ] Sistema de avaliações de estudantes
-- [ ] Página de sucesso de pagamento aprimorada
+### P2 (Baixa prioridade)
+- [ ] Integração WhatsApp
+- [ ] Relatórios mensais
+- [ ] App mobile nativo
 
----
-
-## Credenciais Necessárias
-- **Stripe API Keys** - Configurar em `backend/.env`
-- **Resend API Key** - Configurar em `backend/.env`  
-- **ADMIN_EMAIL** - Email para notificações admin
-
----
-
-## Arquitetura de Arquivos
-
-```
-/app/
-├── backend/
-│   ├── server.py              # API principal
-│   ├── services/
-│   │   └── email_service.py   # Serviço de emails
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── motion/
-│   │   │   │   └── AnimatedComponents.js  # 🆕 Componentes animados
-│   │   │   ├── ui/            # Shadcn components
-│   │   │   └── CheckoutForm.js
-│   │   ├── pages/
-│   │   │   ├── Landing.js     # ✅ Com Framer Motion
-│   │   │   ├── Schools.js     # ✅ Com Framer Motion
-│   │   │   └── ...
-│   │   └── context/
-│   └── package.json
-└── memory/
-    └── PRD.md
-```
-
----
-
-## Changelog
-
-### 18/02/2026
-- ✅ Implementado Framer Motion na Landing page
-- ✅ Implementado Framer Motion na Schools page
-- ✅ Criado arquivo de componentes animados reutilizáveis
-
-### 17/02/2026
-- ✅ Seção de regras da Irlanda na homepage
-- ✅ Sistema de emails via Resend
-- ✅ Apple Pay / Google Pay integrados
-
----
-
-## Notas para Investidores
-- Modelo de negócio: Comissão de 15% sobre cada matrícula
-- Diferencial: Contato direto escola-estudante, sem intermediários
-- Mercado: Brasileiros que querem estudar na Irlanda
+## Próximos Passos
+1. Adicionar navegação GPS para barbeiro ir ao cliente
+2. Implementar pagamento online (Stripe)
+3. Sistema de avaliações
