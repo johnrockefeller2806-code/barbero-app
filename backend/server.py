@@ -199,10 +199,13 @@ async def get_me(user: dict = Depends(get_current_user)):
 
 import secrets
 
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
 @api_router.post("/auth/forgot-password")
-async def forgot_password(email: str):
+async def forgot_password(request: ForgotPasswordRequest):
     """Send password reset code to email"""
-    user = await db.users.find_one({"email": email})
+    user = await db.users.find_one({"email": request.email})
     if not user:
         # Don't reveal if email exists
         return {"message": "If email exists, reset code will be sent"}
@@ -213,9 +216,9 @@ async def forgot_password(email: str):
     
     # Store reset code
     await db.password_resets.update_one(
-        {"email": email},
+        {"email": request.email},
         {"$set": {
-            "email": email,
+            "email": request.email,
             "code": reset_code,
             "expires_at": expires_at.isoformat(),
             "used": False
@@ -225,7 +228,7 @@ async def forgot_password(email: str):
     
     # In production, send email here
     # For now, log the code for testing
-    logging.info(f"Password reset code for {email}: {reset_code}")
+    logging.info(f"Password reset code for {request.email}: {reset_code}")
     
     return {"message": "Reset code sent to your email", "debug_code": reset_code}
 
