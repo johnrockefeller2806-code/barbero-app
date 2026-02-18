@@ -1091,17 +1091,40 @@ export const Landing = () => {
                 </motion.p>
                 <Link to="/schools">
                   <motion.div
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ 
+                      scale: 1.05,
+                      boxShadow: "0 25px 50px rgba(6, 78, 59, 0.4)"
+                    }}
                     whileTap={{ scale: 0.95 }}
-                    className="inline-block"
+                    className="inline-block relative overflow-hidden rounded-full"
                   >
+                    {/* Shimmer effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                      animate={{ x: ['-100%', '100%'] }}
+                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
+                    />
+                    {/* Pulse ring */}
+                    <motion.div
+                      className="absolute inset-0 rounded-full border-2 border-emerald-400"
+                      animate={{ 
+                        scale: [1, 1.2, 1],
+                        opacity: [0.5, 0, 0.5]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
                     <Button 
                       size="lg" 
-                      className="bg-emerald-900 hover:bg-emerald-800 rounded-full px-8 py-6 text-lg"
+                      className="bg-emerald-900 hover:bg-emerald-800 rounded-full px-8 py-6 text-lg relative"
                       data-testid="cta-button"
                     >
                       {t('hero_cta')}
-                      <ArrowRight className="ml-2 h-5 w-5" />
+                      <motion.div
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      >
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </motion.div>
                     </Button>
                   </motion.div>
                 </Link>
