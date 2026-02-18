@@ -416,6 +416,345 @@ export const Landing = () => {
         </div>
       </section>
 
+      {/* Ireland Exchange Rules Section */}
+      <section id="regras-irlanda" className="py-20 md:py-28 bg-white" data-testid="ireland-rules-section">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-2 bg-amber-100 text-amber-800 rounded-full text-sm font-medium mb-4">
+              {language === 'pt' ? '📋 Guia Completo' : language === 'es' ? '📋 Guía Completa' : '📋 Complete Guide'}
+            </span>
+            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
+              {language === 'pt' 
+                ? 'Regras do Intercâmbio na Irlanda' 
+                : language === 'es'
+                ? 'Reglas del Intercambio en Irlanda'
+                : 'Ireland Exchange Rules'}
+            </h2>
+            <p className="text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              {language === 'pt'
+                ? 'Tudo que você precisa saber antes de embarcar. Valores, documentos, prazos e procedimentos oficiais.'
+                : language === 'es'
+                ? 'Todo lo que necesitas saber antes de viajar. Valores, documentos, plazos y procedimientos oficiales.'
+                : 'Everything you need to know before you travel. Prices, documents, deadlines and official procedures.'}
+            </p>
+          </div>
+
+          {/* Requirements Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            {/* Visa Requirements */}
+            <Card className="border-slate-200 overflow-hidden">
+              <div className="bg-emerald-900 text-white p-6">
+                <div className="flex items-center gap-3">
+                  <FileText className="h-8 w-8" />
+                  <div>
+                    <h3 className="text-xl font-bold">
+                      {language === 'pt' ? 'Requisitos do Visto' : language === 'es' ? 'Requisitos de Visa' : 'Visa Requirements'}
+                    </h3>
+                    <p className="text-emerald-200 text-sm">Stamp 2 - Student Visa</p>
+                  </div>
+                </div>
+              </div>
+              <CardContent className="p-6">
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {language === 'pt' ? 'Curso mínimo de 25 semanas' : language === 'es' ? 'Curso mínimo de 25 semanas' : 'Minimum 25-week course'}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {language === 'pt' ? '15 horas/semana em escola ACELS/QQI' : language === 'es' ? '15 horas/semana en escuela ACELS/QQI' : '15 hours/week at ACELS/QQI school'}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {language === 'pt' ? 'Comprovação financeira' : language === 'es' ? 'Comprobación financiera' : 'Financial proof'}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {language === 'pt' ? 'Mínimo €4.200 na conta bancária' : language === 'es' ? 'Mínimo €4.200 en cuenta bancaria' : 'Minimum €4,200 in bank account'}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {language === 'pt' ? 'Seguro saúde obrigatório' : language === 'es' ? 'Seguro de salud obligatorio' : 'Mandatory health insurance'}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {language === 'pt' ? 'Cobertura mínima de €25.000' : language === 'es' ? 'Cobertura mínima de €25.000' : 'Minimum coverage €25,000'}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {language === 'pt' ? 'Carta de matrícula da escola' : language === 'es' ? 'Carta de matrícula de la escuela' : 'School enrollment letter'}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {language === 'pt' ? 'Enrollment Letter oficial' : language === 'es' ? 'Enrollment Letter oficial' : 'Official Enrollment Letter'}
+                      </p>
+                    </div>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Work Rights */}
+            <Card className="border-slate-200 overflow-hidden">
+              <div className="bg-blue-900 text-white p-6">
+                <div className="flex items-center gap-3">
+                  <Building2 className="h-8 w-8" />
+                  <div>
+                    <h3 className="text-xl font-bold">
+                      {language === 'pt' ? 'Direito de Trabalho' : language === 'es' ? 'Derecho al Trabajo' : 'Work Rights'}
+                    </h3>
+                    <p className="text-blue-200 text-sm">Stamp 2 - Student Work Permit</p>
+                  </div>
+                </div>
+              </div>
+              <CardContent className="p-6">
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {language === 'pt' ? '20 horas/semana durante aulas' : language === 'es' ? '20 horas/semana durante clases' : '20 hours/week during term'}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {language === 'pt' ? 'Período letivo regular' : language === 'es' ? 'Período lectivo regular' : 'Regular academic period'}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {language === 'pt' ? '40 horas/semana nas férias' : language === 'es' ? '40 horas/semana en vacaciones' : '40 hours/week during holidays'}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {language === 'pt' ? 'Jun-Set e 15 Dez-15 Jan' : language === 'es' ? 'Jun-Sep y 15 Dic-15 Ene' : 'Jun-Sep and 15 Dec-15 Jan'}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {language === 'pt' ? 'Salário mínimo €12.70/hora' : language === 'es' ? 'Salario mínimo €12.70/hora' : 'Minimum wage €12.70/hour'}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {language === 'pt' ? 'Atualizado em 2024' : language === 'es' ? 'Actualizado en 2024' : 'Updated 2024'}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {language === 'pt' ? 'PPS Number obrigatório' : language === 'es' ? 'PPS Number obligatorio' : 'PPS Number required'}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {language === 'pt' ? 'Necessário para trabalhar legalmente' : language === 'es' ? 'Necesario para trabajar legalmente' : 'Required to work legally'}
+                      </p>
+                    </div>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Costs Breakdown */}
+          <Card className="border-slate-200 mb-12 overflow-hidden" data-testid="costs-breakdown">
+            <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6">
+              <div className="flex items-center gap-3">
+                <Euro className="h-8 w-8" />
+                <div>
+                  <h3 className="text-xl font-bold">
+                    {language === 'pt' ? 'Custos Estimados do Intercâmbio' : language === 'es' ? 'Costos Estimados del Intercambio' : 'Estimated Exchange Costs'}
+                  </h3>
+                  <p className="text-amber-100 text-sm">
+                    {language === 'pt' ? 'Valores médios para 8 meses (2 semestres)' : language === 'es' ? 'Valores medios para 8 meses (2 semestres)' : 'Average values for 8 months (2 semesters)'}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="text-center p-4 bg-slate-50 rounded-xl">
+                  <GraduationCap className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
+                  <p className="text-sm text-slate-500 mb-1">
+                    {language === 'pt' ? 'Curso de Inglês' : language === 'es' ? 'Curso de Inglés' : 'English Course'}
+                  </p>
+                  <p className="text-2xl font-bold text-slate-900">€2.500 - €4.500</p>
+                  <p className="text-xs text-slate-400">25 semanas</p>
+                </div>
+                <div className="text-center p-4 bg-slate-50 rounded-xl">
+                  <MapPin className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                  <p className="text-sm text-slate-500 mb-1">
+                    {language === 'pt' ? 'Acomodação' : language === 'es' ? 'Alojamiento' : 'Accommodation'}
+                  </p>
+                  <p className="text-2xl font-bold text-slate-900">€600 - €1.200</p>
+                  <p className="text-xs text-slate-400">{language === 'pt' ? 'por mês' : language === 'es' ? 'por mes' : 'per month'}</p>
+                </div>
+                <div className="text-center p-4 bg-slate-50 rounded-xl">
+                  <Shield className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+                  <p className="text-sm text-slate-500 mb-1">
+                    {language === 'pt' ? 'Seguro Saúde' : language === 'es' ? 'Seguro de Salud' : 'Health Insurance'}
+                  </p>
+                  <p className="text-2xl font-bold text-slate-900">€150 - €300</p>
+                  <p className="text-xs text-slate-400">{language === 'pt' ? 'por 8 meses' : language === 'es' ? 'por 8 meses' : 'for 8 months'}</p>
+                </div>
+                <div className="text-center p-4 bg-slate-50 rounded-xl">
+                  <FileCheck className="h-8 w-8 text-amber-600 mx-auto mb-2" />
+                  <p className="text-sm text-slate-500 mb-1">
+                    {language === 'pt' ? 'Taxa IRP/GNIB' : language === 'es' ? 'Tasa IRP/GNIB' : 'IRP/GNIB Fee'}
+                  </p>
+                  <p className="text-2xl font-bold text-slate-900">€300</p>
+                  <p className="text-xs text-slate-400">{language === 'pt' ? 'taxa única' : language === 'es' ? 'tasa única' : 'one-time fee'}</p>
+                </div>
+              </div>
+              
+              {/* Total Estimate */}
+              <div className="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <p className="text-emerald-800 font-medium">
+                      {language === 'pt' ? 'Investimento Total Estimado (8 meses):' : language === 'es' ? 'Inversión Total Estimada (8 meses):' : 'Total Estimated Investment (8 months):'}
+                    </p>
+                    <p className="text-sm text-emerald-600">
+                      {language === 'pt' ? 'Inclui curso, moradia, seguro e taxas' : language === 'es' ? 'Incluye curso, vivienda, seguro y tasas' : 'Includes course, housing, insurance and fees'}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-3xl font-bold text-emerald-700">€10.000 - €18.000</p>
+                    <p className="text-xs text-emerald-600">
+                      {language === 'pt' ? '(sem passagem aérea)' : language === 'es' ? '(sin pasaje aéreo)' : '(excluding airfare)'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Step by Step Process */}
+          <Card className="border-slate-200 overflow-hidden" data-testid="step-by-step">
+            <div className="bg-slate-900 text-white p-6">
+              <div className="flex items-center gap-3">
+                <FileCheck className="h-8 w-8" />
+                <div>
+                  <h3 className="text-xl font-bold">
+                    {language === 'pt' ? 'Passo a Passo do Processo' : language === 'es' ? 'Paso a Paso del Proceso' : 'Step by Step Process'}
+                  </h3>
+                  <p className="text-slate-300 text-sm">
+                    {language === 'pt' ? 'Do início ao embarque' : language === 'es' ? 'Del inicio al embarque' : 'From start to departure'}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                {[
+                  {
+                    step: '1',
+                    title: language === 'pt' ? 'Escolha a escola e o curso' : language === 'es' ? 'Elige la escuela y el curso' : 'Choose school and course',
+                    desc: language === 'pt' ? 'Pesquise escolas credenciadas (ACELS/QQI) com cursos de no mínimo 25 semanas' : language === 'es' ? 'Investiga escuelas acreditadas (ACELS/QQI) con cursos de mínimo 25 semanas' : 'Research accredited schools (ACELS/QQI) with minimum 25-week courses',
+                    time: language === 'pt' ? '1-2 semanas' : language === 'es' ? '1-2 semanas' : '1-2 weeks'
+                  },
+                  {
+                    step: '2',
+                    title: language === 'pt' ? 'Faça a matrícula e pague' : language === 'es' ? 'Haz la matrícula y paga' : 'Enroll and pay',
+                    desc: language === 'pt' ? 'Pague o curso pela plataforma e receba a Carta de Matrícula (Enrollment Letter)' : language === 'es' ? 'Paga el curso por la plataforma y recibe la Carta de Matrícula (Enrollment Letter)' : 'Pay for the course through the platform and receive the Enrollment Letter',
+                    time: language === 'pt' ? '1-5 dias úteis' : language === 'es' ? '1-5 días hábiles' : '1-5 business days'
+                  },
+                  {
+                    step: '3',
+                    title: language === 'pt' ? 'Contrate o seguro saúde' : language === 'es' ? 'Contrata el seguro de salud' : 'Get health insurance',
+                    desc: language === 'pt' ? 'Contrate um seguro com cobertura mínima de €25.000 válido na Irlanda' : language === 'es' ? 'Contrata un seguro con cobertura mínima de €25.000 válido en Irlanda' : 'Get insurance with minimum €25,000 coverage valid in Ireland',
+                    time: language === 'pt' ? '1 dia' : language === 'es' ? '1 día' : '1 day'
+                  },
+                  {
+                    step: '4',
+                    title: language === 'pt' ? 'Comprove recursos financeiros' : language === 'es' ? 'Comprueba recursos financieros' : 'Prove financial resources',
+                    desc: language === 'pt' ? 'Tenha no mínimo €4.200 em conta bancária (extrato dos últimos 6 meses)' : language === 'es' ? 'Ten como mínimo €4.200 en cuenta bancaria (extracto de los últimos 6 meses)' : 'Have minimum €4,200 in bank account (last 6 months statement)',
+                    time: language === 'pt' ? 'Antes do embarque' : language === 'es' ? 'Antes del embarque' : 'Before departure'
+                  },
+                  {
+                    step: '5',
+                    title: language === 'pt' ? 'Compre a passagem aérea' : language === 'es' ? 'Compra el pasaje aéreo' : 'Buy your flight',
+                    desc: language === 'pt' ? 'Brasileiros não precisam de visto prévio - entrada como turista (90 dias)' : language === 'es' ? 'Brasileños no necesitan visa previa - entrada como turista (90 días)' : 'Brazilians don\'t need prior visa - entry as tourist (90 days)',
+                    time: language === 'pt' ? '2-4 semanas antes' : language === 'es' ? '2-4 semanas antes' : '2-4 weeks before'
+                  },
+                  {
+                    step: '6',
+                    title: language === 'pt' ? 'Chegue na Irlanda' : language === 'es' ? 'Llega a Irlanda' : 'Arrive in Ireland',
+                    desc: language === 'pt' ? 'Apresente documentos na imigração: carta da escola, seguro, comprovante financeiro' : language === 'es' ? 'Presenta documentos en inmigración: carta de la escuela, seguro, comprobante financiero' : 'Present documents at immigration: school letter, insurance, financial proof',
+                    time: language === 'pt' ? 'No aeroporto' : language === 'es' ? 'En el aeropuerto' : 'At the airport'
+                  },
+                  {
+                    step: '7',
+                    title: language === 'pt' ? 'Registre-se no IRP/GNIB' : language === 'es' ? 'Regístrate en el IRP/GNIB' : 'Register at IRP/GNIB',
+                    desc: language === 'pt' ? 'Agende online em burghquayregistrationoffice.inis.gov.ie - Taxa de €300' : language === 'es' ? 'Agenda online en burghquayregistrationoffice.inis.gov.ie - Tasa de €300' : 'Book online at burghquayregistrationoffice.inis.gov.ie - Fee €300',
+                    time: language === 'pt' ? 'Primeiras 4 semanas' : language === 'es' ? 'Primeras 4 semanas' : 'First 4 weeks'
+                  },
+                  {
+                    step: '8',
+                    title: language === 'pt' ? 'Obtenha o PPS Number' : language === 'es' ? 'Obtén el PPS Number' : 'Get your PPS Number',
+                    desc: language === 'pt' ? 'Necessário para trabalhar - Agende em mywelfare.ie' : language === 'es' ? 'Necesario para trabajar - Agenda en mywelfare.ie' : 'Required to work - Book at mywelfare.ie',
+                    time: language === 'pt' ? 'Após IRP' : language === 'es' ? 'Después del IRP' : 'After IRP'
+                  }
+                ].map((item, index) => (
+                  <div key={index} className="flex gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-10 h-10 bg-emerald-900 rounded-full flex items-center justify-center text-white font-bold">
+                        {item.step}
+                      </div>
+                    </div>
+                    <div className="flex-1 pb-6 border-b border-slate-100 last:border-0 last:pb-0">
+                      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
+                        <div>
+                          <h4 className="font-semibold text-slate-900">{item.title}</h4>
+                          <p className="text-sm text-slate-500 mt-1">{item.desc}</p>
+                        </div>
+                        <span className="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-full whitespace-nowrap">
+                          {item.time}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Important Notice */}
+          <div className="mt-8 p-6 bg-amber-50 border border-amber-200 rounded-xl">
+            <div className="flex items-start gap-4">
+              <div className="p-2 bg-amber-100 rounded-lg flex-shrink-0">
+                <Shield className="h-6 w-6 text-amber-700" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-amber-900 mb-2">
+                  {language === 'pt' ? '⚠️ Informação Importante' : language === 'es' ? '⚠️ Información Importante' : '⚠️ Important Information'}
+                </h4>
+                <p className="text-sm text-amber-800 leading-relaxed">
+                  {language === 'pt'
+                    ? 'As regras de imigração podem mudar. Sempre consulte o site oficial do INIS (Irish Naturalisation and Immigration Service) em inis.gov.ie para informações atualizadas. O STUFF Intercâmbio facilita o processo, mas a responsabilidade pelo cumprimento dos requisitos é do estudante.'
+                    : language === 'es'
+                    ? 'Las reglas de inmigración pueden cambiar. Siempre consulta el sitio oficial del INIS (Irish Naturalisation and Immigration Service) en inis.gov.ie para información actualizada. STUFF Intercâmbio facilita el proceso, pero la responsabilidad de cumplir los requisitos es del estudiante.'
+                    : 'Immigration rules may change. Always check the official INIS (Irish Naturalisation and Immigration Service) website at inis.gov.ie for updated information. STUFF Intercâmbio facilitates the process, but the responsibility for meeting requirements lies with the student.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="py-20 bg-emerald-900 text-white">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
