@@ -775,6 +775,171 @@ async def get_stripe_dashboard_link(user: dict = Depends(get_current_user)):
     except stripe.error.StripeError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+# ==================== CLIENT PAYMENT ROUTES ====================
+
+PLATFORM_FEE_PERCENT = 10  # 10% platform fee
+
+@api_router.post("/connect/payment")
+async def create_client_payment(
+    barber_id: str,
+    service_name: str,
+    service_price: float,
+    is_home_service: bool = False,
+    travel_fee: float = 0,
+    user: dict = Depends(get_current_user)
+):
+    """Create Stripe Checkout session for client to pay barber"""
+    if user["user_type"] != "client":
+        raise HTTPException(status_code=403, detail="Only clients can make payments")
+    
+    # Get barber info
+    barber = await db.users.find_one({"id": barber_id})
+    if not barber:
+        raise HTTPException(status_code=404, detail="Barber not found")
+    
+    # Check if barber has Stripe connected
+    if not barber.get("stripe_account_id"):
+        raise HTTPException(status_code=400, detail="Este barbeiro ainda não configurou Stripe para receber pagamentos")
+    
+    if not barber.get("stripe_onboarding_complete"):
+        raise HTTPException(status_code=400, detail="Stripe do barbeiro ainda não está completamente configurado")
+    
+    # Calculate total
+    total_amount = service_price + travel_fee
+    total_cents = int(total_amount * 100)
+    
+    # Calculate platform fee (10%)
+    platform_fee_cents = int(total_cents * PLATFORM_FEE_PERCENT / 100)
+    
+    try:
+        # Create Stripe Checkout Session with Connected Account
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "eur",
+                        "product_data": {
+                            "name": service_name,
+                            "description": f"Serviço com {barber['name']}" + (" (Home Service)" if is_home_service else ""),
+                        },
+                        "unit_amount": int(service_price * 100),
+                    },
+                    "quantity": 1,
+                }
+            ] + ([
+                {
+                    "price_data": {
+                        "currency": "eur",
+                        "product_data": {
+                            "name": "Taxa de Deslocamento",
+                            "description": f"Home Service - Taxa de viagem",
+                        },
+                        "unit_amount": int(travel_fee * 100),
+                    },
+                    "quantity": 1,
+                }
+            ] if travel_fee > 0 else []),
+            mode="payment",
+            success_url=f"{FRONTEND_URL}/client?payment=success&session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{FRONTEND_URL}/client?payment=cancelled",
+            payment_intent_data={
+                "application_fee_amount": platform_fee_cents,
+                "transfer_data": {
+                    "destination": barber["stripe_account_id"],
+                },
+                "metadata": {
+                    "client_id": user["id"],
+                    "barber_id": barber_id,
+                    "service_name": service_name,
+                    "is_home_service": str(is_home_service),
+                }
+            },
+            metadata={
+                "client_id": user["id"],
+                "barber_id": barber_id,
+                "service_name": service_name,
+                "service_price": str(service_price),
+                "travel_fee": str(travel_fee),
+                "is_home_service": str(is_home_service),
+            }
+        )
+        
+        # Store pending payment info
+        await db.pending_payments.insert_one({
+            "session_id": session.id,
+            "client_id": user["id"],
+            "barber_id": barber_id,
+            "service_name": service_name,
+            "service_price": service_price,
+            "travel_fee": travel_fee,
+            "total_amount": total_amount,
+            "platform_fee": platform_fee_cents / 100,
+            "is_home_service": is_home_service,
+            "status": "pending",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return {"checkout_url": session.url, "session_id": session.id}
+        
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@api_router.post("/connect/payment/confirm")
+async def confirm_payment(session_id: str, user: dict = Depends(get_current_user)):
+    """Confirm payment was successful and add client to queue"""
+    try:
+        # Retrieve the session to verify payment
+        session = stripe.checkout.Session.retrieve(session_id)
+        
+        if session.payment_status != "paid":
+            raise HTTPException(status_code=400, detail="Payment not completed")
+        
+        # Get pending payment info
+        pending = await db.pending_payments.find_one({"session_id": session_id})
+        if not pending:
+            raise HTTPException(status_code=404, detail="Payment record not found")
+        
+        if pending["status"] == "completed":
+            return {"success": True, "message": "Payment already processed"}
+        
+        # Update pending payment status
+        await db.pending_payments.update_one(
+            {"session_id": session_id},
+            {"$set": {"status": "completed", "completed_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        # Add earnings to barber wallet
+        barber_earnings = pending["total_amount"] - pending["platform_fee"]
+        
+        await db.wallets.update_one(
+            {"barber_id": pending["barber_id"]},
+            {
+                "$inc": {
+                    "available_balance": barber_earnings,
+                    "total_earned": barber_earnings
+                }
+            },
+            upsert=True
+        )
+        
+        # Record transaction
+        await db.transactions.insert_one({
+            "id": str(uuid.uuid4()),
+            "barber_id": pending["barber_id"],
+            "type": "earning",
+            "amount": barber_earnings,
+            "description": f"Pagamento: {pending['service_name']}",
+            "client_id": pending["client_id"],
+            "status": "completed",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return {"success": True, "message": "Payment confirmed"}
+        
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 # ==================== WALLET ROUTES ====================
 
 @api_router.get("/wallet/balance")
