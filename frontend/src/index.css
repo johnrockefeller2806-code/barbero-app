@@ -1,13 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 :root {
-  --font-heading: 'Oswald', sans-serif;
-  --font-body: 'Manrope', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --background: #09090B;
+  --foreground: #FAFAFA;
+  --card: #18181B;
+  --card-foreground: #FAFAFA;
+  --primary: #F59E0B;
+  --primary-foreground: #000000;
+  --secondary: #27272A;
+  --secondary-foreground: #FAFAFA;
+  --muted: #27272A;
+  --muted-foreground: #A1A1AA;
+  --accent: #F59E0B;
+  --accent-foreground: #000000;
+  --destructive: #EF4444;
+  --destructive-foreground: #FAFAFA;
+  --border: #27272A;
+  --input: #27272A;
+  --ring: #F59E0B;
 }
 
 * {
@@ -16,126 +30,119 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: var(--font-body);
-  background-color: #09090B;
-  color: #fff;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Manrope', sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
 .font-heading {
-  font-family: var(--font-heading);
+  font-family: 'Oswald', sans-serif;
 }
 
 .font-mono {
-  font-family: var(--font-mono);
+  font-family: 'JetBrains Mono', monospace;
 }
 
-/* Custom scrollbar */
+/* Leaflet Map Styles */
+.leaflet-container {
+  background: var(--background) !important;
+}
+
+.leaflet-tile-pane {
+  filter: brightness(0.9);
+}
+
+.custom-marker {
+  background: var(--primary);
+  border-radius: 50%;
+  border: 3px solid var(--foreground);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+.marker-online {
+  background: #22C55E;
+  animation: pulse 2s infinite;
+}
+
+.marker-offline {
+  background: #6B7280;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #18181b;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3f3f46;
-  border-radius: 4px;
+  background: var(--muted);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #52525b;
+  background: var(--primary);
 }
 
-/* Animations */
+/* Animation Classes */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
 .animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
 }
 
 .animate-slideIn {
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.3s ease-out forwards;
 }
 
-/* Map container */
-.leaflet-container {
-  height: 100%;
-  width: 100%;
-  border-radius: 12px;
+/* Status Badge */
+.status-online {
+  background: #22C55E;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
 }
 
-/* PWA Install Banner */
-.pwa-install-banner {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
+.status-offline {
+  background: #6B7280;
 }
 
-/* Custom button styles */
-.btn-primary {
-  @apply bg-amber-500 text-black font-heading uppercase tracking-wider px-6 py-3 hover:bg-amber-400 transition-colors;
+/* Custom Focus */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary) !important;
 }
 
-.btn-secondary {
-  @apply border border-zinc-700 text-zinc-300 font-heading uppercase tracking-wider px-6 py-3 hover:border-amber-500 hover:text-amber-500 transition-colors;
+/* Toast styles */
+.toast-success {
+  background: #22C55E !important;
 }
 
-/* Card styles */
-.card {
-  @apply bg-zinc-900 border border-zinc-800 rounded-lg p-6;
-}
-
-.card:hover {
-  @apply border-amber-500/30;
-}
-
-/* Input styles */
-input, textarea, select {
-  @apply bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none transition-colors;
-}
-
-/* Status badges */
-.badge-online {
-  @apply bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm;
-}
-
-.badge-offline {
-  @apply bg-zinc-500/20 text-zinc-400 px-3 py-1 rounded-full text-sm;
-}
-
-/* Toast notifications */
-.toast {
-  @apply fixed bottom-4 right-4 bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 shadow-lg z-50;
-}
-
-/* Loading spinner */
-.spinner {
-  @apply w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin;
-}
-
-/* Signature canvas */
-.signature-canvas {
-  border: 2px dashed #3f3f46;
-  border-radius: 8px;
-  background: #18181b;
+.toast-error {
+  background: var(--destructive) !important;
 }

@@ -1,78 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
-import axios from 'axios';
-import { Scissors, User, Mail, Lock, Phone, MapPin, ArrowRight, ArrowLeft, Instagram, KeyRound, RefreshCw } from 'lucide-react';
+import { Scissors, User, Mail, Lock, Phone, MapPin, ArrowRight, ArrowLeft } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const LOGO_URL = "https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/7tsbrqqb_WhatsApp%20Image%202026-01-30%20at%2021.59.32.jpeg";
-
-// PIN Input Component
-const PinInput = ({ value, onChange, disabled }) => {
-  const inputRefs = useRef([]);
-  
-  const handleChange = (index, e) => {
-    const val = e.target.value;
-    if (val.length <= 1 && /^\d*$/.test(val)) {
-      const newPin = value.split('');
-      newPin[index] = val;
-      onChange(newPin.join(''));
-      
-      // Auto focus next
-      if (val && index < 5) {
-        inputRefs.current[index + 1]?.focus();
-      }
-    }
-  };
-  
-  const handleKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !value[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-  
-  const handlePaste = (e) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').slice(0, 6).replace(/\D/g, '');
-    onChange(pastedData);
-  };
-  
-  return (
-    <div className="flex gap-2 justify-center" onPaste={handlePaste}>
-      {[0, 1, 2, 3, 4, 5].map((index) => (
-        <input
-          key={index}
-          ref={(el) => (inputRefs.current[index] = el)}
-          type="text"
-          inputMode="numeric"
-          maxLength={1}
-          value={value[index] || ''}
-          onChange={(e) => handleChange(index, e)}
-          onKeyDown={(e) => handleKeyDown(index, e)}
-          disabled={disabled}
-          className="w-12 h-14 text-center text-2xl font-bold bg-zinc-900 border border-zinc-700 text-white rounded-lg focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-          data-testid={`pin-input-${index}`}
-        />
-      ))}
-    </div>
-  );
-};
 
 const AuthPage = () => {
   const navigate = useNavigate();
-  const { login, register, loginWithPin } = useAuth();
+  const { login, register } = useAuth();
   const { t } = useLanguage();
-  
-  // View states
-  const [view, setView] = useState('login'); // login, login-pin, register, forgot-password, reset-password, set-pin
+  const [isLogin, setIsLogin] = useState(true);
   const [userType, setUserType] = useState(null);
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   
-  // Form data
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -81,33 +25,9 @@ const AuthPage = () => {
     user_type: '',
     specialty: '',
     address: '',
-    instagram: '',
     latitude: 53.3498,
     longitude: -6.2603
   });
-  
-  // PIN states
-  const [pin, setPin] = useState('');
-  const [resetCode, setResetCode] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [hasPinSet, setHasPinSet] = useState(false);
-  const [pendingUser, setPendingUser] = useState(null);
-
-  // Check if user has PIN when email changes
-  useEffect(() => {
-    const checkPin = async () => {
-      if (formData.email && formData.email.includes('@')) {
-        try {
-          const res = await axios.get(`${API}/auth/check-pin?email=${formData.email}`);
-          setHasPinSet(res.data.pin_set);
-        } catch {
-          setHasPinSet(false);
-        }
-      }
-    };
-    const timer = setTimeout(checkPin, 500);
-    return () => clearTimeout(timer);
-  }, [formData.email]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -119,91 +39,10 @@ const AuthPage = () => {
     setLoading(true);
     setError('');
     try {
-      const result = await login(formData.email, formData.password);
-      
-      // Check if PIN needs to be set
-      if (!result.pin_set) {
-        setPendingUser(result.user);
-        setView('set-pin');
-      } else {
-        navigate(result.user.user_type === 'barber' ? '/barber' : '/client');
-      }
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid credentials');
-    }
-    setLoading(false);
-  };
-
-  const handlePinLogin = async (e) => {
-    e.preventDefault();
-    if (pin.length !== 6) {
-      setError('PIN must be 6 digits');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      const user = await loginWithPin(formData.email, pin);
+      const user = await login(formData.email, formData.password);
       navigate(user.user_type === 'barber' ? '/barber' : '/client');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid PIN');
-      setPin('');
-    }
-    setLoading(false);
-  };
-
-  const handleSetPin = async (e) => {
-    e.preventDefault();
-    if (pin.length !== 6) {
-      setError('PIN must be 6 digits');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      await axios.post(`${API}/auth/set-pin`, { pin });
-      navigate(pendingUser.user_type === 'barber' ? '/barber' : '/client');
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Error setting PIN');
-    }
-    setLoading(false);
-  };
-
-  const handleForgotPassword = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setSuccess('');
-    try {
-      await axios.post(`${API}/auth/forgot-password`, { email: formData.email });
-      setSuccess('Reset code sent to your email!');
-      setView('reset-password');
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Error sending reset code');
-    }
-    setLoading(false);
-  };
-
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    if (resetCode.length !== 6) {
-      setError('Code must be 6 digits');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      await axios.post(`${API}/auth/reset-password`, {
-        email: formData.email,
-        code: resetCode,
-        new_password: newPassword
-      });
-      setSuccess('Password reset successfully! Please login.');
-      setView('login');
-      setResetCode('');
-      setNewPassword('');
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid or expired code');
+      setError(err.response?.data?.detail || 'Credenciais inválidas');
     }
     setLoading(false);
   };
@@ -216,17 +55,15 @@ const AuthPage = () => {
       const data = { ...formData, user_type: userType };
       if (userType === 'barber') {
         data.services = [
-          { id: '1', name: 'Corte', price: 30, duration: 30 },
-          { id: '2', name: 'Barba', price: 15, duration: 20 },
-          { id: '3', name: 'Combo (Corte + Barba)', price: 40, duration: 45 }
+          { id: '1', name: 'Corte', price: 45, duration: 30 },
+          { id: '2', name: 'Barba', price: 35, duration: 25 },
+          { id: '3', name: 'Combo', price: 70, duration: 50 }
         ];
-        data.home_service_fee_per_km = 1.0; // €1 por km
       }
-      const result = await register(data);
-      setPendingUser(result);
-      setView('set-pin');
+      const user = await register(data);
+      navigate(user.user_type === 'barber' ? '/barber' : '/client');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Registration error');
+      setError(err.response?.data?.detail || 'Erro ao cadastrar');
     }
     setLoading(false);
   };
@@ -246,509 +83,8 @@ const AuthPage = () => {
     }
   };
 
-  const renderLoginForm = () => (
-    <form onSubmit={handleLogin} className="space-y-6" data-testid="login-form">
-      <div className="text-center mb-8">
-        <h2 className="font-heading text-3xl font-bold text-white uppercase">{t('auth_login')}</h2>
-        <p className="text-zinc-500 mt-2">{t('auth_login_subtitle')}</p>
-      </div>
-
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm" data-testid="error-message">
-          {error}
-        </div>
-      )}
-      {success && (
-        <div className="bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3 rounded-lg text-sm">
-          {success}
-        </div>
-      )}
-
-      <div className="space-y-4">
-        <div className="relative">
-          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-          <input
-            type="email"
-            name="email"
-            placeholder={t('auth_email')}
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-            data-testid="input-email"
-          />
-        </div>
-        <div className="relative">
-          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-          <input
-            type="password"
-            name="password"
-            placeholder={t('auth_password')}
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-            data-testid="input-password"
-          />
-        </div>
-      </div>
-
-      {/* Quick PIN Login Option */}
-      {hasPinSet && formData.email && (
-        <button
-          type="button"
-          onClick={() => { setView('login-pin'); setError(''); }}
-          className="w-full flex items-center justify-center gap-2 text-amber-500 hover:text-amber-400 py-2 transition-colors"
-          data-testid="btn-use-pin"
-        >
-          <KeyRound className="w-4 h-4" />
-          Quick access with PIN
-        </button>
-      )}
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-amber-500 text-black font-heading uppercase tracking-widest py-4 rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-        data-testid="btn-login"
-      >
-        {loading ? t('auth_logging_in') : t('auth_btn_login')}
-        <ArrowRight className="w-5 h-5" />
-      </button>
-
-      <button
-        type="button"
-        onClick={() => { setView('forgot-password'); setError(''); setSuccess(''); }}
-        className="w-full text-zinc-500 hover:text-amber-500 text-sm transition-colors"
-        data-testid="btn-forgot-password"
-      >
-        Forgot your password?
-      </button>
-
-      {/* Divider */}
-      <div className="flex items-center gap-4 my-2">
-        <div className="flex-1 h-px bg-zinc-800" />
-        <span className="text-sm text-zinc-600">ou continue com</span>
-        <div className="flex-1 h-px bg-zinc-800" />
-      </div>
-
-      {/* Google Login Button */}
-      {/* REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH */}
-      <button
-        type="button"
-        onClick={() => {
-          const redirectUrl = window.location.origin + '/client';
-          window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
-        }}
-        className="w-full bg-white text-gray-800 font-medium py-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-3 border border-gray-300"
-        data-testid="btn-google-login"
-      >
-        <svg className="w-5 h-5" viewBox="0 0 24 24">
-          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-        </svg>
-        Continuar com Google
-      </button>
-
-      <p className="text-center text-zinc-500">
-        {t('auth_no_account')}{' '}
-        <button type="button" onClick={() => setView('register')} className="text-amber-500 hover:underline" data-testid="btn-goto-register">
-          {t('auth_signup')}
-        </button>
-      </p>
-    </form>
-  );
-
-  const renderPinLogin = () => (
-    <form onSubmit={handlePinLogin} className="space-y-6" data-testid="pin-login-form">
-      <button
-        type="button"
-        onClick={() => { setView('login'); setPin(''); setError(''); }}
-        className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to password login
-      </button>
-
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <KeyRound className="w-8 h-8 text-amber-500" />
-        </div>
-        <h2 className="font-heading text-2xl font-bold text-white uppercase">Quick Access</h2>
-        <p className="text-zinc-500 mt-2">Enter your 6-digit PIN</p>
-        <p className="text-zinc-600 text-sm mt-1">{formData.email}</p>
-      </div>
-
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
-          {error}
-        </div>
-      )}
-
-      <PinInput value={pin} onChange={setPin} disabled={loading} />
-
-      <button
-        type="submit"
-        disabled={loading || pin.length !== 6}
-        className="w-full bg-amber-500 text-black font-heading uppercase tracking-widest py-4 rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-        data-testid="btn-pin-login"
-      >
-        {loading ? 'Verifying...' : 'Enter'}
-        <ArrowRight className="w-5 h-5" />
-      </button>
-    </form>
-  );
-
-  const renderSetPin = () => (
-    <form onSubmit={handleSetPin} className="space-y-6" data-testid="set-pin-form">
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <KeyRound className="w-8 h-8 text-amber-500" />
-        </div>
-        <h2 className="font-heading text-2xl font-bold text-white uppercase">Set Your PIN</h2>
-        <p className="text-zinc-500 mt-2">Create a 6-digit PIN for quick access</p>
-        <p className="text-zinc-600 text-sm mt-1">Like a bank app, use your PIN for faster logins</p>
-      </div>
-
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
-          {error}
-        </div>
-      )}
-
-      <PinInput value={pin} onChange={setPin} disabled={loading} />
-
-      <button
-        type="submit"
-        disabled={loading || pin.length !== 6}
-        className="w-full bg-amber-500 text-black font-heading uppercase tracking-widest py-4 rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-        data-testid="btn-set-pin"
-      >
-        {loading ? 'Setting PIN...' : 'Confirm PIN'}
-        <ArrowRight className="w-5 h-5" />
-      </button>
-
-      <button
-        type="button"
-        onClick={() => navigate(pendingUser?.user_type === 'barber' ? '/barber' : '/client')}
-        className="w-full text-zinc-500 hover:text-white text-sm transition-colors"
-      >
-        Skip for now
-      </button>
-    </form>
-  );
-
-  const renderForgotPassword = () => (
-    <form onSubmit={handleForgotPassword} className="space-y-6" data-testid="forgot-password-form">
-      <button
-        type="button"
-        onClick={() => { setView('login'); setError(''); setSuccess(''); }}
-        className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to login
-      </button>
-
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <RefreshCw className="w-8 h-8 text-amber-500" />
-        </div>
-        <h2 className="font-heading text-2xl font-bold text-white uppercase">Reset Password</h2>
-        <p className="text-zinc-500 mt-2">Enter your email to receive a reset code</p>
-      </div>
-
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
-          {error}
-        </div>
-      )}
-
-      <div className="relative">
-        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-        <input
-          type="email"
-          name="email"
-          placeholder="Your email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-          data-testid="input-forgot-email"
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-amber-500 text-black font-heading uppercase tracking-widest py-4 rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-        data-testid="btn-send-code"
-      >
-        {loading ? 'Sending...' : 'Send Reset Code'}
-        <ArrowRight className="w-5 h-5" />
-      </button>
-    </form>
-  );
-
-  const renderResetPassword = () => (
-    <form onSubmit={handleResetPassword} className="space-y-6" data-testid="reset-password-form">
-      <button
-        type="button"
-        onClick={() => { setView('forgot-password'); setResetCode(''); setError(''); }}
-        className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back
-      </button>
-
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Mail className="w-8 h-8 text-green-500" />
-        </div>
-        <h2 className="font-heading text-2xl font-bold text-white uppercase">Check Your Email</h2>
-        <p className="text-zinc-500 mt-2">Enter the 6-digit code sent to</p>
-        <p className="text-amber-500">{formData.email}</p>
-      </div>
-
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
-          {error}
-        </div>
-      )}
-
-      <div className="space-y-4">
-        <div>
-          <label className="text-zinc-400 text-sm mb-2 block">Reset Code</label>
-          <PinInput value={resetCode} onChange={setResetCode} disabled={loading} />
-        </div>
-
-        <div className="relative">
-          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-          <input
-            type="password"
-            placeholder="New password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-            minLength={6}
-            className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-            data-testid="input-new-password"
-          />
-        </div>
-      </div>
-
-      <button
-        type="submit"
-        disabled={loading || resetCode.length !== 6 || !newPassword}
-        className="w-full bg-amber-500 text-black font-heading uppercase tracking-widest py-4 rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-        data-testid="btn-reset-password"
-      >
-        {loading ? 'Resetting...' : 'Reset Password'}
-        <ArrowRight className="w-5 h-5" />
-      </button>
-
-      <button
-        type="button"
-        onClick={handleForgotPassword}
-        disabled={loading}
-        className="w-full text-zinc-500 hover:text-amber-500 text-sm transition-colors"
-      >
-        Didn't receive the code? Send again
-      </button>
-    </form>
-  );
-
-  const renderRegisterTypeSelection = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="font-heading text-3xl font-bold text-white uppercase">{t('auth_register')}</h2>
-        <p className="text-zinc-500 mt-2">{t('auth_register_subtitle')}</p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <button
-          onClick={() => { setUserType('client'); getLocation(); }}
-          className="bg-zinc-900 border border-zinc-800 p-8 rounded-lg hover:border-amber-500 transition-all group"
-          data-testid="btn-type-client"
-        >
-          <User className="w-12 h-12 text-zinc-500 group-hover:text-amber-500 mx-auto mb-4 transition-colors" />
-          <p className="font-heading text-lg text-white uppercase">{t('auth_type_client')}</p>
-          <p className="text-zinc-500 text-sm mt-1">{t('auth_type_client_desc')}</p>
-        </button>
-        <button
-          onClick={() => { setUserType('barber'); getLocation(); }}
-          className="bg-zinc-900 border border-zinc-800 p-8 rounded-lg hover:border-amber-500 transition-all group"
-          data-testid="btn-type-barber"
-        >
-          <Scissors className="w-12 h-12 text-zinc-500 group-hover:text-amber-500 mx-auto mb-4 transition-colors" />
-          <p className="font-heading text-lg text-white uppercase">{t('auth_type_barber')}</p>
-          <p className="text-zinc-500 text-sm mt-1">{t('auth_type_barber_desc')}</p>
-        </button>
-      </div>
-
-      <p className="text-center text-zinc-500">
-        {t('auth_has_account')}{' '}
-        <button type="button" onClick={() => setView('login')} className="text-amber-500 hover:underline" data-testid="btn-goto-login">
-          {t('auth_signin')}
-        </button>
-      </p>
-    </div>
-  );
-
-  const renderRegisterForm = () => (
-    <form onSubmit={handleRegister} className="space-y-6">
-      <button
-        type="button"
-        onClick={() => setUserType(null)}
-        className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        {t('auth_back')}
-      </button>
-
-      <div className="text-center mb-4">
-        <h2 className="font-heading text-2xl font-bold text-white uppercase">
-          {t('auth_register')} - {userType === 'barber' ? t('auth_type_barber') : t('auth_type_client')}
-        </h2>
-      </div>
-
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
-          {error}
-        </div>
-      )}
-
-      <div className="space-y-4">
-        <div className="relative">
-          <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-          <input
-            type="text"
-            name="name"
-            placeholder={t('auth_name')}
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-            data-testid="input-name"
-          />
-        </div>
-        <div className="relative">
-          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-          <input
-            type="email"
-            name="email"
-            placeholder={t('auth_email')}
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-            data-testid="input-reg-email"
-          />
-        </div>
-        <div className="relative">
-          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-          <input
-            type="tel"
-            name="phone"
-            placeholder={t('auth_phone')}
-            value={formData.phone}
-            onChange={handleChange}
-            required
-            className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-            data-testid="input-phone"
-          />
-        </div>
-        <div className="relative">
-          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-          <input
-            type="password"
-            name="password"
-            placeholder={t('auth_password')}
-            value={formData.password}
-            onChange={handleChange}
-            required
-            minLength={6}
-            className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-            data-testid="input-reg-password"
-          />
-        </div>
-
-        {userType === 'barber' && (
-          <>
-            <div className="relative">
-              <Scissors className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-              <input
-                type="text"
-                name="specialty"
-                placeholder={t('auth_specialty')}
-                value={formData.specialty}
-                onChange={handleChange}
-                className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-                data-testid="input-specialty"
-              />
-            </div>
-            <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-              <input
-                type="text"
-                name="address"
-                placeholder={t('auth_address')}
-                value={formData.address}
-                onChange={handleChange}
-                className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-                data-testid="input-address"
-              />
-            </div>
-            <div className="relative">
-              <Instagram className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-              <input
-                type="text"
-                name="instagram"
-                placeholder="Instagram (ex: @seuperfil)"
-                value={formData.instagram}
-                onChange={handleChange}
-                className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 rounded-lg focus:border-amber-500 transition-colors"
-                data-testid="input-instagram"
-              />
-            </div>
-          </>
-        )}
-      </div>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-amber-500 text-black font-heading uppercase tracking-widest py-4 rounded-lg hover:bg-amber-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-        data-testid="btn-register"
-      >
-        {loading ? t('auth_registering') : t('auth_btn_register')}
-        <ArrowRight className="w-5 h-5" />
-      </button>
-    </form>
-  );
-
-  const renderContent = () => {
-    switch (view) {
-      case 'login':
-        return renderLoginForm();
-      case 'login-pin':
-        return renderPinLogin();
-      case 'set-pin':
-        return renderSetPin();
-      case 'forgot-password':
-        return renderForgotPassword();
-      case 'reset-password':
-        return renderResetPassword();
-      case 'register':
-        return userType ? renderRegisterForm() : renderRegisterTypeSelection();
-      default:
-        return renderLoginForm();
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-[#09090B] flex overflow-y-auto" data-testid="auth-page">
+    <div className="min-h-screen bg-[#09090B] flex" data-testid="auth-page">
       {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-zinc-900 to-zinc-950 flex-col justify-center items-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -766,7 +102,7 @@ const AuthPage = () => {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 pb-24">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8">
         {/* Language Toggle */}
         <div className="absolute top-4 right-4">
           <LanguageToggle />
@@ -778,10 +114,227 @@ const AuthPage = () => {
             <img src={LOGO_URL} alt="ClickBarber" className="h-20 w-auto object-contain" />
           </div>
 
-          {renderContent()}
-          
-          {/* Spacer for Made with Emergent badge */}
-          <div className="h-16 lg:hidden"></div>
+          {isLogin ? (
+            /* LOGIN FORM */
+            <form onSubmit={handleLogin} className="space-y-6" data-testid="login-form">
+              <div className="text-center mb-8">
+                <h2 className="font-heading text-3xl font-bold text-white uppercase">{t('auth_login')}</h2>
+                <p className="text-zinc-500 mt-2">{t('auth_login_subtitle')}</p>
+              </div>
+
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-sm text-sm" data-testid="error-message">
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder={t('auth_email')}
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 focus:border-amber-500 transition-colors"
+                    data-testid="input-email"
+                  />
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder={t('auth_password')}
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 focus:border-amber-500 transition-colors"
+                    data-testid="input-password"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-amber-500 text-black font-heading uppercase tracking-widest py-4 hover:bg-amber-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                data-testid="btn-login"
+              >
+                {loading ? t('auth_logging_in') : t('auth_btn_login')}
+                <ArrowRight className="w-5 h-5" />
+              </button>
+
+              <p className="text-center text-zinc-500">
+                {t('auth_no_account')}{' '}
+                <button type="button" onClick={() => setIsLogin(false)} className="text-amber-500 hover:underline" data-testid="btn-goto-register">
+                  {t('auth_signup')}
+                </button>
+              </p>
+            </form>
+          ) : (
+            /* REGISTER FORM */
+            <div data-testid="register-form">
+              {!userType ? (
+                /* Step 1: Choose User Type */
+                <div className="space-y-6">
+                  <div className="text-center mb-8">
+                    <h2 className="font-heading text-3xl font-bold text-white uppercase">{t('auth_register')}</h2>
+                    <p className="text-zinc-500 mt-2">{t('auth_register_subtitle')}</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      onClick={() => { setUserType('client'); getLocation(); }}
+                      className="bg-zinc-900 border border-zinc-800 p-8 hover:border-amber-500 transition-all group"
+                      data-testid="btn-type-client"
+                    >
+                      <User className="w-12 h-12 text-zinc-500 group-hover:text-amber-500 mx-auto mb-4 transition-colors" />
+                      <p className="font-heading text-lg text-white uppercase">{t('auth_type_client')}</p>
+                      <p className="text-zinc-500 text-sm mt-1">{t('auth_type_client_desc')}</p>
+                    </button>
+                    <button
+                      onClick={() => { setUserType('barber'); getLocation(); }}
+                      className="bg-zinc-900 border border-zinc-800 p-8 hover:border-amber-500 transition-all group"
+                      data-testid="btn-type-barber"
+                    >
+                      <Scissors className="w-12 h-12 text-zinc-500 group-hover:text-amber-500 mx-auto mb-4 transition-colors" />
+                      <p className="font-heading text-lg text-white uppercase">{t('auth_type_barber')}</p>
+                      <p className="text-zinc-500 text-sm mt-1">{t('auth_type_barber_desc')}</p>
+                    </button>
+                  </div>
+
+                  <p className="text-center text-zinc-500">
+                    {t('auth_has_account')}{' '}
+                    <button type="button" onClick={() => setIsLogin(true)} className="text-amber-500 hover:underline" data-testid="btn-goto-login">
+                      {t('auth_signin')}
+                    </button>
+                  </p>
+                </div>
+              ) : (
+                /* Step 2: Fill Form */
+                <form onSubmit={handleRegister} className="space-y-6">
+                  <button
+                    type="button"
+                    onClick={() => setUserType(null)}
+                    className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    {t('auth_back')}
+                  </button>
+
+                  <div className="text-center mb-4">
+                    <h2 className="font-heading text-2xl font-bold text-white uppercase">
+                      {t('auth_register')} - {userType === 'barber' ? t('auth_type_barber') : t('auth_type_client')}
+                    </h2>
+                  </div>
+
+                  {error && (
+                    <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-sm text-sm">
+                      {error}
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder={t('auth_name')}
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 focus:border-amber-500 transition-colors"
+                        data-testid="input-name"
+                      />
+                    </div>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder={t('auth_email')}
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 focus:border-amber-500 transition-colors"
+                        data-testid="input-reg-email"
+                      />
+                    </div>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder={t('auth_phone')}
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                        className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 focus:border-amber-500 transition-colors"
+                        data-testid="input-phone"
+                      />
+                    </div>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                      <input
+                        type="password"
+                        name="password"
+                        placeholder={t('auth_password')}
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                        minLength={6}
+                        className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 focus:border-amber-500 transition-colors"
+                        data-testid="input-reg-password"
+                      />
+                    </div>
+
+                    {userType === 'barber' && (
+                      <>
+                        <div className="relative">
+                          <Scissors className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                          <input
+                            type="text"
+                            name="specialty"
+                            placeholder={t('auth_specialty')}
+                            value={formData.specialty}
+                            onChange={handleChange}
+                            className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 focus:border-amber-500 transition-colors"
+                            data-testid="input-specialty"
+                          />
+                        </div>
+                        <div className="relative">
+                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                          <input
+                            type="text"
+                            name="address"
+                            placeholder={t('auth_address')}
+                            value={formData.address}
+                            onChange={handleChange}
+                            className="w-full bg-zinc-900 border border-zinc-800 text-white pl-12 pr-4 py-4 focus:border-amber-500 transition-colors"
+                            data-testid="input-address"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-amber-500 text-black font-heading uppercase tracking-widest py-4 hover:bg-amber-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    data-testid="btn-register"
+                  >
+                    {loading ? t('auth_registering') : t('auth_btn_register')}
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

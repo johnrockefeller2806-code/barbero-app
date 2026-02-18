@@ -40,7 +40,7 @@ const LandingPage = () => {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/aptgl28y_ChatGPT%20Image%20Jan%2031%2C%202026%20at%2012_02_18%20AM.png"
+            src="https://images.pexels.com/photos/20405694/pexels-photo-20405694.jpeg"
             alt="Hero Background"
             className="w-full h-full object-cover opacity-30"
           />
@@ -148,7 +148,7 @@ const LandingPage = () => {
             </div>
             <div className="relative">
               <img 
-                src="https://customer-assets.emergentagent.com/job_f16b93ce-5ac3-4503-bae3-65d25ede4a91/artifacts/9t8aqgpx_ChatGPT%20Image%20Jan%2031%2C%202026%20at%2012_02_33%20AM.png"
+                src="https://images.pexels.com/photos/12464841/pexels-photo-12464841.jpeg"
                 alt="Barber at work"
                 className="w-full h-[500px] object-cover grayscale hover:grayscale-0 transition-all duration-500"
               />
@@ -184,12 +184,7 @@ const LandingPage = () => {
             <div className="flex items-center gap-2">
               <img src={LOGO_URL} alt="ClickBarber" className="h-10 w-auto object-contain" />
             </div>
-            <div className="flex items-center gap-6">
-              <Link to="/privacy" className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">
-                Política de Privacidade
-              </Link>
-              <p className="text-zinc-500 text-sm">© 2026 ClickBarber. {t('footer_rights')}</p>
-            </div>
+            <p className="text-zinc-500 text-sm">© 2025 ClickBarber. {t('footer_rights')}</p>
           </div>
         </div>
       </footer>
