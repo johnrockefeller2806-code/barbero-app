@@ -144,11 +144,27 @@ export const Landing = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <img 
+              <motion.img 
                 src={LOGO_URL} 
                 alt="STUFF Intercâmbio" 
                 className="h-20 md:h-24 w-auto object-contain bg-white/10 backdrop-blur-sm rounded-2xl p-3"
                 data-testid="hero-logo"
+                whileHover={{ 
+                  scale: 1.1,
+                  rotate: [0, -3, 3, -3, 0],
+                  boxShadow: "0 0 30px rgba(255,255,255,0.3)"
+                }}
+                whileTap={{ scale: 0.95 }}
+                animate={{
+                  y: [0, -5, 0],
+                }}
+                transition={{
+                  y: {
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }
+                }}
               />
             </motion.div>
             
