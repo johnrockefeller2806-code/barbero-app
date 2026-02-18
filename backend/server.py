@@ -596,6 +596,553 @@ async def seed_data():
     
     return {"message": "Seeded 4 barbers successfully"}
 
+# ==================== STRIPE CONNECT ROUTES ====================
+
+@api_router.post("/stripe/connect/onboard")
+async def create_stripe_connect_account(user: dict = Depends(get_current_user)):
+    """Create Stripe Connect account for barber and return onboarding link"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can connect Stripe")
+    
+    try:
+        # Check if barber already has a Stripe account
+        barber = await db.users.find_one({"id": user["id"]})
+        
+        if barber.get("stripe_account_id"):
+            # Create new account link for existing account
+            account_link = stripe.AccountLink.create(
+                account=barber["stripe_account_id"],
+                refresh_url=f"{FRONTEND_URL}/barber/wallet",
+                return_url=f"{FRONTEND_URL}/barber/wallet?stripe_success=true",
+                type="account_onboarding",
+            )
+            return {"url": account_link.url}
+        
+        # Create new Stripe Connect Express account
+        account = stripe.Account.create(
+            type="express",
+            country="IE",  # Ireland
+            email=user["email"],
+            capabilities={
+                "card_payments": {"requested": True},
+                "transfers": {"requested": True},
+            },
+            business_type="individual",
+            metadata={"barber_id": user["id"]}
+        )
+        
+        # Save Stripe account ID to barber
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": {"stripe_account_id": account.id, "stripe_onboarding_complete": False}}
+        )
+        
+        # Create account link for onboarding
+        account_link = stripe.AccountLink.create(
+            account=account.id,
+            refresh_url=f"{FRONTEND_URL}/barber/wallet",
+            return_url=f"{FRONTEND_URL}/barber/wallet?stripe_success=true",
+            type="account_onboarding",
+        )
+        
+        return {"url": account_link.url}
+        
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@api_router.get("/stripe/connect/status")
+async def get_stripe_connect_status(user: dict = Depends(get_current_user)):
+    """Get Stripe Connect account status"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can check Stripe status")
+    
+    barber = await db.users.find_one({"id": user["id"]})
+    
+    if not barber.get("stripe_account_id"):
+        return {"connected": False, "onboarding_complete": False}
+    
+    try:
+        account = stripe.Account.retrieve(barber["stripe_account_id"])
+        
+        # Update onboarding status
+        onboarding_complete = account.charges_enabled and account.payouts_enabled
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": {"stripe_onboarding_complete": onboarding_complete}}
+        )
+        
+        return {
+            "connected": True,
+            "onboarding_complete": onboarding_complete,
+            "charges_enabled": account.charges_enabled,
+            "payouts_enabled": account.payouts_enabled,
+            "account_id": barber["stripe_account_id"]
+        }
+    except stripe.error.StripeError as e:
+        return {"connected": False, "error": str(e)}
+
+@api_router.get("/stripe/connect/dashboard")
+async def get_stripe_dashboard_link(user: dict = Depends(get_current_user)):
+    """Get Stripe Express Dashboard login link"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can access Stripe dashboard")
+    
+    barber = await db.users.find_one({"id": user["id"]})
+    
+    if not barber.get("stripe_account_id"):
+        raise HTTPException(status_code=400, detail="Stripe account not connected")
+    
+    try:
+        login_link = stripe.Account.create_login_link(barber["stripe_account_id"])
+        return {"url": login_link.url}
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+# ==================== WALLET ROUTES ====================
+
+@api_router.get("/wallet/balance")
+async def get_wallet_balance(user: dict = Depends(get_current_user)):
+    """Get wallet balance and earnings summary"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers have wallets")
+    
+    barber = await db.users.find_one({"id": user["id"]})
+    
+    # Check if Stripe is connected
+    stripe_connected = bool(barber.get("stripe_account_id") and barber.get("stripe_onboarding_complete"))
+    
+    # Get wallet data from DB or create default
+    wallet = await db.wallets.find_one({"barber_id": user["id"]})
+    if not wallet:
+        wallet = {
+            "barber_id": user["id"],
+            "available_balance": 0,
+            "pending_balance": 0,
+            "total_earned": 0,
+            "auto_payout": {"enabled": False, "frequency": "weekly", "minimum_amount": 50}
+        }
+        await db.wallets.insert_one(wallet)
+    
+    # Calculate week and month earnings
+    now = datetime.now(timezone.utc)
+    week_start = now - timedelta(days=now.weekday())
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    
+    week_earnings = await db.transactions.aggregate([
+        {"$match": {"barber_id": user["id"], "type": "earning", "created_at": {"$gte": week_start.isoformat()}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]).to_list(1)
+    
+    month_earnings = await db.transactions.aggregate([
+        {"$match": {"barber_id": user["id"], "type": "earning", "created_at": {"$gte": month_start.isoformat()}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]).to_list(1)
+    
+    return {
+        "connected": stripe_connected,
+        "available_balance": wallet.get("available_balance", 0),
+        "pending_balance": wallet.get("pending_balance", 0),
+        "total_earned": wallet.get("total_earned", 0),
+        "week_earnings": week_earnings[0]["total"] if week_earnings else 0,
+        "month_earnings": month_earnings[0]["total"] if month_earnings else 0,
+        "auto_payout": wallet.get("auto_payout", {"enabled": False, "frequency": "weekly", "minimum_amount": 50})
+    }
+
+@api_router.get("/wallet/transactions")
+async def get_wallet_transactions(limit: int = 50, user: dict = Depends(get_current_user)):
+    """Get wallet transactions"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers have wallets")
+    
+    transactions = await db.transactions.find(
+        {"barber_id": user["id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Format for frontend
+    formatted = []
+    for t in transactions:
+        formatted.append({
+            "id": t.get("id"),
+            "type": t.get("type"),
+            "amount": t.get("amount"),
+            "description": t.get("description"),
+            "status": t.get("status", "completed"),
+            "date": t.get("created_at")
+        })
+    
+    return {"transactions": formatted}
+
+@api_router.get("/wallet/payouts")
+async def get_wallet_payouts(user: dict = Depends(get_current_user)):
+    """Get payout history"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers have wallets")
+    
+    payouts = await db.payouts.find(
+        {"barber_id": user["id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    return {"payouts": payouts}
+
+@api_router.post("/wallet/payout")
+async def request_payout(amount: float, payout_type: str = "standard", user: dict = Depends(get_current_user)):
+    """Request a payout"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can request payouts")
+    
+    barber = await db.users.find_one({"id": user["id"]})
+    if not barber.get("stripe_account_id") or not barber.get("stripe_onboarding_complete"):
+        raise HTTPException(status_code=400, detail="Stripe account not connected or onboarding incomplete")
+    
+    wallet = await db.wallets.find_one({"barber_id": user["id"]})
+    if not wallet or wallet.get("available_balance", 0) < amount:
+        raise HTTPException(status_code=400, detail="Insufficient balance")
+    
+    if amount < 1:
+        raise HTTPException(status_code=400, detail="Minimum payout is €1")
+    
+    # Calculate fee for instant payout
+    fee = round(amount * 0.015, 2) if payout_type == "instant" else 0
+    net_amount = amount - fee
+    
+    try:
+        # Create payout via Stripe
+        payout = stripe.Transfer.create(
+            amount=int(net_amount * 100),  # Convert to cents
+            currency="eur",
+            destination=barber["stripe_account_id"],
+            metadata={"barber_id": user["id"], "payout_type": payout_type}
+        )
+        
+        # Update wallet balance
+        await db.wallets.update_one(
+            {"barber_id": user["id"]},
+            {"$inc": {"available_balance": -amount}}
+        )
+        
+        # Record payout
+        payout_record = {
+            "id": str(uuid.uuid4()),
+            "barber_id": user["id"],
+            "amount": amount,
+            "fee": fee,
+            "net_amount": net_amount,
+            "payout_type": payout_type,
+            "status": "pending",
+            "stripe_transfer_id": payout.id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "arrival_date": (datetime.now(timezone.utc) + timedelta(days=0 if payout_type == "instant" else 3)).isoformat()
+        }
+        await db.payouts.insert_one(payout_record)
+        
+        # Record transaction
+        transaction = {
+            "id": str(uuid.uuid4()),
+            "barber_id": user["id"],
+            "type": "payout",
+            "amount": -amount,
+            "description": f"Saque {'Instantâneo' if payout_type == 'instant' else 'Standard'}",
+            "status": "completed",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.transactions.insert_one(transaction)
+        
+        return {"success": True, "message": f"Saque de €{net_amount:.2f} solicitado com sucesso"}
+        
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@api_router.post("/wallet/auto-payout")
+async def configure_auto_payout(enabled: bool, frequency: str = "weekly", minimum_amount: float = 50, user: dict = Depends(get_current_user)):
+    """Configure automatic payouts"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can configure auto-payout")
+    
+    if frequency not in ["daily", "weekly", "monthly"]:
+        raise HTTPException(status_code=400, detail="Invalid frequency")
+    
+    if minimum_amount < 10:
+        raise HTTPException(status_code=400, detail="Minimum amount must be at least €10")
+    
+    await db.wallets.update_one(
+        {"barber_id": user["id"]},
+        {"$set": {"auto_payout": {"enabled": enabled, "frequency": frequency, "minimum_amount": minimum_amount}}},
+        upsert=True
+    )
+    
+    return {"success": True}
+
+# ==================== VERIFICATION ROUTES ====================
+
+@api_router.get("/verification/status")
+async def get_verification_status(user: dict = Depends(get_current_user)):
+    """Get barber verification status"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers need verification")
+    
+    verification = await db.verifications.find_one({"barber_id": user["id"]}, {"_id": 0})
+    
+    if not verification:
+        return {
+            "status": "not_started",
+            "contract_accepted": False,
+            "documents_submitted": False
+        }
+    
+    return verification
+
+@api_router.get("/verification/contract")
+async def get_verification_contract():
+    """Get the service contract text"""
+    contract_text = """CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE BARBEARIA
+
+TERMOS E CONDIÇÕES
+
+1. OBJETO DO CONTRATO
+Este contrato estabelece os termos e condições para a prestação de serviços de barbearia através da plataforma ClickBarber.
+
+2. OBRIGAÇÕES DO PROFISSIONAL
+2.1. O profissional compromete-se a prestar serviços de qualidade, respeitando os padrões de higiene e segurança.
+2.2. Manter suas credenciais e documentos atualizados na plataforma.
+2.3. Cumprir com os horários agendados pelos clientes.
+2.4. Tratar os clientes com respeito e profissionalismo.
+
+3. ATENDIMENTO DOMICILIAR
+3.1. Para serviços em domicílio, o profissional deve estar devidamente verificado.
+3.2. O profissional é responsável pelo seu próprio transporte e equipamentos.
+3.3. Taxas de deslocamento serão calculadas automaticamente pela plataforma.
+
+4. PAGAMENTOS E COMISSÕES
+4.1. A plataforma retém uma comissão de 10% sobre cada serviço.
+4.2. Os pagamentos são processados via Stripe e transferidos semanalmente.
+4.3. O profissional pode solicitar saques a qualquer momento após atingir o valor mínimo.
+
+5. CANCELAMENTOS
+5.1. Cancelamentos com menos de 2 horas de antecedência podem resultar em penalidades.
+5.2. O cliente pode avaliar o serviço após a conclusão.
+
+6. VERIFICAÇÃO DE IDENTIDADE
+6.1. O profissional deve submeter documentos válidos para verificação.
+6.2. A verificação é obrigatória para atendimentos domiciliares.
+
+7. PROTEÇÃO DE DADOS
+7.1. Seus dados pessoais são protegidos conforme o GDPR.
+7.2. Documentos de verificação são armazenados de forma segura.
+
+8. RESCISÃO
+8.1. Qualquer parte pode rescindir este contrato com aviso prévio de 30 dias.
+8.2. Violações graves podem resultar em rescisão imediata.
+
+Ao assinar este contrato, você concorda com todos os termos acima.
+
+Data de Emissão: {date}
+""".format(date=datetime.now(timezone.utc).strftime("%d/%m/%Y"))
+    
+    return {"contract_text": contract_text}
+
+@api_router.post("/verification/accept-contract")
+async def accept_contract(accepted: bool, signature: str, signer_name: str, user: dict = Depends(get_current_user)):
+    """Accept the service contract with electronic signature"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can accept contract")
+    
+    if not accepted or not signature or not signer_name:
+        raise HTTPException(status_code=400, detail="Contract acceptance, signature and name are required")
+    
+    verification = await db.verifications.find_one({"barber_id": user["id"]})
+    
+    verification_data = {
+        "barber_id": user["id"],
+        "contract_accepted": True,
+        "contract_accepted_at": datetime.now(timezone.utc).isoformat(),
+        "signature": signature,
+        "signer_name": signer_name,
+        "documents_submitted": verification.get("documents_submitted", False) if verification else False,
+        "status": "contract_signed"
+    }
+    
+    await db.verifications.update_one(
+        {"barber_id": user["id"]},
+        {"$set": verification_data},
+        upsert=True
+    )
+    
+    return {"success": True, "message": "Contract accepted successfully"}
+
+@api_router.post("/verification/submit-documents")
+async def submit_documents(passport_photo: str, passport_selfie: str, user: dict = Depends(get_current_user)):
+    """Submit verification documents (passport photo + selfie with passport)"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can submit documents")
+    
+    verification = await db.verifications.find_one({"barber_id": user["id"]})
+    
+    if not verification or not verification.get("contract_accepted"):
+        raise HTTPException(status_code=400, detail="Contract must be accepted first")
+    
+    if not passport_photo or not passport_selfie:
+        raise HTTPException(status_code=400, detail="Both passport photo and selfie are required")
+    
+    await db.verifications.update_one(
+        {"barber_id": user["id"]},
+        {"$set": {
+            "documents_submitted": True,
+            "documents_submitted_at": datetime.now(timezone.utc).isoformat(),
+            "passport_photo": passport_photo,
+            "passport_selfie": passport_selfie,
+            "status": "under_review"
+        }}
+    )
+    
+    return {"success": True, "message": "Documents submitted for review"}
+
+@api_router.get("/admin/verifications")
+async def get_pending_verifications(user: dict = Depends(get_current_user)):
+    """Get all pending verifications (admin only)"""
+    # For now, any barber can access this for demo purposes
+    verifications = await db.verifications.find(
+        {"status": "under_review"},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Get barber info for each verification
+    for v in verifications:
+        barber = await db.users.find_one({"id": v["barber_id"]}, {"_id": 0, "password": 0})
+        v["barber"] = barber
+    
+    return {"verifications": verifications}
+
+@api_router.post("/admin/verifications/{barber_id}/approve")
+async def approve_verification(barber_id: str, user: dict = Depends(get_current_user)):
+    """Approve a barber verification"""
+    await db.verifications.update_one(
+        {"barber_id": barber_id},
+        {"$set": {
+            "status": "verified",
+            "verified_at": datetime.now(timezone.utc).isoformat(),
+            "verified_by": user["id"]
+        }}
+    )
+    
+    # Update barber profile
+    await db.users.update_one(
+        {"id": barber_id},
+        {"$set": {"is_verified": True}}
+    )
+    
+    return {"success": True}
+
+@api_router.post("/admin/verifications/{barber_id}/reject")
+async def reject_verification(barber_id: str, reason: str = "Documents unclear", user: dict = Depends(get_current_user)):
+    """Reject a barber verification"""
+    await db.verifications.update_one(
+        {"barber_id": barber_id},
+        {"$set": {
+            "status": "rejected",
+            "rejected_at": datetime.now(timezone.utc).isoformat(),
+            "rejected_by": user["id"],
+            "verification_notes": reason
+        }}
+    )
+    
+    return {"success": True}
+
+# ==================== SUBSCRIPTION ROUTES ====================
+
+@api_router.get("/subscription/plans")
+async def get_subscription_plans():
+    """Get available subscription plans"""
+    plans = [
+        {
+            "id": "basic",
+            "name": "Básico",
+            "price": 9.99,
+            "trial_days": 7,
+            "features": [
+                "Perfil na plataforma",
+                "Até 50 clientes/mês",
+                "Relatórios básicos",
+                "Suporte por email"
+            ]
+        },
+        {
+            "id": "premium",
+            "name": "Premium",
+            "price": 19.99,
+            "trial_days": 14,
+            "features": [
+                "Perfil destacado",
+                "Clientes ilimitados",
+                "Relatórios avançados",
+                "Suporte prioritário",
+                "Atendimento domiciliar",
+                "Sem taxa de saque"
+            ]
+        }
+    ]
+    return {"plans": plans}
+
+@api_router.get("/subscription/status")
+async def get_subscription_status(user: dict = Depends(get_current_user)):
+    """Get current subscription status"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers have subscriptions")
+    
+    subscription = await db.subscriptions.find_one({"barber_id": user["id"]}, {"_id": 0})
+    
+    if not subscription:
+        # Create trial subscription
+        trial_end = datetime.now(timezone.utc) + timedelta(days=7)
+        subscription = {
+            "barber_id": user["id"],
+            "plan": "trial",
+            "status": "trial",
+            "trial_ends_at": trial_end.isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.subscriptions.insert_one(subscription)
+    
+    return subscription
+
+@api_router.post("/subscription/checkout")
+async def create_checkout_session(plan_id: str, user: dict = Depends(get_current_user)):
+    """Create Stripe checkout session for subscription"""
+    if user["user_type"] != "barber":
+        raise HTTPException(status_code=403, detail="Only barbers can subscribe")
+    
+    prices = {
+        "basic": 999,  # €9.99 in cents
+        "premium": 1999  # €19.99 in cents
+    }
+    
+    if plan_id not in prices:
+        raise HTTPException(status_code=400, detail="Invalid plan")
+    
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {
+                        "name": f"ClickBarber {plan_id.capitalize()} Plan"
+                    },
+                    "unit_amount": prices[plan_id],
+                    "recurring": {"interval": "month"}
+                },
+                "quantity": 1
+            }],
+            mode="subscription",
+            success_url=f"{FRONTEND_URL}/subscription?success=true",
+            cancel_url=f"{FRONTEND_URL}/subscription?canceled=true",
+            metadata={"barber_id": user["id"], "plan_id": plan_id}
+        )
+        return {"checkout_url": session.url}
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @api_router.get("/")
 async def root():
     return {"message": "BarberX API v1.0"}
