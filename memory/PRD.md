@@ -1,142 +1,94 @@
-# ClickBarber - Marketplace de Barbeiros
+# BarberX - Marketplace de Barbeiros em Tempo Real (Dublin, Ireland)
 
-## Resumo do Projeto
-Plataforma marketplace para conectar clientes a barbeiros em Dublin, em tempo real. Os clientes podem ver barbeiros disponíveis no mapa, agendar serviços e receber atendimento em domicílio.
+## Problema Original
+Criar um marketplace de barbeiros em tempo real para Dublin, Irlanda. Barbeiros podem ficar Online/Offline. Clientes visualizam no mapa quem está disponível. **Nova feature**: Atendimento em domicílio com taxa de deslocamento paga pelo cliente.
 
-## Status Atual: EM DESENVOLVIMENTO ✅
+## Arquitetura
+- **Frontend**: React.js + Tailwind CSS + Leaflet (mapas)
+- **Backend**: FastAPI (Python) com JWT auth
+- **Banco de Dados**: MongoDB
+- **Localização**: Dublin, Ireland
+- **Moeda**: Euro (€)
 
----
+## User Personas
+1. **Cliente**: Pessoa buscando barbeiro disponível por perto ou em domicílio
+2. **Barbeiro**: Profissional gerenciando agenda e oferecendo atendimento presencial ou em domicílio
 
-## Funcionalidades Implementadas ✅
+## Core Requirements
+- ✅ Cadastro/Login para clientes e barbeiros
+- ✅ Toggle Online/Offline para barbeiros
+- ✅ Mapa em tempo real com barbeiros disponíveis (Dublin)
+- ✅ Sistema de fila digital
+- ✅ **Home Service** - Atendimento em domicílio com taxa de deslocamento
 
-### Core Features
-1. **Mapa em Tempo Real** - Visualização de barbeiros disponíveis com Leaflet
-2. **Dashboard do Barbeiro** - Toggle Online/Offline, gerenciamento de serviços
-3. **Dashboard do Cliente** - Busca, reservas e histórico
-4. **Home Service** - Atendimento em domicílio com cálculo de taxa de deslocamento
-5. **Autenticação JWT** - Login/Registro para clientes e barbeiros
-6. **Multi-idiomas** - Português e Inglês
+## Implementado ✅ (29/01/2026)
 
-### UI/UX
-7. **Framer Motion** ✅ (Implementado 18/02/2026)
-   - Hero com animações de entrada
-   - Logo animada com hover effects
-   - Botões com shimmer effect e sombras dinâmicas
-   - Seta animada nos CTAs
-   - Cards com hover scale e glow
-   - Tesoura animada no botão "Sou Barbeiro"
-   - Texto "BARBER" com glow pulsante
-   - Scroll indicator animado
-   - Imagem de barbeiro com transição grayscale
+### Landing Page
+- [x] Hero section em inglês
+- [x] Features section
+- [x] CTA para cadastro
 
----
+### Sistema de Autenticação
+- [x] Cadastro de cliente e barbeiro
+- [x] Login com JWT
+- [x] Proteção de rotas
 
-## Stack Tecnológica
+### Dashboard do Cliente
+- [x] Mapa Leaflet centralizado em Dublin
+- [x] Marcadores verdes/cinza (online/offline)
+- [x] Filtro "Online only"
+- [x] Detalhes do barbeiro
+- [x] **Modal de reserva com opções**:
+  - At the barbershop
+  - Home Service (+taxa de deslocamento)
+- [x] Cálculo automático de distância e taxa
 
-### Frontend
-- React 19
-- TailwindCSS
-- Shadcn/UI Components
-- **Framer Motion** (animações)
-- **Leaflet** (mapas)
-- Lucide Icons
+### Dashboard do Barbeiro
+- [x] Toggle ON/OFF
+- [x] Indicador de Home Service ativo
+- [x] Fila com badge "HOME" para atendimentos em domicílio
+- [x] Detalhes do cliente (endereço, distância, taxa)
+- [x] Estatísticas de ganhos
 
-### Backend
-- FastAPI (Python)
-- MongoDB
-- JWT Authentication
+### Home Service Feature
+- [x] Campo `offers_home_service` no barbeiro
+- [x] Taxa por km configurável (`home_service_fee_per_km`)
+- [x] Cálculo de distância (Haversine formula)
+- [x] Modal com seleção de tipo de atendimento
+- [x] Input de endereço do cliente
+- [x] Total calculado (serviço + deslocamento)
+- [x] Badge "HOME" na fila do barbeiro
 
----
+### Barbeiros de Dublin (Seed Data)
+| Nome | Especialidade | Home Service | Taxa/km |
+|------|--------------|--------------|---------|
+| Sean Murphy | Beard & Traditional | ✅ | €2.50 |
+| Liam O'Connor | Fade & Skin Fade | ✅ | €3.00 |
+| Patrick Byrne | Hot Towel & Razor | ✅ | €2.00 |
+| Conor Walsh | Modern Styles | ❌ | - |
 
-## Próximas Tarefas (Backlog)
+## Testes
+- Backend: 100% ✅
+- Frontend: 85% ✅ (core features working)
 
-### P0 - Alta Prioridade
-- [ ] Testar fluxo completo cliente -> barbeiro
-- [ ] Verificar mapa com localização em Dublin
+## Backlog / Próximas Features
 
-### P1 - Média Prioridade  
-- [ ] Adicionar animações nas páginas internas (Dashboard, Auth)
-- [ ] Sistema de pagamentos (Stripe)
-- [ ] Notificações push
+### P0 (Alta prioridade)
+- [ ] Notificações push quando chegar a vez
+- [ ] Navegação GPS para home service
+- [ ] Avaliação após atendimento
 
-### P2 - Baixa Prioridade
-- [ ] Sistema de avaliações
-- [ ] Chat entre cliente e barbeiro
+### P1 (Média prioridade)
 - [ ] Histórico de atendimentos
+- [ ] Chat entre cliente e barbeiro
+- [ ] Pagamento online integrado
 
----
+### P2 (Baixa prioridade)
+- [ ] Integração WhatsApp
+- [ ] Relatórios mensais
+- [ ] App mobile nativo
 
-## Arquitetura de Arquivos
-
-```
-/app/
-├── backend/
-│   ├── server.py              # API principal com endpoints
-│   ├── requirements.txt
-│   └── tests/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── motion/
-│   │   │   │   └── AnimatedComponents.js  # Componentes Framer Motion
-│   │   │   ├── ui/            # Shadcn components
-│   │   │   └── Map.js         # Componente de mapa Leaflet
-│   │   ├── pages/
-│   │   │   ├── LandingPage.js  # ✅ Com Framer Motion
-│   │   │   ├── BarberDashboard.js
-│   │   │   ├── ClientDashboard.js
-│   │   │   └── Auth.js
-│   │   ├── contexts/
-│   │   │   └── LanguageContext.js
-│   │   └── i18n/
-│   └── package.json
-└── memory/
-    └── PRD.md
-```
-
----
-
-## Changelog
-
-### 18/02/2026
-- ✅ Migrado de STUFF Intercâmbio para ClickBarber
-- ✅ Implementado Framer Motion na Landing Page
-- ✅ Animações premium: shimmer, glow, hover effects
-- ✅ Logo animada, tesoura animada, scroll indicator
-
----
-
-## Modelos de Dados
-
-### User
-```json
-{
-  "id": "uuid",
-  "name": "string",
-  "email": "string",
-  "user_type": "client | barber",
-  "latitude": "float",
-  "longitude": "float",
-  "is_online": "boolean",
-  "offers_home_service": "boolean",
-  "home_service_fee_per_km": "float"
-}
-```
-
-### Booking
-```json
-{
-  "id": "uuid",
-  "client_id": "uuid",
-  "barber_id": "uuid",
-  "service": "object",
-  "status": "pending | confirmed | completed | cancelled",
-  "is_home_service": "boolean",
-  "travel_fee": "float"
-}
-```
-
----
-
-## Preview URL
-https://stuff-exchange.preview.emergentagent.com (ClickBarber)
+## Próximos Passos
+1. Adicionar navegação GPS para barbeiro ir ao cliente
+2. Implementar pagamento online (Stripe)
+3. Sistema de avaliações
